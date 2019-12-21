@@ -25,4 +25,4 @@ class StockProcessor:
                 self.dataset.append(Dataset(raw))
                 del raw[:]
                 i -= 1
-        
+    
