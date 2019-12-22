@@ -1,7 +1,7 @@
 
 import time
 import stock as stock
-from sklearn import preprocessing
+import tqdm as tqdm
 
 DATASET_LABEL = ["TRAINING", "VALIDATING", "TESTING"]
 
@@ -39,6 +39,8 @@ class Dataset:
         return self.raw[index]
     def append_spike_datapoint(self, val):
         self.spike_detected_matrix.append(val)
+    def spike_matrix(self):
+        return self.spike_detected_matrix
 
 class StockProcessor:
     def __init__(self, target_stock, split_range, spike_sampling_range):
@@ -85,7 +87,32 @@ class StockProcessor:
         if (self.spike_sampling_range < MINIMUM_SAMPLING_RANGE) | (self.spike_sampling_range > MAXIMUM_SAMPLING_RANGE):
             print("\nWARNING: Specified spike sampling range is out of limits! Reverting to default sampling range...")
             self.spike_sampling_range = DEFAULT_SAMPLING_RANGE
+        temp1 = 0
+        temp2 = 0
+        maximum_variability = -10000
+        for _range in range(0, dataset.raw_size() - self.spike_sampling_range, self.spike_sampling_range):
+            for i in range(_range, (_range + self.spike_sampling_range - 1)):
+                if (i + 1) > dataset.raw_size():
+                    pass
+                else:
+                    if abs(dataset.raw_datapoint(i) - dataset.raw_datapoint(i + 1)) > maximum_variability:
+                        temp1 = dataset.raw_datapoint(i)
+                        temp2 = dataset.raw_datapoint(i + 1)
+            dataset.append_spike_datapoint(temp1)
+            dataset.append_spike_datapoint(temp2)
+        return dataset
+
     def run(self):
         self.prepare_dataset()
+        # apply the spike detection algorithm on all stock datasets
+        count = 0
+        print('')
+        loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
         for data in self.dataset:
+            loop.set_description('Applying spike detection algorithm on stock dataset... ' .format(count))
             data = self.spike_detection(data)
+            count += 1
+            loop.update(1)
+            time.sleep(0.01)
+        print('\n\nCompleted spike detection!')
+        loop.close()
