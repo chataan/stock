@@ -1,5 +1,6 @@
 
 import time as time
+import tqdm as tqdm
 
 YEAR=0
 MONTH=1
@@ -34,14 +35,18 @@ class Stock:
             data.append(x)
             data[len(data) - 1] = data[len(data) - 1].replace("-", ",")
         del data[0] # delete the line: "Date,Open,High,Low,Close,Adj Close,Volume" on the .csv file
+
+        print("\nReading stock data from: ", self.path)
+        loop = tqdm.tqdm(total = len(data), position = 0, leave = False)
         for line in data:
             line = line.split(",")
             # convert all the numbers in the line as integers, create a StockDataPoint
             uploaded.append(StockDataPoint(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[OPEN])))
-            uploaded.append(StockDataPoint(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[CLOSE])))
-            print("Stock Data >> [Date: {0}-{1}-{2},  Open = {3}]" .format(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[OPEN])))
-            print("Stock Data >> [Date: {0}-{1}-{2}, Close = {3}]" .format(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[CLOSE])))
+            uploaded.append(StockDataPoint(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[CLOSE]))) 
+            loop.set_description('Reading stock data...' .format(len(uploaded)))
+            loop.update(1)
             time.sleep(0.01)
+        print("\n\nUploaded stock data successfully!")
         return uploaded
     def delete_datapoint(self, index):
         if (index < 0) | (index >= len(self.datapoints)):
