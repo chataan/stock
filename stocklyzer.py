@@ -6,6 +6,9 @@ import tqdm as tqdm
 
 DATASET_LABEL = ["TRAINING", "VALIDATING", "TESTING"]
 
+SHORT_TERM = 30
+LONG_TERM = 365
+
 MINIMUM_SAMPLING_RANGE = 3
 DEFAULT_SAMPLING_RANGE = 5
 MAXIMUM_SAMPLING_RANGE = 6
@@ -61,16 +64,17 @@ class StockProcessor:
         for i in range(self.target_stock.amount_of_datapoints() % self.split_range):
             self.target_stock.delete_datapoint(i)
         raw = []
-        for sets in range(self.target_stock.amount_of_datapoints() - self.split_range):
-            for i in range(sets, sets + self.split_range):
+        for sets in range(0, (self.target_stock.amount_of_datapoints() - self.split_range + 1)):
+            for i in range(sets, (sets + self.split_range)):
                 raw.append(self.target_stock.datapoint(i).price())
-                if i % self.split_range == 0:
-                    self.dataset.append(Dataset(raw))
-                    raw = []
+            self.dataset.append(Dataset(raw))
+            raw = []
+            
         # set breakpoints to split the dataset into three categories: training, validating, testing
         self.training_dataset_breakpoint = int((len(self.dataset) * 60) / 100)
-        self.validation_dataset_breakpoint = self.training_dataset_breakpoint + int((len(self.dataset) * 20) / 100)
+        self.validation_dataset_breakpoint = self.training_dataset_breakpoint + int((len(self.dataset) * 30) / 100)
         self.testing_dataset_breakpoint = self.validation_dataset_breakpoint + int((len(self.dataset) * 10) / 100)
+
         for i in range(len(self.dataset)):
             if i <= self.training_dataset_breakpoint:
                 self.dataset[i].set_dataset_label("TRAINING")
@@ -84,6 +88,7 @@ class StockProcessor:
             # normalize the raw stock data of all datasets
             self.dataset[i].normalize()
         print("Completed stock dataset partitioning! [Training = {0}, Validation = {1}, Testing = {2}]" .format(self.amount_of_training_datasets, self.amount_of_validation_datasets, self.amount_of_testing_datasets))
+        print("Each dataset contains a total of {0} stock datapoints!" .format(self.dataset[0].raw_size()))
         time.sleep(1)
     def spike_detection(self, dataset):
         """ deploy a spike detection algorithm that extracts datapoints with 
@@ -109,13 +114,11 @@ class StockProcessor:
     def run(self):
         self.prepare_dataset()
         # apply the spike detection algorithm on all stock datasets
-        count = 0
         print('')
         loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
         for data in self.dataset:
-            loop.set_description('Applying spike detection algorithm on stock dataset... ' .format(count))
+            loop.set_description('Applying spike detection algorithm on stock dataset... ' .format(len(self.dataset)))
             data = self.spike_detection(data)
-            count += 1
             loop.update(1)
             time.sleep(0.001)
         print('\n\nCompleted spike detection!')

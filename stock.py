@@ -36,14 +36,16 @@ class Stock:
             data[len(data) - 1] = data[len(data) - 1].replace("-", ",")
         del data[0] # delete the line: "Date,Open,High,Low,Close,Adj Close,Volume" on the .csv file
 
+        count = 0
         print("\nReading stock data from: ", self.path)
         loop = tqdm.tqdm(total = len(data), position = 0, leave = False)
         for line in data:
             line = line.split(",")
             # convert all the numbers in the line as integers, create a StockDataPoint
             uploaded.append(StockDataPoint(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[OPEN])))
-            uploaded.append(StockDataPoint(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[CLOSE]))) 
-            loop.set_description('Reading stock data...' .format(len(uploaded)))
+            uploaded.append(StockDataPoint(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[CLOSE])))
+            count += 1
+            loop.set_description('Reading stock data...' .format(len(data)))
             loop.update(1)
             time.sleep(0.01)
         print("\n\nUploaded stock data successfully!")
