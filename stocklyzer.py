@@ -14,6 +14,8 @@ class Dataset:
         self.raw = raw
         self.spike_detected_matrix = []
         self.final_close_value = self.raw[len(self.raw) - 1] # expected output
+        self.variability_slope = 0.00 # the slope of a linear segment that links the first and last value in the raw data
+        self.increase_decrease_ratio = 0.00 # frequency of price increase : frequency of price decrease (stability of the stock's variability)
         self.dataset_label = ""
         del self.raw[len(raw) - 1] # exclude the last datapoint, which is the final close value
     def set_dataset_label(self, label):
@@ -58,11 +60,12 @@ class StockProcessor:
         for i in range(self.target_stock.amount_of_datapoints() % self.split_range):
             self.target_stock.delete_datapoint(i)
         raw = []
-        for i in range(self.target_stock.amount_of_datapoints()):
-            raw.append(self.target_stock.datapoint(i).price())
-            if i % self.split_range == 0:
-                self.dataset.append(Dataset(raw))
-                raw = []
+        for sets in range(self.target_stock.amount_of_datapoints() - self.split_range):
+            for i in range(sets, sets + self.split_range):
+                raw.append(self.target_stock.datapoint(i).price())
+                if i % self.split_range == 0:
+                    self.dataset.append(Dataset(raw))
+                    raw = []
         # set breakpoints to split the dataset into three categories: training, validating, testing
         self.training_dataset_breakpoint = int((len(self.dataset) * 60) / 100)
         self.validation_dataset_breakpoint = self.training_dataset_breakpoint + int((len(self.dataset) * 20) / 100)
@@ -79,7 +82,7 @@ class StockProcessor:
                 self.amount_of_testing_datasets += 1
             # normalize the raw stock data of all datasets
             self.dataset[i].normalize()
-        print("Completed stock data pre-processing! [Training = {0}, Validation = {1}, Testing = {2}]" .format(self.amount_of_training_datasets, self.amount_of_validation_datasets, self.amount_of_testing_datasets))
+        print("Completed stock dataset partitioning! [Training = {0}, Validation = {1}, Testing = {2}]" .format(self.amount_of_training_datasets, self.amount_of_validation_datasets, self.amount_of_testing_datasets))
         time.sleep(1)
     def spike_detection(self, dataset):
         """ deploy a spike detection algorithm that extracts datapoints with 
@@ -113,6 +116,6 @@ class StockProcessor:
             data = self.spike_detection(data)
             count += 1
             loop.update(1)
-            time.sleep(0.01)
+            time.sleep(0.001)
         print('\n\nCompleted spike detection!')
         loop.close()
