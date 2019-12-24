@@ -22,7 +22,8 @@ class StockDataPoint:
         self.value = val
 
 class Stock:
-    def __init__(self, path):
+    def __init__(self, name, path):
+        self.name = name
         self.path = path
         self.datapoints = self.upload_stock_data()
     def upload_stock_data(self):
