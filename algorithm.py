@@ -20,7 +20,7 @@ class Dataset:
         self.final_close_value = self.raw[len(self.raw) - 1] # expected output
         self.variability_slope = 0.00 # the slope of a linear segment that links the first and last value in the raw data
         self.increase_decrease_ratio = 0.00 # frequency of price increase : frequency of price decrease (stability of the stock's variability)
-        self.average_price_variablity = 0.00 # average change in price in raw data
+        self.average_price_variablity = 0.00 # average price variability in raw data
         self.dataset_label = ""
         del self.raw[len(raw) - 1] # exclude the last datapoint, which is the final close value
     def set_dataset_label(self, label):
@@ -48,6 +48,12 @@ class Dataset:
         self.spike_detected_matrix.append(val)
     def spike_matrix(self):
         return self.spike_detected_matrix
+    def set_variability_slope(self, val):
+        self.variability_slope = val
+    def set_increase_decrease_ratio(self, val):
+        self.increase_decrease_ratio = val
+    def set_average_price_variability(self, val):
+        self.average_price_variablity = val
 
 class StockProcessor:
     def __init__(self, target_stock, split_range, spike_sampling_range):
@@ -111,7 +117,36 @@ class StockProcessor:
             dataset.append_spike_datapoint(temp1)
             dataset.append_spike_datapoint(temp2)
         return dataset
-
+    def variability_slope_analysis(self, dataset):
+        """ return the slope of a linear segment connecting the first and last raw stock datapoint
+        this represents the steadiness of the stock's variability or price change
+        higher the value --> higher stock increase """
+        return (dataset.raw_datapoint(0) - dataset.raw_datapoint(dataset.raw_size() - 1)) / dataset.raw_size()
+    def increase_decrease_ratio(self, dataset):
+        """ calculate the frequency difference of the stock's price increase/decrease 
+        (iterations of increase : iterations of decrease) --> higher score = higher stock increase frequency """
+        increase_iterations = 0
+        decrease_iterations = 0
+        for i in range(dataset.raw_size() - 1):
+            if dataset.raw_datapoint(i) < dataset.raw_datapoint(i + 1):
+                increase_iterations += 1
+            elif dataset.raw_datapoint(i) > dataset.raw_datapoint(i + 1):
+                decrease_iterations += 1
+            else:
+                pass
+        return increase_iterations / decrease_iterations
+    def average_price_variability(self, dataset):
+        """ calculate the average change (variability) of the stock's value 
+        --> evaluates the consistency/stableness of growth (lower the score, the more steady growth/variability in stock price """
+        price_variability_sum = 0
+        for i in range(dataset.raw_size() - 1):
+            price_variability_sum += dataset.raw_datapoint(i + 1) - dataset.raw_datapoint(i)
+        return price_variability_sum / dataset.raw_size()
+    def data_analysis(self, dataset):
+        dataset.set_variability_slope(self.variability_slope_analysis(dataset))
+        dataset.set_increase_decrease_ratio(self.increase_decrease_ratio(dataset))
+        dataset.set_average_price_variability(self.average_price_variability(dataset))
+        return dataset
     def run(self):
         self.prepare_dataset()
         # apply the spike detection algorithm on all stock datasets
@@ -122,5 +157,15 @@ class StockProcessor:
             data = self.spike_detection(data)
             loop.update(1)
             time.sleep(0.001)
-        print('\n\nCompleted spike detection!')
+        print('\nCompleted spike detection!')
         loop.close()
+        # run data analysis algorithm on each dataset
+        print('')
+        loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
+        for data in self.dataset:
+            loop.set_description('Running data analysis on stock dataset... ' .format(len(self.dataset)))
+            data = self.data_analysis(data)
+            loop.update(1)
+            time.sleep(0.0001)
+        print('\nCompleted data analysis!')
+
