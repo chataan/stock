@@ -20,6 +20,7 @@ class Dataset:
         self.final_close_value = self.raw[len(self.raw) - 1] # expected output
         self.variability_slope = 0.00 # the slope of a linear segment that links the first and last value in the raw data
         self.increase_decrease_ratio = 0.00 # frequency of price increase : frequency of price decrease (stability of the stock's variability)
+        self.average_price_variablity = 0.00 # average change in price in raw data
         self.dataset_label = ""
         del self.raw[len(raw) - 1] # exclude the last datapoint, which is the final close value
     def set_dataset_label(self, label):
