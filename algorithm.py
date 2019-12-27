@@ -16,6 +16,8 @@ MAXIMUM_SAMPLING_RANGE = 6
 class Dataset:
     def __init__(self, raw):
         self.raw = raw
+        self.min = 0
+        self.max = 0
         self.spike_detected_matrix = []
         self.final_close_value = self.raw[len(self.raw) - 1] # expected output
         self.variability_slope = 0.00 # the slope of a linear segment that links the first and last value in the raw data
@@ -38,6 +40,8 @@ class Dataset:
                 pass
         for i in range(len(self.raw)):
             self.raw[i] = (self.raw[i] - min) / (max - min)
+        # save the maximum and minimum values for future use
+        self.min, self.max = min, max
     def raw_size(self):
         return len(self.raw)
     def raw_matrix(self):
@@ -76,7 +80,7 @@ class StockProcessor:
                 raw.append(self.target_stock.datapoint(i).price())
             self.dataset.append(Dataset(raw))
             raw = []
-            
+        
         # set breakpoints to split the dataset into three categories: training, validating, testing
         self.training_dataset_breakpoint = int((len(self.dataset) * 60) / 100)
         self.validation_dataset_breakpoint = self.training_dataset_breakpoint + int((len(self.dataset) * 30) / 100)
@@ -121,7 +125,7 @@ class StockProcessor:
         """ return the slope of a linear segment connecting the first and last raw stock datapoint
         this represents the steadiness of the stock's variability or price change
         higher the value --> higher stock increase """
-        return (dataset.raw_datapoint(0) - dataset.raw_datapoint(dataset.raw_size() - 1)) / dataset.raw_size()
+        return (dataset.raw_datapoint(dataset.raw_size() - 1) - dataset.raw_datapoint(0)) / dataset.raw_size()
     def increase_decrease_ratio(self, dataset):
         """ calculate the frequency difference of the stock's price increase/decrease 
         (iterations of increase : iterations of decrease) --> higher score = higher stock increase frequency """
@@ -146,6 +150,8 @@ class StockProcessor:
         dataset.set_variability_slope(self.variability_slope_analysis(dataset))
         dataset.set_increase_decrease_ratio(self.increase_decrease_ratio(dataset))
         dataset.set_average_price_variability(self.average_price_variability(dataset))
+
+        #print(self.variability_slope_analysis(dataset), self.increase_decrease_ratio(dataset), self.average_price_variability(dataset))
         return dataset
     def run(self):
         self.prepare_dataset()
