@@ -13,6 +13,25 @@ MINIMUM_SAMPLING_RANGE = 3
 DEFAULT_SAMPLING_RANGE = 5
 MAXIMUM_SAMPLING_RANGE = 6
 
+def normalize(matrix):
+    """ MinMaxScaler to normalize matrix with high values """
+    min = 10000
+    max = -10000
+    for val in matrix:
+        if val < min:
+            min = val
+        elif val > max:
+            max = val;
+        else:
+            pass
+    for i in range(len(matrix)):
+        matrix[i] = (matrix[i] - min) / (max - min)
+    return matrix
+
+def rescale(value, min, max):
+    """ Reverse of a MinMaxScaler: scales up a certain value based on a min max value """
+    return (value * (max - min)) + min 
+
 class Dataset:
     def __init__(self, raw):
         self.raw = raw
@@ -27,27 +46,15 @@ class Dataset:
         del self.raw[len(raw) - 1] # exclude the last datapoint, which is the final close value
     def set_dataset_label(self, label):
         self.dataset_label = label
-    def normalize(self):
-        """ MinMaxScaler """
-        min = 10000
-        max = -10000
-        for val in self.raw:
-            if val < min:
-                min = val
-            elif val > max:
-                max = val
-            else:
-                pass
-        for i in range(len(self.raw)):
-            self.raw[i] = (self.raw[i] - min) / (max - min)
-        # save the maximum and minimum values for future use
-        self.min, self.max = min, max
     def raw_size(self):
         return len(self.raw)
     def raw_matrix(self):
         return self.raw
     def raw_datapoint(self, index):
         return self.raw[index]
+    def set_raw_matrix(self, matrix):
+        for i in range(len(matrix)):
+            self.raw[i] = matrix[i]
     def append_spike_datapoint(self, val):
         self.spike_detected_matrix.append(val)
     def spike_matrix(self):
@@ -97,7 +104,7 @@ class StockProcessor:
                 self.dataset[i].set_dataset_label("TESTING")
                 self.amount_of_testing_datasets += 1
             # normalize the raw stock data of all datasets
-            self.dataset[i].normalize()
+            self.dataset[i].set_raw_matrix(normalize(self.dataset[i].raw_matrix()))
         print("Completed stock dataset partitioning! [Training = {0}, Validation = {1}, Testing = {2}]" .format(self.amount_of_training_datasets, self.amount_of_validation_datasets, self.amount_of_testing_datasets))
         print("Each dataset contains a total of {0} stock datapoints!" .format(self.dataset[0].raw_size()))
         time.sleep(1)
@@ -150,7 +157,6 @@ class StockProcessor:
         dataset.set_variability_slope(self.variability_slope_analysis(dataset))
         dataset.set_increase_decrease_ratio(self.increase_decrease_ratio(dataset))
         dataset.set_average_price_variability(self.average_price_variability(dataset))
-
         #print(self.variability_slope_analysis(dataset), self.increase_decrease_ratio(dataset), self.average_price_variability(dataset))
         return dataset
     def run(self):
