@@ -44,6 +44,10 @@ class Dataset:
         self.average_price_variablity = 0.00 # average price variability in raw data
         self.dataset_label = ""
         del self.raw[len(raw) - 1] # exclude the last datapoint, which is the final close value
+    def maximum(self):
+        return self.max
+    def minimum(self):
+        return self.min
     def set_dataset_label(self, label):
         self.dataset_label = label
     def raw_size(self):
@@ -132,7 +136,7 @@ class StockProcessor:
         """ return the slope of a linear segment connecting the first and last raw stock datapoint
         this represents the steadiness of the stock's variability or price change
         higher the value --> higher stock increase """
-        return (dataset.raw_datapoint(dataset.raw_size() - 1) - dataset.raw_datapoint(0)) / dataset.raw_size()
+        return (rescale(dataset.raw_datapoint(dataset.raw_size() - 1), dataset.minimum(), dataset.maximum()) - rescale(dataset.raw_datapoint(0), dataset.minimum(), dataset.maximum())) / dataset.raw_size()
     def increase_decrease_ratio(self, dataset):
         """ calculate the frequency difference of the stock's price increase/decrease 
         (iterations of increase : iterations of decrease) --> higher score = higher stock increase frequency """
@@ -149,10 +153,13 @@ class StockProcessor:
     def average_price_variability(self, dataset):
         """ calculate the average change (variability) of the stock's value 
         --> evaluates the consistency/stableness of growth (lower the score, the more steady growth/variability in stock price """
+        rescaled = []
+        for i in range(dataset.raw_size()):
+            rescaled.append(rescale(dataset.raw_datapoint(i), dataset.minimum(), dataset.maximum()))
         price_variability_sum = 0
-        for i in range(dataset.raw_size() - 1):
-            price_variability_sum += dataset.raw_datapoint(i + 1) - dataset.raw_datapoint(i)
-        return price_variability_sum / dataset.raw_size()
+        for i in range(len(rescaled) - 1):
+            price_variability_sum += abs(rescaled[i + 1] - rescaled[i])
+        return price_variability_sum / len(rescaled)
     def data_analysis(self, dataset):
         dataset.set_variability_slope(self.variability_slope_analysis(dataset))
         dataset.set_increase_decrease_ratio(self.increase_decrease_ratio(dataset))
@@ -180,4 +187,3 @@ class StockProcessor:
             loop.update(1)
             time.sleep(0.0001)
         print('\nCompleted data analysis!')
-

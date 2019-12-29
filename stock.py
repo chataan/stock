@@ -1,6 +1,8 @@
 
 import time as time
 import tqdm as tqdm
+import matplotlib.pyplot as plt
+from datetime import datetime
 
 YEAR=0
 MONTH=1
@@ -14,7 +16,7 @@ class StockDataPoint:
         self.month = month
         self.date = date
         self.value = value
-    def date(self):
+    def date_info(self):
         return self.year, self.month, self.date
     def price(self):
         return self.value
@@ -26,6 +28,21 @@ class Stock:
         self.name = name
         self.path = path
         self.datapoints = self.upload_stock_data()
+        self.count = []
+        self.raw = [] # just the price values
+        for i in range(len(self.datapoints)):
+            self.raw.append(self.datapoints[i].price())
+            self.count.append(i)
+
+        # show and save a graph of the stock
+        stock_graph = str(datetime.today().strftime("%Y-%m-%d")) + "-" + self.name + ".png"
+        plt.plot(self.count, self.raw)
+        plt.xlabel('Datapoint Count')
+        plt.ylabel('Stock Price')
+        plt.title(stock_graph)
+        plt.show()
+        plt.savefig(stock_graph)
+
     def upload_stock_data(self):
         """ Upload datapoints of a stock """
         uploaded = []
@@ -38,7 +55,7 @@ class Stock:
         del data[0] # delete the line: "Date,Open,High,Low,Close,Adj Close,Volume" on the .csv file
 
         count = 0
-        print("\nReading stock data from: ", self.path)
+        print("\nReading '", self.name, "' stock data from: ", self.path)
         loop = tqdm.tqdm(total = len(data), position = 0, leave = False)
         for line in data:
             line = line.split(",")
