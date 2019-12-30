@@ -23,9 +23,16 @@ class ViewController: UIViewController {
         // read stock data, create line graph
         // make predictions of the stock price using the pre-trained models loaded in the application
         if SearchBar.text != "" {
-            StockNameLabel.text = SearchBar.text
-            SearchBar.text = ""
-            StatusLabel.text = "Stock data acquired from finance.yahoo.com"
+            if (SearchBar.text == "reset") || (SearchBar.text == "Reset") {
+                StatusLabel.text = "Get started by searching a stock!"
+                StockNameLabel.text = ""
+                SearchBar.text = ""
+            }
+            else {
+                StockNameLabel.text = SearchBar.text
+                SearchBar.text = ""
+                StatusLabel.text = "Stock data acquired from finanace.yahoo.com"
+            }
         } else {}
     }
 }

@@ -35,7 +35,7 @@ class Stock:
             self.count.append(i)
 
         # show and save a graph of the stock
-        stock_graph = str(datetime.today().strftime("%Y-%m-%d")) + "-" + self.name + ".png"
+        stock_graph = str(datetime.today().strftime("%Y-%m-%d")) + "-" + self.name + ".jpg"
         plt.plot(self.count, self.raw)
         plt.xlabel('Datapoint Count')
         plt.ylabel('Stock Price')
@@ -65,7 +65,7 @@ class Stock:
             count += 1
             loop.set_description('Reading stock data...' .format(len(data)))
             loop.update(1)
-            time.sleep(0.01)
+            time.sleep(0.001)
         print("\n\nUploaded stock data successfully!")
         return uploaded
     def delete_datapoint(self, index):
