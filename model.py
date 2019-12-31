@@ -13,5 +13,16 @@ class KerasPredictor:
     """ This predictor will generate a LSTM prediction model 
     based on the StockProcessor feeded in the class """
     def __init__(self, stock_processor):
+        self.verification = None
+        if type(stock_processor) != StockProcessor:
+            print("ERROR: An unknown data type was given! All processes are disabled!")
+            self.verification = False
+            return
+        else:
+            self.verification = True
         self.stock = stock_processor
+        self.training_input = []
+        self.training_output = []
+    def preprocessing(self): 
+        """ Packaging the processed stock data into 2 dimensional training arrays (numpy) """
         
