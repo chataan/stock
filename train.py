@@ -9,6 +9,13 @@ msft = "Database/MSFT.csv" # Microsoft Inc.
 nvda = "Database/NVDA.csv" # NVIDIA Inc.
 tsla = "Database/TSLA.csv" # Tesla Inc.
 
+# search given stock query on Google Search Engine 
+#query += " finance.yahoo"
+#search_result = None
+#for link in googlesearch.search(query, tld="co.in", num=1, stop=1, pause=2):
+    #search_result = str(link)
+# acquire the past year worth of stock data
+
 if __name__ == "__main__":
     google = stock.Stock("Google", goog)
     long_term = algorithm.StockProcessor(google, algorithm.LONG_TERM, 5)

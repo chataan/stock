@@ -35,7 +35,7 @@ class Stock:
             self.count.append(i)
 
         # show and save a graph of the stock
-        stock_graph = str(datetime.today().strftime("%Y-%m-%d")) + "-" + self.name + ".jpg"
+        stock_graph = str(datetime.today().strftime("%Y-%m-%d")) + "-" + self.name + ".png"
         plt.plot(self.count, self.raw)
         plt.xlabel('Datapoint Count')
         plt.ylabel('Stock Price')
