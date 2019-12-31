@@ -12,6 +12,6 @@ tsla = "Database/TSLA.csv" # Tesla Inc.
 if __name__ == "__main__":
     google = stock.Stock("Google", goog)
     long_term = algorithm.StockProcessor(google, algorithm.LONG_TERM, 5)
-    #short_term = algoriht.StockProcessor(google, algorithm.SHORT_TERM, 5)
     long_term.run()
+    #short_term = algoriht.StockProcessor(google, algorithm.SHORT_TERM, 5)
     #short_term.run()

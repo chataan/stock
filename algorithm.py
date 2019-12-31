@@ -77,6 +77,12 @@ class Dataset:
 
 class StockProcessor:
     def __init__(self, target_stock, split_range, spike_sampling_range):
+        self.verification = None
+        if type(target_stock) != stock.Stock:
+            print("ERROR: Given stock does not match the required stock.Stock data type! All future processes are disabled")
+            self.verification = False # this will disable the StockProcessor from running any processes to prevent errors
+        else:
+            self.verification = True
         self.target_stock = target_stock
         self.split_range = split_range
         self.spike_sampling_range = spike_sampling_range
@@ -193,23 +199,27 @@ class StockProcessor:
         #print(self.variability_slope_analysis(dataset), self.increase_decrease_ratio(dataset), self.average_price_variability(dataset))
         return dataset
     def run(self):
-        self.prepare_dataset()
-        # apply the spike detection algorithm on all stock datasets
-        print('')
-        loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
-        for data in self.dataset:
-            loop.set_description('Applying spike detection algorithm on stock dataset... ' .format(len(self.dataset)))
-            data = self.spike_detection(data)
-            loop.update(1)
-            time.sleep(0.001)
-        print('\nCompleted spike detection!')
-        loop.close()
-        # run data analysis algorithm on each dataset
-        print('')
-        loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
-        for data in self.dataset:
-            loop.set_description('Running data analysis on stock dataset... ' .format(len(self.dataset)))
-            data = self.data_analysis(data)
-            loop.update(1)
-            time.sleep(0.0001)
-        print('\nCompleted data analysis!')
+        if self.verification == False:
+            print("StockProcessor was disabled for future processes due to a non-matching data type for the target stock!")
+            return
+        else:
+            self.prepare_dataset()
+            # apply the spike detection algorithm on all stock datasets
+            print('')
+            loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
+            for data in self.dataset:
+                loop.set_description('Applying spike detection algorithm on stock dataset... ' .format(len(self.dataset)))
+                data = self.spike_detection(data)
+                loop.update(1)
+                time.sleep(0.001)
+            print('\nCompleted spike detection!')
+            loop.close()
+            # run data analysis algorithm on each dataset
+            print('')
+            loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
+            for data in self.dataset:
+                loop.set_description('Running data analysis on stock dataset... ' .format(len(self.dataset)))
+                data = self.data_analysis(data)
+                loop.update(1)
+                time.sleep(0.0001)
+            print('\nCompleted data analysis!')
