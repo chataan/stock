@@ -49,6 +49,8 @@ class Dataset:
         return self.min
     def set_dataset_label(self, label):
         self.dataset_label = label
+    def get_close_value(self): # this is the labeled output of the corresponding time series data
+        return self.final_close_value
     def raw_size(self):
         return len(self.raw)
     def raw_matrix(self):
@@ -60,6 +62,8 @@ class Dataset:
             self.raw[i] = matrix[i]
     def append_spike_datapoint(self, val):
         self.spike_detected_matrix.append(val)
+    def spike_datapoint(self, index):
+        return self.spike_detected_matrix[index]
     def spike_matrix(self):
         return self.spike_detected_matrix
     def set_variability_slope(self, val):
@@ -123,6 +127,12 @@ class StockProcessor:
         print("Completed stock dataset partitioning! [Training = {0}, Validation = {1}, Testing = {2}]" .format(self.amount_of_training_datasets, self.amount_of_validation_datasets, self.amount_of_testing_datasets))
         print("Each dataset contains a total of {0} stock datapoints!" .format(self.dataset[0].raw_size()))
         time.sleep(1)
+    def amount_of_time_series(self):
+        return len(self.dataset)
+    def length_of_time_series(self):
+        return len(self.dataset[0].spike_matrix())
+    def get_time_series(self, index):
+        return self.dataset[index]
     def spike_detection(self, dataset):
         """ deploy a spike detection algorithm that extracts datapoints with 
         high alteration values within a segmentation range """
@@ -198,7 +208,7 @@ class StockProcessor:
         dataset.compute_confidence_rate()
         #print(self.variability_slope_analysis(dataset), self.increase_decrease_ratio(dataset), self.average_price_variability(dataset))
         return dataset
-    def run(self):
+    def train(self):
         if self.verification == False:
             print("StockProcessor was disabled for future processes due to a non-matching data type for the target stock!")
             return
@@ -223,3 +233,4 @@ class StockProcessor:
                 loop.update(1)
                 time.sleep(0.0001)
             print('\nCompleted data analysis!')
+        
