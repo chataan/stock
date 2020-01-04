@@ -124,8 +124,8 @@ class StockProcessor:
                 self.amount_of_testing_datasets += 1
             # normalize the raw stock data of all datasets
             self.dataset[i].set_raw_matrix(normalize(self.dataset[i].raw_matrix()))
-        print("Completed stock dataset partitioning! [Training = {0}, Validation = {1}, Testing = {2}]" .format(self.amount_of_training_datasets, self.amount_of_validation_datasets, self.amount_of_testing_datasets))
-        print("Each dataset contains a total of {0} stock datapoints!" .format(self.dataset[0].raw_size()))
+        print("Completed stock time series partitioning! [Training = {0}, Validation = {1}, Testing = {2}]" .format(self.amount_of_training_datasets, self.amount_of_validation_datasets, self.amount_of_testing_datasets))
+        print("Each time series data contains a total of {0} datapoints!" .format(self.dataset[0].raw_size()))
         time.sleep(1)
     def amount_of_time_series(self):
         return len(self.dataset)
@@ -218,7 +218,7 @@ class StockProcessor:
             print('')
             loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
             for data in self.dataset:
-                loop.set_description('Applying spike detection algorithm on stock dataset... ' .format(len(self.dataset)))
+                loop.set_description('Applying spike detection algorithm on time series data... ' .format(len(self.dataset)))
                 data = self.spike_detection(data)
                 loop.update(1)
                 time.sleep(0.001)
@@ -228,7 +228,7 @@ class StockProcessor:
             print('')
             loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
             for data in self.dataset:
-                loop.set_description('Running data analysis on stock dataset... ' .format(len(self.dataset)))
+                loop.set_description('Running data analysis on time series data... ' .format(len(self.dataset)))
                 data = self.data_analysis(data)
                 loop.update(1)
                 time.sleep(0.0001)

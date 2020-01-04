@@ -3,6 +3,8 @@
 import stock as stock
 import algorithm as algorithm
 import model as model
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 aapl = "Database/AAPL.csv" # Applc Inc.
 goog = "Database/GOOG.csv" # Google Inc.
@@ -18,6 +20,7 @@ tsla = "Database/TSLA.csv" # Tesla Inc.
 # acquire the past year worth of stock data
 
 if __name__ == "__main__":
+    os.system('clear')
     google = stock.Stock("Google", goog)
     long_term = algorithm.StockProcessor(google, algorithm.LONG_TERM, 5)
     long_term.train()
