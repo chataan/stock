@@ -1,4 +1,5 @@
 
+import os
 import time as time
 import tqdm as tqdm
 import matplotlib.pyplot as plt
@@ -41,7 +42,6 @@ class Stock:
         plt.ylabel('Stock Price')
         plt.title(stock_graph)
         plt.show()
-        plt.savefig(stock_graph)
 
     def upload_stock_data(self):
         """ Upload datapoints of a stock """
