@@ -8,9 +8,9 @@ DATASET_LABEL = ["TRAINING", "VALIDATING", "TESTING"]
 SHORT_TERM = 30
 LONG_TERM = 365
 
-MINIMUM_SAMPLING_RANGE = 3
-DEFAULT_SAMPLING_RANGE = 5
-MAXIMUM_SAMPLING_RANGE = 6
+MINIMUM_SAMPLING_RANGE = 2
+DEFAULT_SAMPLING_RANGE = 3
+MAXIMUM_SAMPLING_RANGE = 5
 
 def normalize(matrix):
     """ MinMaxScaler to normalize matrix with high values """
@@ -50,7 +50,7 @@ class Dataset:
     def set_dataset_label(self, label):
         self.dataset_label = label
     def get_close_value(self): # this is the labeled output of the corresponding time series data
-        return self.final_close_value
+        return rescale(self.final_close_value, self.min, self.max)
     def raw_size(self):
         return len(self.raw)
     def raw_matrix(self):
@@ -97,6 +97,8 @@ class StockProcessor:
         self.amount_of_training_datasets = 0
         self.amount_of_validation_datasets = 0
         self.amount_of_testing_datasets = 0
+    def stock_name(self):
+        return self.target_stock.stock_name()
     def prepare_dataset(self):
         for i in range(self.target_stock.amount_of_datapoints() % self.split_range):
             self.target_stock.delete_datapoint(i)

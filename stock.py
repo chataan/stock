@@ -42,7 +42,8 @@ class Stock:
         plt.ylabel('Stock Price')
         plt.title(stock_graph)
         plt.show()
-
+    def stock_name(self):
+        return self.name
     def upload_stock_data(self):
         """ Upload datapoints of a stock """
         uploaded = []
