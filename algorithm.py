@@ -49,6 +49,8 @@ class Dataset:
         return self.min
     def set_dataset_label(self, label):
         self.dataset_label = label
+    def get_dataset_label(self):
+        return self.dataset_label
     def get_close_value(self): # this is the labeled output of the corresponding time series data
         return rescale(self.final_close_value, self.min, self.max)
     def raw_size(self):

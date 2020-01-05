@@ -28,5 +28,5 @@ if __name__ == "__main__":
     #short_term.run()
 
     google_predictor = model.KerasPredictor(long_term, "Long Term Google Stock")
-    google_predictor.preprocessing() # organize dataset
-    google_predictor.create_lstm_model(1500, 32)
+    google_predictor.preprocessing()
+    google_predictor.create_lstm_model(100, 32)
