@@ -82,7 +82,7 @@ class KerasPredictor:
         lstm.fit(self.validation_input, self.validation_output, epochs=int(iterations/10), batch_size=batch_size)
 
         # save the model
-        model_name = self.stock.stock_name() + "_model.h5"
+        model_name = self.stock.stock_name().lower() + "_model.h5"
         model_json = lstm.to_json()
         with open("model.json", "w") as json_file:
             json_file.write(model_json)
