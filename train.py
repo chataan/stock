@@ -39,14 +39,3 @@ if __name__ == "__main__":
 
     long_term_google.evaluate_test_set()
     short_term_google.evaluate_test_set()
-
-    sp = StockProcessor()
-    google_predict = Stock("Google", "Database/GOOG_PREDICT.csv", False, True)
-    
-    # make short term prediction
-    sp.revert_to_predictor(google_predict, SHORT_TERM, 4)
-    short_term_google.predict(sp)
-
-    # make long term prediction
-    sp.revert_to_predictor(google_predict, LONG_TERM, 4)
-    long_term_google.predict(sp)

@@ -2,6 +2,10 @@
 
 import glob
 import googlesearch as googlesearch
+from stock import Stock
+from algorithm import StockProcessor
+from algorithm import LONG_TERM, SHORT_TERM
+from model import KerasPredictor
 
 model_base = "Models/"
 
@@ -13,26 +17,14 @@ model_base = "Models/"
 # acquire the past year worth of stock data
 
 if __name__ == "__main__":
-    print("")
-    query = input("Search a stock: ")
-    query = query.lower()
-    # check if there is an existing prediction model on the given stock
-    i = 0
-    model_path = None
-    models = [f for f in glob.glob((model_base + "**/*.h5"), recursive=True)]
-    for model in models:
-        if (query in model) == True:
-            model_path = model
-            break
-        else:
-            pass
-    if model_path == None: # no model exists for the requested stock
-        print("\nThere were no models that matched your stock search query!")
-        print("A model training request will be written for the following stock!\n")
-        # append the request stock name on request.csv 
-        request_form = open("request.csv", "a+")
-        request_form.write((query + "\r\n"))
-        print("\nRequest submitted!\n")
-        request_form.close()
-    else: # model exists
-        print("")
+    """ REQUIREMENTS TO USE THE PREDICTOR """
+    """ To use the predictor, you need the following information: 
+        1. Stock (Upload .csv)
+        2. StockProcessor (process the uploaded stock) 
+        3. KerasPredictor
+            a. load a model
+            b. run """
+    predictor = KerasPredictor()
+    google = Stock("Google", "Database/GOOG_PREDICT.csv", False, True)
+    predictor.load("short_term_google")
+    predictor.run(google, SHORT_TERM, 4)

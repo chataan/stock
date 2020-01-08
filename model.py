@@ -20,11 +20,11 @@ from algorithm import rescale
 class KerasPredictor:
     """ This predictor will generate a LSTM prediction model 
     based on the StockProcessor feeded in the class """
-    def __init__(self, stock_processor, name=None):
+    def __init__(self, stock_processor=None, name=None):
         self.name = name
+        self.loaded_model = None
         self.verification = None
         if type(stock_processor) != StockProcessor:
-            print("ERROR: An unknown data type was given! All processes are disabled!")
             self.verification = False
             return
         else:
@@ -110,19 +110,42 @@ class KerasPredictor:
         x = np.array(x)
         x = np.reshape(x, (x.shape[0], x.shape[1], 1))
 
-        # load model
-        json_file = open((self.name.lower() + '_model.json'), "r")
-        loaded_model_json = json_file.read()
+        if self.loaded_model != None:
+            """ THIS WILL ONLY BE EXECUTED WHEN ACTUALLY USING A PREDICTOR (ASSUMES IT ALREADY LOADED A MODEL) """
+            prediction = self.loaded_model.predict(x)
+
+            for d in range(prediction.shape[0]):
+                for i in range(prediction.shape[1]):
+                    prediction[d][i] = rescale(prediction[d][i], stock_processor.timeseries().minimum(), stock_processor.timeseries().maximum())
+            print("Prediction = ", prediction)
+        else:
+            # load model
+            json_file = open((self.name.lower() + '_model.json'), "r")
+            loaded_model_json = json_file.read()
+            json_file.close()
+
+            loaded_model = model_from_json(loaded_model_json)
+            loaded_model.load_weights((self.name.lower() + "_model.h5"))
+            print("\nLoaded model for '", stock_processor.stock_name(), "'!\n")
+
+            loaded_model.compile(optimizer='adam', loss='mean_squared_error')
+            prediction = loaded_model.predict(x)
+
+            for d in range(prediction.shape[0]):
+                for i in range(prediction.shape[1]):
+                    prediction[d][i] = rescale(prediction[d][i], stock_processor.timeseries().minimum(), stock_processor.timeseries().maximum())
+            print("Prediction = ", prediction)
+    # the below two functions will only be used when actually using the predictor
+    def load(self, model_name):
+        json_file = open(model_name + "_model.json", 'r')
+        load = json_file.read()
         json_file.close()
 
-        loaded_model = model_from_json(loaded_model_json)
-        loaded_model.load_weights((self.name.lower() + "_model.h5"))
-        print("\nLoaded model for '", stock_processor.stock_name(), "'!\n")
-
-        loaded_model.compile(optimizer='adam', loss='mean_squared_error')
-        prediction = loaded_model.predict(x)
-
-        for d in range(prediction.shape[0]):
-            for i in range(prediction.shape[1]):
-                prediction[d][i] = rescale(prediction[d][i], stock_processor.timeseries().minimum(), stock_processor.timeseries().maximum())
-        print("Prediction = ", prediction)
+        self.loaded_model = model_from_json(load)
+        self.loaded_model.load_weights((model_name + "_model.h5"))
+        self.loaded_model.compile(optimizer='adam', loss='mean_squared_error')
+    def run(self, eval_stock, split_range, spike_sampling_range):
+        """ argument(model) should be the NAME of the .json file of the model """
+        sp = StockProcessor()
+        sp.revert_to_predictor(eval_stock, split_range, spike_sampling_range)
+        self.predict(sp)
