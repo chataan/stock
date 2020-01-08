@@ -11,33 +11,19 @@ DATE=2
 OPEN=3
 CLOSE=7
 
-class StockDataPoint:
-    def __init__(self, year, month, date, value):
-        self.year = year
-        self.month = month
-        self.date = date
-        self.value = value
-    def date_info(self):
-        return self.year, self.month, self.date
-    def price(self):
-        return self.value
-    def edit_value(self, val):
-        self.value = val
-
 class Stock:
     def __init__(self, name=None, path=None, graph=False, log=False):
         self.log = log
         self.name = name
         self.path = path
-        self.datapoints = self.upload_stock_data()
-        self.count = []
         self.raw = [] # just the price values
-        for i in range(len(self.datapoints)):
-            self.raw.append(self.datapoints[i].price())
-            if graph == True:
-                self.count.append(i)
-        # show and save a graph of the stock
+        self.upload_stock_data()
+        self.count = []
         if graph == True:
+            for i in range(len(self.datapoints)):
+                if graph == True:
+                    self.count.append(i)
+            # show and save a graph of the stock
             stock_graph = str(datetime.today().strftime("%Y-%m-%d")) + "-" + self.name + ".png"
             plt.plot(self.count, self.raw)
             plt.xlabel('Datapoint Count')
@@ -69,8 +55,8 @@ class Stock:
         for line in data:
             line = line.split(",")
             # convert all the numbers in the line as integers, create a StockDataPoint
-            uploaded.append(StockDataPoint(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[OPEN])))
-            uploaded.append(StockDataPoint(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[CLOSE])))
+            self.raw.append(float(line[OPEN]))
+            self.raw.append(float(line[CLOSE]))
             count += 1
             if self.log == True:
                 loop.set_description('Reading stock data...' .format(len(data)))
@@ -79,13 +65,12 @@ class Stock:
             else:
                 pass
         print("\n\nUploaded stock data successfully!")
-        return uploaded
     def delete_datapoint(self, index):
-        if (index < 0) | (index >= len(self.datapoints)):
+        if (index < 0) | (index >= len(self.raw)):
             pass
         else:
-            del self.datapoints[index]
+            del self.raw[index]
     def datapoint(self, index):
-        return self.datapoints[index]
+        return self.raw[index]
     def amount_of_datapoints(self):
-        return len(self.datapoints)
+        return len(self.raw)

@@ -48,8 +48,6 @@ class Dataset:
         return self.max
     def minimum(self):
         return self.min
-    def set_dataset_label(self, label):
-        self.dataset_label = label
     def get_dataset_label(self):
         return self.dataset_label
     def get_close_value(self): # this is the labeled output of the corresponding time series data
@@ -69,6 +67,8 @@ class Dataset:
         return self.spike_detected_matrix[index]
     def spike_matrix(self):
         return self.spike_detected_matrix
+    def set_dataset_label(self, label):
+        self.dataset_label = label
     def set_variability_slope(self, val):
         self.variability_slope = val
     def set_increase_decrease_ratio(self, val):
@@ -123,7 +123,7 @@ class StockProcessor:
         raw = []
         for sets in range(0, (self.target_stock.amount_of_datapoints() - self.split_range + 1)):
             for i in range(sets, (sets + self.split_range)):
-                raw.append(self.target_stock.datapoint(i).price())
+                raw.append(self.target_stock.datapoint(i))
             self.dataset.append(Dataset(raw))
             raw = []
         
