@@ -5,8 +5,11 @@ import tqdm as tqdm
 
 DATASET_LABEL = ["TRAINING", "VALIDATING", "TESTING"]
 
-SHORT_TERM = 30
-LONG_TERM = 365
+TRAIN=0
+PREDICT=1
+
+SHORT_TERM = 100 # 3 months
+LONG_TERM = 365 # a year
 
 MINIMUM_SAMPLING_RANGE = 2
 DEFAULT_SAMPLING_RANGE = 3
@@ -25,18 +28,16 @@ def normalize(matrix):
             pass
     for i in range(len(matrix)):
         matrix[i] = (matrix[i] - min) / (max - min)
-    return matrix
+    return matrix, min, max
 def rescale(value, min, max):
     """ Reverse of a MinMaxScaler: scales up a certain value based on a min max value """
     return (value * (max - min)) + min 
 
 class Dataset:
     def __init__(self, raw):
-        self.raw = raw
-        self.min = 0
-        self.max = 0
+        self.raw, self.min, self.max = normalize(raw)
         self.spike_detected_matrix = []
-        self.final_close_value = self.raw[len(self.raw) - 1] # expected output
+        self.final_close_value = self.raw[len(self.raw) - 1]
         self.variability_slope = 0.00 # the slope of a linear segment that links the first and last value in the raw data
         self.increase_decrease_ratio = 0.00 # frequency of price increase : frequency of price decrease (stability of the stock's variability)
         self.average_price_variablity = 0.00 # average price variability in raw data
@@ -52,7 +53,7 @@ class Dataset:
     def get_dataset_label(self):
         return self.dataset_label
     def get_close_value(self): # this is the labeled output of the corresponding time series data
-        return rescale(self.final_close_value, self.min, self.max)
+        return self.final_close_value
     def raw_size(self):
         return len(self.raw)
     def raw_matrix(self):
@@ -83,6 +84,7 @@ class Dataset:
 
 class StockProcessor:
     def __init__(self, target_stock, split_range, spike_sampling_range):
+        self.mode=TRAIN
         self.verification = None
         if type(target_stock) != stock.Stock:
             print("ERROR: Given stock does not match the required stock.Stock data type! All future processes are disabled")
@@ -99,11 +101,25 @@ class StockProcessor:
         self.amount_of_training_datasets = 0
         self.amount_of_validation_datasets = 0
         self.amount_of_testing_datasets = 0
-    def stock_name(self):
-        return self.target_stock.stock_name()
-    def prepare_dataset(self):
-        for i in range(self.target_stock.amount_of_datapoints() % self.split_range):
-            self.target_stock.delete_datapoint(i)
+        self.time_series = None # will only be used in prediction mode
+        # immediately run the processor
+        self.run()
+    def revert_to_predictor(self, target_stock, split_range, spike_sampling_range):
+        """ Initialize all data contained in the stock processor, upload new information """
+        self.terminate()
+        self.mode = PREDICT
+        self.verification = True
+        self.target_stock = target_stock
+        self.split_range = split_range
+        self.spike_sampling_range = spike_sampling_range
+        self.time_series = None
+        # immediately run process
+        self.run()
+    def terminate(self):
+        """ Terminate session: free all arrays/memory allocated by the processor """
+        del self.dataset[:]
+        self.target_stock.terminate()
+    def partition_time_series(self):
         raw = []
         for sets in range(0, (self.target_stock.amount_of_datapoints() - self.split_range + 1)):
             for i in range(sets, (sets + self.split_range)):
@@ -126,25 +142,21 @@ class StockProcessor:
             else:
                 self.dataset[i].set_dataset_label("TESTING")
                 self.amount_of_testing_datasets += 1
-            # normalize the raw stock data of all datasets
-            self.dataset[i].set_raw_matrix(normalize(self.dataset[i].raw_matrix()))
         print("Completed stock time series partitioning! [Training = {0}, Validation = {1}, Testing = {2}]" .format(self.amount_of_training_datasets, self.amount_of_validation_datasets, self.amount_of_testing_datasets))
         print("Each time series data contains a total of {0} datapoints!" .format(self.dataset[0].raw_size()))
         time.sleep(1)
-    def amount_of_time_series(self):
-        return len(self.dataset)
-    def length_of_time_series(self):
-        return len(self.dataset[0].spike_matrix())
-    def get_time_series(self, index):
-        return self.dataset[index]
     def spike_detection(self, dataset):
         """ deploy a spike detection algorithm that extracts datapoints with 
         high alteration values within a segmentation range """
         if (self.spike_sampling_range < MINIMUM_SAMPLING_RANGE) | (self.spike_sampling_range > MAXIMUM_SAMPLING_RANGE):
             print("\nWARNING: Specified spike sampling range is out of limits! Reverting to default sampling range...")
             self.spike_sampling_range = DEFAULT_SAMPLING_RANGE
-        temp1 = 0
-        temp2 = 0
+        spike_start = 0
+        spike_start_index = 0
+        spike_end = 0
+        spike_end_index = 0
+        spike_midpoint = 0
+        spike_midpoint_index = 0
         maximum_variability = -10000
         for _range in range(0, dataset.raw_size() - self.spike_sampling_range, self.spike_sampling_range):
             for i in range(_range, (_range + self.spike_sampling_range - 1)):
@@ -152,10 +164,17 @@ class StockProcessor:
                     pass
                 else:
                     if abs(dataset.raw_datapoint(i) - dataset.raw_datapoint(i + 1)) > maximum_variability:
-                        temp1 = dataset.raw_datapoint(i)
-                        temp2 = dataset.raw_datapoint(i + 1)
-            dataset.append_spike_datapoint(temp1)
-            dataset.append_spike_datapoint(temp2)
+                        spike_start, spike_start_index = dataset.raw_datapoint(i), i
+                        spike_end, spike_end_index = dataset.raw_datapoint(i + 1), (i + 1)
+            # between the spike points detected beforehand, sample out the maximum value between those two
+            midpoint_max = -10000
+            for i in range(spike_start_index, spike_end_index):
+                if dataset.raw_datapoint(i) > midpoint_max:
+                    midpoint_max =  dataset.raw_datapoint(i)
+            # push in all the sampled datapoints
+            dataset.append_spike_datapoint(spike_start)
+            dataset.append_spike_datapoint(midpoint_max)
+            dataset.append_spike_datapoint(spike_end)
         return dataset
     def variability_slope_analysis(self, dataset):
         """ return the slope of a linear segment connecting the first and last raw stock datapoint
@@ -212,29 +231,47 @@ class StockProcessor:
         dataset.compute_confidence_rate()
         #print(self.variability_slope_analysis(dataset), self.increase_decrease_ratio(dataset), self.average_price_variability(dataset))
         return dataset
-    def train(self):
-        if self.verification == False:
-            print("StockProcessor was disabled for future processes due to a non-matching data type for the target stock!")
-            return
+    def run(self):
+        if self.mode == TRAIN:
+            if self.verification == False:
+                print("StockProcessor was disabled for future processes due to a non-matching data type for the target stock!")
+                return
+            else:
+                self.partition_time_series()
+                # apply the spike detection algorithm on all stock datasets
+                print('')
+                loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
+                for data in self.dataset:
+                    loop.set_description('Applying spike detection algorithm on time series data... ' .format(len(self.dataset)))
+                    data = self.spike_detection(data)
+                    loop.update(1)
+                    time.sleep(0.0000001)
+                print('\nCompleted spike detection!')
+                loop.close()
+                # run data analysis algorithm on each dataset
+                print('')
+                loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
+                for data in self.dataset:
+                    loop.set_description('Running data analysis on time series data... ' .format(len(self.dataset)))
+                    data = self.data_analysis(data)
+                    loop.update(1)
+                    time.sleep(0.00001)
+                print('\nCompleted data analysis!')
         else:
-            self.prepare_dataset()
-            # apply the spike detection algorithm on all stock datasets
-            print('')
-            loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
-            for data in self.dataset:
-                loop.set_description('Applying spike detection algorithm on time series data... ' .format(len(self.dataset)))
-                data = self.spike_detection(data)
-                loop.update(1)
-                time.sleep(0.001)
-            print('\nCompleted spike detection!')
-            loop.close()
-            # run data analysis algorithm on each dataset
-            print('')
-            loop = tqdm.tqdm(total = len(self.dataset), position = 0, leave = False)
-            for data in self.dataset:
-                loop.set_description('Running data analysis on time series data... ' .format(len(self.dataset)))
-                data = self.data_analysis(data)
-                loop.update(1)
-                time.sleep(0.0001)
-            print('\nCompleted data analysis!')
-        
+            print('\n                                           RUNNING PREDICTION MODE')
+            raw = []
+            for i in range(self.split_range):
+                raw.append(self.target_stock.datapoint(i).price())
+            self.time_series = Dataset(raw)
+            self.time_series = self.spike_detection(self.time_series)
+            self.time_series = self.data_analysis(self.time_series)
+    def stock_name(self):
+        return self.target_stock.stock_name()
+    def amount_of_time_series(self):
+        return len(self.dataset)
+    def length_of_time_series(self):
+        return len(self.dataset[0].spike_matrix())
+    def get_time_series(self, index):
+        return self.dataset[index]
+    def timeseries(self):
+        return self.time_series

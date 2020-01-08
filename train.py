@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
-import stock as stock
-import algorithm as algorithm
-import model as model
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+from stock import Stock
+from algorithm import SHORT_TERM
+from algorithm import LONG_TERM
+from algorithm import StockProcessor
+from model import KerasPredictor
 
 aapl = "Database/AAPL.csv" # Applc Inc.
 goog = "Database/GOOG.csv" # Google Inc.
@@ -19,14 +22,31 @@ tsla = "Database/TSLA.csv" # Tesla Inc.
     #search_result = str(link)
 # acquire the past year worth of stock data
 
+long_term_processor = None
+short_term_processor = None
+
 if __name__ == "__main__":
     os.system('clear')
-    google = stock.Stock("Google", goog)
-    long_term = algorithm.StockProcessor(google, algorithm.LONG_TERM, 5)
-    long_term.train()
-    #short_term = algoriht.StockProcessor(google, algorithm.SHORT_TERM, 5)
-    #short_term.run()
+    google = Stock("Google", goog, False, True)
 
-    google_predictor = model.KerasPredictor(long_term, "Long Term Google Stock")
-    google_predictor.preprocessing()
-    google_predictor.create_lstm_model(100, 32)
+    long_term_processor = StockProcessor(google, LONG_TERM, 4)
+    long_term_google = KerasPredictor(long_term_processor, "Long_Term_Google_Stock")
+    long_term_google.train_model(int(LONG_TERM / 3), 1000, 32)
+
+    short_term_processor = StockProcessor(google, SHORT_TERM, 4)
+    short_term_google = KerasPredictor(short_term_processor, "Short_Term_Google_Stock")
+    short_term_google.train_model(int(SHORT_TERM / 3), 1000, 32)
+
+    long_term_google.evaluate_test_set()
+    short_term_google.evaluate_test_set()
+
+    sp = StockProcessor()
+    google_predict = Stock("Google", "Database/GOOG_PREDICT.csv", False, True)
+    
+    # make short term prediction
+    sp.revert_to_predictor(google_predict, SHORT_TERM, 4)
+    short_term_google.predict(sp)
+
+    # make long term prediction
+    sp.revert_to_predictor(google_predict, LONG_TERM, 4)
+    long_term_google.predict(sp)

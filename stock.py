@@ -25,7 +25,8 @@ class StockDataPoint:
         self.value = val
 
 class Stock:
-    def __init__(self, name, path):
+    def __init__(self, name=None, path=None, graph=False, log=False):
+        self.log = log
         self.name = name
         self.path = path
         self.datapoints = self.upload_stock_data()
@@ -33,15 +34,21 @@ class Stock:
         self.raw = [] # just the price values
         for i in range(len(self.datapoints)):
             self.raw.append(self.datapoints[i].price())
-            self.count.append(i)
-
+            if graph == True:
+                self.count.append(i)
         # show and save a graph of the stock
-        stock_graph = str(datetime.today().strftime("%Y-%m-%d")) + "-" + self.name + ".png"
-        plt.plot(self.count, self.raw)
-        plt.xlabel('Datapoint Count')
-        plt.ylabel('Stock Price')
-        plt.title(stock_graph)
-        plt.show()
+        if graph == True:
+            stock_graph = str(datetime.today().strftime("%Y-%m-%d")) + "-" + self.name + ".png"
+            plt.plot(self.count, self.raw)
+            plt.xlabel('Datapoint Count')
+            plt.ylabel('Stock Price')
+            plt.title(stock_graph)
+            plt.show()
+        else:
+            pass
+    def terminate(self):
+        del self.count[:]
+        del self.raw[:]
     def stock_name(self):
         return self.name
     def upload_stock_data(self):
@@ -57,16 +64,20 @@ class Stock:
 
         count = 0
         print("\nReading '", self.name, "' stock data from: ", self.path)
-        loop = tqdm.tqdm(total = len(data), position = 0, leave = False)
+        if self.log == True:
+            loop = tqdm.tqdm(total = len(data), position = 0, leave = False)
         for line in data:
             line = line.split(",")
             # convert all the numbers in the line as integers, create a StockDataPoint
             uploaded.append(StockDataPoint(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[OPEN])))
             uploaded.append(StockDataPoint(int(line[YEAR]), int(line[MONTH]), int(line[DATE]), float(line[CLOSE])))
             count += 1
-            loop.set_description('Reading stock data...' .format(len(data)))
-            loop.update(1)
-            time.sleep(0.001)
+            if self.log == True:
+                loop.set_description('Reading stock data...' .format(len(data)))
+                loop.update(1)
+                time.sleep(0.001)
+            else:
+                pass
         print("\n\nUploaded stock data successfully!")
         return uploaded
     def delete_datapoint(self, index):
