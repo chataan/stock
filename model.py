@@ -69,7 +69,6 @@ class KerasPredictor:
         self.test_input = np.reshape(self.test_input, (self.test_input.shape[0], self.test_input.shape[1], 1))
         print('\n')
         loop.close()
-        self.stock.terminate()
     def train_model(self, cells=50, iterations=1000, batch_size=32):
         print("")
         lstm = Sequential() # initialize RNN
