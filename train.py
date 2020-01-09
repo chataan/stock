@@ -3,10 +3,12 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-from stock import Stock
-from algorithm import MONTH, QUARTER, YEAR
-from algorithm import StockProcessor
-from model import KerasPredictor
+import tqdm as tqdm
+from stock import upload
+from financial import MONTH, QUARTER, YEAR
+from financial import partition_time_series
+from financial import rolling_mean_trend
+import model as model
 
 aapl = "Database/AAPL.csv" # Applc Inc.
 goog = "Database/GOOG.csv" # Google Inc.
@@ -26,10 +28,18 @@ short_term_processor = None
 
 if __name__ == "__main__":
     os.system('clear')
-    google = Stock("Google", goog, False, True)
+    google = upload(goog, True)
+    dataset = partition_time_series(google, YEAR)
 
-    short_term_processor = StockProcessor(google, YEAR, QUARTER, 5, True)
-    short_term_google = KerasPredictor(short_term_processor, "Short_Term_Google_Stock")
-    short_term_google.train_model(int(QUARTER / 3), 1000, 32)
-
-    short_term_google.evaluate_test_set()
+    # compute trend line of each time series
+    loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
+    for timeseries in dataset:
+        loop.set_description('Analyzing time series trend line ' .format(len(dataset)))
+        timeseries.set_trendline_matrix(rolling_mean_trend(timeseries, QUARTER))
+        loop.update(1)
+    print("\nCompleted trend line analysis")
+    loop.close()
+    
+    # create a Keras model
+    model = model.KerasPredictor(dataset, "google")
+    model.train() # this may take up to 2 ~ 8 hours depending on data dimensions
