@@ -134,5 +134,4 @@ def rolling_mean_trend(time_series, trend_window_range):
         slope = y2 - y1
         bias = -slope + y1
         linear_prediction = slope * 3 + bias
-        #trend.append(linear_prediction) # push in the linear prediction value in the trend matrix (for training)
-        return trend
+        return trend, linear_prediction

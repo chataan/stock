@@ -38,8 +38,10 @@ if __name__ == "__main__":
     loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
     for timeseries in dataset:
         loop.set_description('Analyzing time series trend line and spike analysis ' .format(len(dataset)))
-        timeseries.set_trendline_matrix(rolling_mean_trend(timeseries, QUARTER))
+        trendline, prediction = rolling_mean_trend(timeseries, QUARTER)
+        timeseries.set_trendline_matrix(trendline)
         timeseries.set_trendline_matrix(reduction(timeseries))
+        timeseries.append_trend_datapoint(prediction)
         loop.update(1)
     print("\nCompleted trend line analysis")
     loop.close()

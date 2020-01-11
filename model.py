@@ -73,7 +73,7 @@ class KerasPredictor:
 
         lstm.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
         lstm.fit(self.training_input, self.training_output, use_multiprocessing=multiprocessing, epochs=iterations, batch_size=batch_size) # train each time series 1000 times
-        lstm.fit(self.validation_input, self.validation_output, use_multiprocessing=multiprocessing, epochs=int(iterations/10), batch_size=batch_size)
+        lstm.fit(self.validation_input, self.validation_output, use_multiprocessing=multiprocessing, validation_data=(self.validation_input, self.validation_output))
 
         # save the model
         model_name = self.name.lower() + "_model.h5"
