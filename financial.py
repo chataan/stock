@@ -3,12 +3,17 @@ import time
 import stock as stock
 import tqdm as tqdm
 import matplotlib.pyplot as plt
+import numpy as np
 
 DATASET_LABEL = ["TRAINING", "VALIDATING", "TESTING"]
 
-MONTH = 40 
-QUARTER = 90
-YEAR = 365
+MONTH=31
+QUARTER=91
+YEAR=366
+
+MINIMUM_SAMPLING_RANGE=3
+DEFAULT_SAMPLING_RANGE=5 # Short term
+MAXIMUM_SAMPLING_RANGE=10 # Long term
 
 def normalize(matrix):
     """ MinMaxScaler to normalize matrix with high values """
@@ -55,6 +60,8 @@ class Dataset:
         return self.trend[index]
     def trend_matrix(self):
         return self.trend
+    def append_trend_datapoint(self, val):
+        self.trend.append(val)
     def set_dataset_label(self, label):
         self.dataset_label = label
     def set_trendline_matrix(self, matrix):
@@ -91,6 +98,20 @@ def partition_time_series(stock, timeseries_split_range):
     print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
     return dataset
 
+def reduction(time_series):
+    """ Max pool reduction on trend line of time series """
+    if (time_series.raw_size() % 2) != 0:
+        for i in range(time_series.raw_size() % 2):
+            time_series.append_trend_datapoint(0) # zero padding
+    maximum = -1
+    reduced = []
+    for _range in range(0, time_series.raw_size() - 2, 2):
+        for i in range(_range, _range + 2):
+            if time_series.trend_datapoint(i) > maximum:
+                maximum = time_series.trend_datapoint(i)
+        reduced.append(maximum)
+        maxmium = -1
+    return reduced
 def rolling_mean_trend(time_series, trend_window_range):
         """ Moving average analysis to detect trend in stock price variability """
         """ type(time_series) should be "Dataset" """
@@ -113,5 +134,5 @@ def rolling_mean_trend(time_series, trend_window_range):
         slope = y2 - y1
         bias = -slope + y1
         linear_prediction = slope * 3 + bias
-        trend.append(linear_prediction) # push in the linear prediction value in the trend matrix (for training)
+        #trend.append(linear_prediction) # push in the linear prediction value in the trend matrix (for training)
         return trend
