@@ -109,4 +109,9 @@ def rolling_mean_trend(time_series, trend_window_range):
             avg /= time_series.raw_size() - _range
             trend.append(avg)
         # compute linear slope of the last two datapoints to forecast the next possible datapoint
+        y1, y2 = trend[len(trend) - 2], trend[len(trend) - 1]
+        slope = y2 - y1
+        bias = -slope + y1
+        linear_prediction = slope * 3 + bias
+        trend.append(linear_prediction) # push in the linear prediction value in the trend matrix (for training)
         return trend

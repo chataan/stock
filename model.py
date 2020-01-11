@@ -58,10 +58,9 @@ class KerasPredictor:
         self.test_input = np.reshape(self.test_input, (self.test_input.shape[0], self.test_input.shape[1], 1))
         print('\n')
         loop.close()
-    def train(self, cells=None, multiprocessing=True, iterations=1000, batch_size=32):
+    def train(self, multiprocessing=True, iterations=1000, batch_size=32):
         print("")
-        if cells == None:
-            int(self.training_input.shape[1] / 3)
+        cells = int(self.training_input.shape[1] / 3)
         lstm = Sequential() # initialize RNN
         # first layer of the LSTM (with dropout regularization)
         lstm.add(LSTM(units=cells, return_sequences=True, input_shape=(self.training_input.shape[1], 1)))
