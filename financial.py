@@ -11,9 +11,9 @@ MONTH=31
 QUARTER=91
 YEAR=366
 
-MINIMUM_SAMPLING_RANGE=3
-DEFAULT_SAMPLING_RANGE=5 # Short term
-MAXIMUM_SAMPLING_RANGE=10 # Long term
+MINIMUM_SAMPLING_RANGE=2
+STANDARD_SAMPLING_RANGE=3 # Short term
+MAXIMUM_SAMPLING_RANGE=5 # Long term
 
 def normalize(matrix):
     """ MinMaxScaler to normalize matrix with high values """
@@ -38,7 +38,7 @@ class Dataset:
         self.dataset_label = ""
         self.raw, self.min, self.max = normalize(raw)
         self.final_close_value = self.raw[len(self.raw) - 1]
-        self.trend = []
+        self.sampled = []
         del self.raw[len(raw) - 1] # exclude the last datapoint, which is the final close value
     def maximum(self):
         return self.max
@@ -54,18 +54,18 @@ class Dataset:
         return self.raw
     def raw_datapoint(self, index):
         return self.raw[index]
-    def trend_size(self):
-        return len(self.trend)
-    def trend_datapoint(self, index):
-        return self.trend[index]
-    def trend_matrix(self):
-        return self.trend
-    def append_trend_datapoint(self, val):
-        self.trend.append(val)
+    def sampled_size(self):
+        return len(self.sampled)
+    def sampled_datapoint(self, index):
+        return self.sampled[index]
+    def sampled_matrix(self):
+        return self.sampled
+    def append_sampled_datapoint(self, val):
+        self.sampled.append(val)
     def set_dataset_label(self, label):
         self.dataset_label = label
-    def set_trendline_matrix(self, matrix):
-        self.trend = matrix
+    def set_sampled_matrix(self, matrix):
+        self.sampled = matrix
 
 def partition_time_series(stock, timeseries_split_range):
     dataset = []
@@ -98,40 +98,47 @@ def partition_time_series(stock, timeseries_split_range):
     print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
     return dataset
 
-def reduction(time_series):
-    """ Max pool reduction on trend line of time series """
-    if (time_series.raw_size() % 2) != 0:
-        for i in range(time_series.raw_size() % 2):
-            time_series.append_trend_datapoint(0) # zero padding
-    maximum = -1
+def trend_regularization(time_series, trendline, sampling_range, slide_range):
+    """ Regularizing a raw matrix according to its moving average trendline """
+    sampled = []
+    for _range in range(0, time_series.raw_size() - sampling_range, slide_range):
+        matmul = 0.00
+        for i in range(_range, _range + sampling_range):
+            # convolving the raw matrix on the trendline matrix
+            matmul += time_series.raw_datapoint(i) * trendline[i]
+        sampled.append(matmul)
+    sampled, min, max = normalize(sampled)
+    return sampled
+def reduction(matrix):
+    """ Max pooling for size/noise reduction (prevent overfitting) """
     reduced = []
-    for _range in range(0, time_series.raw_size() - 2, 2):
+    for _range in range(0, len(matrix) - 2, 2):
+        max = -1000
         for i in range(_range, _range + 2):
-            if time_series.trend_datapoint(i) > maximum:
-                maximum = time_series.trend_datapoint(i)
-        reduced.append(maximum)
-        maxmium = -1
+            if matrix[i] > max:
+                max = matrix[i]
+        reduced.append(max)
     return reduced
 def rolling_mean_trend(time_series, trend_window_range):
-        """ Moving average analysis to detect trend in stock price variability """
-        """ type(time_series) should be "Dataset" """
-        """ RETURNS: Rolling mean trend 1D matrix, a prediction value """
-        trend = []
-        for _range in range(0, time_series.raw_size() - trend_window_range):
-            avg = 0.00
-            for i in range(_range, _range + trend_window_range):
-                avg += time_series.raw_datapoint(i)
-            avg /= trend_window_range
-            trend.append(avg)
-        for _range in range(time_series.raw_size() - trend_window_range, time_series.raw_size()):
-            avg = 0.00
-            for i in range(_range, time_series.raw_size()):
-                avg += time_series.raw_datapoint(i)
-            avg /= time_series.raw_size() - _range
-            trend.append(avg)
-        # compute linear slope of the last two datapoints to forecast the next possible datapoint
-        y1, y2 = trend[len(trend) - 2], trend[len(trend) - 1]
-        slope = y2 - y1
-        bias = -slope + y1
-        linear_prediction = slope * 3 + bias
-        return trend, linear_prediction
+    """ Moving average analysis to detect trend in stock price variability """
+    """ type(time_series) should be "Dataset" """
+    """ RETURNS: Rolling mean trend 1D matrix, a prediction value """
+    trend = []
+    for _range in range(0, time_series.raw_size() - trend_window_range):
+        avg = 0.00
+        for i in range(_range, _range + trend_window_range):
+            avg += time_series.raw_datapoint(i)
+        avg /= trend_window_range
+        trend.append(avg)
+    for _range in range(time_series.raw_size() - trend_window_range, time_series.raw_size()):
+        avg = 0.00
+        for i in range(_range, time_series.raw_size()):
+            avg += time_series.raw_datapoint(i)
+        avg /= time_series.raw_size() - _range
+        trend.append(avg)
+    # compute linear slope of the last two datapoints to forecast the next possible datapoint
+    y1, y2 = trend[len(trend) - 2], trend[len(trend) - 1]
+    slope = y2 - y1
+    bias = -slope + y1
+    linear_prediction = slope * 3 + bias
+    return trend, linear_prediction

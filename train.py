@@ -6,10 +6,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tqdm as tqdm
 from stock import upload
 from financial import MONTH, QUARTER, YEAR
-from financial import MINIMUM_SAMPLING_RANGE, DEFAULT_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
-from financial import partition_time_series
-from financial import rolling_mean_trend
-from financial import reduction
+from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
+from financial import partition_time_series, trend_regularization, rolling_mean_trend, reduction
 import matplotlib.pyplot as plt
 import model as model
 
@@ -39,13 +37,12 @@ if __name__ == "__main__":
     for timeseries in dataset:
         loop.set_description('Analyzing time series trend line and spike analysis ' .format(len(dataset)))
         trendline, prediction = rolling_mean_trend(timeseries, QUARTER)
-        timeseries.set_trendline_matrix(trendline)
-        timeseries.set_trendline_matrix(reduction(timeseries))
-        timeseries.append_trend_datapoint(prediction)
+        matrix = trend_regularization(timeseries, trendline, STANDARD_SAMPLING_RANGE, 2)
+        matrix = reduction(matrix)
+        timeseries.set_sampled_matrix(matrix)
         loop.update(1)
     print("\nCompleted trend line analysis")
     loop.close()
 
-    # create a Keras model
     model = model.KerasPredictor(dataset, "google")
-    model.train() # this may take up to 2 ~ 8 hours depending on data dimensions
+    model.train(True, 100, 48) # multiprocessing=True, iterations=100, batch_size=32

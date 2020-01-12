@@ -38,13 +38,13 @@ class KerasPredictor:
             loop.set_description('Packaging all processed time series data... ' .format(len(dataset)))
             time_series = dataset[d]
             if time_series.get_dataset_label() == "TRAINING":
-                self.training_input.append(time_series.trend_matrix())
+                self.training_input.append(time_series.sampled_matrix())
                 self.training_output.append(time_series.get_close_value())
             elif time_series.get_dataset_label() == "VALIDATING":
-                self.validation_input.append(time_series.trend_matrix())
+                self.validation_input.append(time_series.sampled_matrix())
                 self.validation_output.append(time_series.get_close_value())
             else:
-                self.test_input.append(time_series.trend_matrix())
+                self.test_input.append(time_series.sampled_matrix())
                 self.test_output.append(time_series.get_close_value())
             loop.update(1)
 
@@ -60,20 +60,25 @@ class KerasPredictor:
         loop.close()
     def train(self, multiprocessing=True, iterations=1000, batch_size=32):
         print("")
-        cells = int(self.training_input.shape[1] / 3)
+        cells = int(self.training_input.shape[1] * 2 / 3)
         lstm = Sequential() # initialize RNN
         # first layer of the LSTM (with dropout regularization)
         lstm.add(LSTM(units=cells, return_sequences=True, input_shape=(self.training_input.shape[1], 1)))
         lstm.add(Dropout(0.2))
         # second layer of the LSTM (with dropout regularization)
-        lstm.add(LSTM(units=cells))
+        lstm.add(LSTM(units=cells, return_sequences=True))
         lstm.add(Dropout(0.2))
+        # third layer
+        lstm.add(LSTM(units=cells, return_sequences=True))
+        lstm.add(Dropout(0.2))
+        # fourth layer
+        lstm.add(LSTM(units=cells))
         # the last output layer of the LSTM
         lstm.add(Dense(units=1))
 
-        lstm.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+        lstm.compile(optimizer='adam', loss='mean_squared_error')
         lstm.fit(self.training_input, self.training_output, use_multiprocessing=multiprocessing, epochs=iterations, batch_size=batch_size) # train each time series 1000 times
-        lstm.fit(self.validation_input, self.validation_output, use_multiprocessing=multiprocessing, validation_data=(self.validation_input, self.validation_output))
+        lstm.fit(self.validation_input, self.validation_output, use_multiprocessing=multiprocessing, epochs=iterations, validation_data=(self.validation_input, self.validation_output))
 
         # save the model
         model_name = self.name.lower() + "_model.h5"
@@ -91,7 +96,7 @@ class KerasPredictor:
         loaded_model = model_from_json(loaded_model_json)
         loaded_model.load_weights((self.name + "_model.h5"))
 
-        loaded_model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+        loaded_model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mse'])
         accuracy = loaded_model.evaluate(self.test_input, self.test_output, verbose=0)
-        print(self.name, ' Model %s =  [%.2f%%]' %(loaded_model.metrics_names[1], accuracy[1] * 100))
+        print(self.name, ' Model accuracy %s =  [%.2f%%]' %(loaded_model.metrics_names[1], accuracy[1] * 100))
            
