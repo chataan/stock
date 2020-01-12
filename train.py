@@ -43,5 +43,5 @@ if __name__ == "__main__":
     print("\nCompleted trend line analysis")
     loop.close()
 
-    model = model.KerasPredictor(dataset, "google")
+    model = model.KerasTrainer(dataset, "google")
     model.train(True, 100, 48) # multiprocessing=True, iterations=100, batch_size=32

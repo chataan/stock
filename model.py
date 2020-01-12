@@ -16,7 +16,7 @@ from keras.layers import LSTM
 from keras.layers import Dropout
 from financial import rescale
 
-class KerasPredictor:
+class KerasTrainer:
     """ This predictor will generate a LSTM prediction model """
     def __init__(self, dataset=None, name=None):
         self.name = name
@@ -99,4 +99,23 @@ class KerasPredictor:
         loaded_model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mse'])
         accuracy = loaded_model.evaluate(self.test_input, self.test_output, verbose=0)
         print(self.name, ' Model MSE %s =  [%.2f%%]' %(loaded_model.metrics_names[1], mse[1] * 100))
-           
+
+class Model:
+    def __init__(self, model_name):
+        """ model_name should be the stock name (ex: google, microsoft ...) 
+        __init__ will load the Keras model (.json, .h5) """
+        self.json_file = open(model_name + "_model.json", "r")
+        self.loaded_json = self.json_file.read()
+        self.json_file.close()
+
+        self.model = model_from_json(self.loaded_json)
+        self.model.load_weights(model_name + "_model.h5")
+    def predict(self, data):
+        """ data should be a time series """
+        x = []
+        x.append(data.sampled_matrix())
+        x = np.array(x)
+        x = np.reshape(x, (x.shape[0], x.shape[1], 1))
+
+        result = self.model.predict(x)
+        return result

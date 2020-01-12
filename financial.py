@@ -67,6 +67,12 @@ class Dataset:
     def set_sampled_matrix(self, matrix):
         self.sampled = matrix
 
+def fetch_last_time_series(stock, timeseries_split_range):
+    raw = []
+    for i in range(len(stock) - 1, len(stock) - timeseries_split_range, -1):
+        raw.append(stock[i])
+    return Dataset(raw)
+
 def partition_time_series(stock, timeseries_split_range):
     dataset = []
     for sets in range(0, (len(stock) - timeseries_split_range + 1)):
