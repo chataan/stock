@@ -98,5 +98,5 @@ class KerasPredictor:
 
         loaded_model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mse'])
         accuracy = loaded_model.evaluate(self.test_input, self.test_output, verbose=0)
-        print(self.name, ' Model accuracy %s =  [%.2f%%]' %(loaded_model.metrics_names[1], accuracy[1] * 100))
+        print(self.name, ' Model MSE %s =  [%.2f%%]' %(loaded_model.metrics_names[1], mse[1] * 100))
            
