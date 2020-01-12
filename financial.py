@@ -113,7 +113,6 @@ def trend_regularization(time_series, trendline, sampling_range, slide_range):
             # convolving the raw matrix on the trendline matrix
             matmul += time_series.raw_datapoint(i) * trendline[i]
         sampled.append(matmul)
-    sampled, min, max = normalize(sampled)
     return sampled
 def reduction(matrix):
     """ Max pooling for size/noise reduction (prevent overfitting) """
