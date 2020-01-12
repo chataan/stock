@@ -8,7 +8,6 @@ from stock import upload
 from financial import MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
 from financial import partition_time_series, trend_regularization, rolling_mean_trend, reduction
-import matplotlib.pyplot as plt
 import model as model
 
 aapl = "Database/AAPL.csv" # Applc Inc.
