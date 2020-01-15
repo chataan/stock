@@ -12,8 +12,8 @@ QUARTER=91
 YEAR=366
 
 MINIMUM_SAMPLING_RANGE=2
-STANDARD_SAMPLING_RANGE=3 # Short term
-MAXIMUM_SAMPLING_RANGE=5 # Long term
+STANDARD_SAMPLING_RANGE=3
+MAXIMUM_SAMPLING_RANGE=5 
 
 def normalize(matrix):
     """ MinMaxScaler to normalize matrix with high values """
@@ -74,7 +74,8 @@ def fetch_last_time_series(stock, timeseries_split_range):
     return Dataset(raw)
 def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
     dataset = []
-    ignore_breakpoint = int((len(dataset) * ignore_percentage) / 100) # discard 35% (default) of the stock datapoint (since too old datapoints = obsolete)
+    # discard 35% (default) of the stock datapoint (since too old datapoints = obsolete)
+    ignore_breakpoint = int((len(dataset) * ignore_percentage) / 100)
     for sets in range(ignore_breakpoint, (len(stock) - timeseries_split_range + 1)):
         raw = []
         for i in range(sets, (sets + timeseries_split_range)):
@@ -98,9 +99,6 @@ def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
     print("Completed stock time series partitioning! [Training = {0}, Validation = {1}]" .format(amount_of_training_datasets, amount_of_validation_datasets))
     print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
     return dataset
-def spike_sampling(matrix, sampling_range=STANDARD_SAMPLING_RANGE, move_range=2):
-    """ Used for sampling datapoints from the trendline with high variability within a range """
-    
 def rolling_mean_trend(time_series, trend_window_range):
     """ Moving average analysis to detect trend in stock price variability """
     """ type(time_series) should be "Dataset" """
@@ -124,3 +122,11 @@ def rolling_mean_trend(time_series, trend_window_range):
     bias = -slope + y1
     linear_prediction = slope * 3 + bias
     return trend, linear_prediction
+def sampling(matrix, sampling_range=STANDARD_SAMPLING_RANGE):
+    """ Apply after trend line computation
+    samples out the first and last datapoint on a specific range of a trend line """
+    sampled = []
+    for _range in range(0, len(matrix) - sampling_range, sampling_range):
+        sampled.append(matrix[_range])
+        sampled.append(matrix[_range + sampling_range - 1])
+    return sampled
