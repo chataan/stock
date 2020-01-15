@@ -4,7 +4,7 @@ import time
 from financial import rescale
 from financial import MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
-from financial import fetch_last_time_series, trend_regularization, rolling_mean_trend, reduction
+from financial import fetch_last_time_series, spike_sampling, rolling_mean_trend
 from model import Model
 
 def select_model():
@@ -33,11 +33,10 @@ def select_model():
     return files[0]
 
 def run(stock, model_name):
-    test = fetch_last_time_series(stock, YEAR)
+    test = fetch_last_time_series(stock, QUARTER)
 
     print("Running time series processing... ", end="")
-    trendline, prediction = rolling_mean_trend(test, QUARTER)
-    matrix = trend_regularization(test, trendline, STANDARD_SAMPLING_RANGE, 2)
+    trendline, prediction = rolling_mean_trend(test, MONTH)
     matrix = reduction(matrix)
     test.set_sampled_matrix(matrix)
     print("DONE!\n")

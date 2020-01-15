@@ -7,7 +7,7 @@ import numpy as np
 
 DATASET_LABEL = ["TRAINING", "VALIDATING", "TESTING"]
 
-MONTH=31
+MONTH=29
 QUARTER=91
 YEAR=366
 
@@ -72,58 +72,35 @@ def fetch_last_time_series(stock, timeseries_split_range):
     for i in range(len(stock) - 1, len(stock) - timeseries_split_range, -1):
         raw.append(stock[i])
     return Dataset(raw)
-
-def partition_time_series(stock, timeseries_split_range):
+def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
     dataset = []
-    for sets in range(0, (len(stock) - timeseries_split_range + 1)):
+    ignore_breakpoint = int((len(dataset) * ignore_percentage) / 100) # discard 35% (default) of the stock datapoint (since too old datapoints = obsolete)
+    for sets in range(ignore_breakpoint, (len(stock) - timeseries_split_range + 1)):
         raw = []
         for i in range(sets, (sets + timeseries_split_range)):
             raw.append(stock[i])
         dataset.append(Dataset(raw))
         raw = []
-        
-    # set breakpoints to split the dataset into three categories: training, validating, testing
-    training_dataset_breakpoint = int((len(dataset) * 60) / 100)
-    validation_dataset_breakpoint = training_dataset_breakpoint + int((len(dataset) * 30) / 100)
-    testing_dataset_breakpoint = validation_dataset_breakpoint + int((len(dataset) * 10) / 100)
+
+    # set breakpoints to split the dataset into three categories: training, validating
+    training_dataset_breakpoint = int((len(dataset) * 80) / 100)
+    validation_dataset_breakpoint = training_dataset_breakpoint + int((len(dataset) * 20) / 100)
 
     amount_of_training_datasets = 0
     amount_of_validation_datasets = 0
-    amount_of_testing_datasets = 0
     for i in range(len(dataset)):
         if i <= training_dataset_breakpoint:
             dataset[i].set_dataset_label("TRAINING")
             amount_of_training_datasets += 1
-        elif (i > training_dataset_breakpoint) & (i <= validation_dataset_breakpoint):
+        else:
             dataset[i].set_dataset_label("VALIDATING")
             amount_of_validation_datasets += 1
-        else:
-            dataset[i].set_dataset_label("TESTING")
-            amount_of_testing_datasets += 1
-    print("Completed stock time series partitioning! [Training = {0}, Validation = {1}, Testing = {2}]" .format(amount_of_training_datasets, amount_of_validation_datasets, amount_of_testing_datasets))
+    print("Completed stock time series partitioning! [Training = {0}, Validation = {1}]" .format(amount_of_training_datasets, amount_of_validation_datasets))
     print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
     return dataset
-
-def trend_regularization(time_series, trendline, sampling_range, slide_range):
-    """ Regularizing a raw matrix according to its moving average trendline """
-    sampled = []
-    for _range in range(0, time_series.raw_size() - sampling_range, slide_range):
-        matmul = 0.00
-        for i in range(_range, _range + sampling_range):
-            # convolving the raw matrix on the trendline matrix
-            matmul += time_series.raw_datapoint(i) * trendline[i]
-        sampled.append(matmul)
-    return sampled
-def reduction(matrix):
-    """ Max pooling for size/noise reduction (prevent overfitting) """
-    reduced = []
-    for _range in range(0, len(matrix) - 2, 2):
-        max = -1000
-        for i in range(_range, _range + 2):
-            if matrix[i] > max:
-                max = matrix[i]
-        reduced.append(max)
-    return reduced
+def spike_sampling(matrix, sampling_range=STANDARD_SAMPLING_RANGE, move_range=2):
+    """ Used for sampling datapoints from the trendline with high variability within a range """
+    
 def rolling_mean_trend(time_series, trend_window_range):
     """ Moving average analysis to detect trend in stock price variability """
     """ type(time_series) should be "Dataset" """

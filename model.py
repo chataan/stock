@@ -25,8 +25,6 @@ class KerasTrainer:
         self.training_output = []
         self.validation_input = []
         self.validation_output = []
-        self.test_input = []
-        self.test_output = []
         if dataset != None:
             self.preprocessing(dataset)
     def preprocessing(self, dataset): 
@@ -40,12 +38,9 @@ class KerasTrainer:
             if time_series.get_dataset_label() == "TRAINING":
                 self.training_input.append(time_series.sampled_matrix())
                 self.training_output.append(time_series.get_close_value())
-            elif time_series.get_dataset_label() == "VALIDATING":
+            else:
                 self.validation_input.append(time_series.sampled_matrix())
                 self.validation_output.append(time_series.get_close_value())
-            else:
-                self.test_input.append(time_series.sampled_matrix())
-                self.test_output.append(time_series.get_close_value())
             loop.update(1)
 
         self.training_input, self.training_output = np.array(self.training_input), np.array(self.training_output)
@@ -54,8 +49,6 @@ class KerasTrainer:
         self.validation_input, self.validation_output = np.array(self.validation_input), np.array(self.validation_output)
         self.validation_input = np.reshape(self.validation_input, (self.validation_input.shape[0], self.validation_input.shape[1], 1))
 
-        self.test_input, self.test_output = np.array(self.test_input), np.array(self.test_output)
-        self.test_input = np.reshape(self.test_input, (self.test_input.shape[0], self.test_input.shape[1], 1))
         print('\n')
         loop.close()
     def train(self, multiprocessing=True, iterations=1000, batch_size=32):
