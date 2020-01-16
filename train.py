@@ -36,12 +36,12 @@ if __name__ == "__main__":
     loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
     for timeseries in dataset:
         loop.set_description('Analyzing time series trend line and spike analysis ' .format(len(dataset)))
-        matrix, prediction = rolling_mean_trend(timeseries, MONTH)
+        matrix, prediction = rolling_mean_trend(timeseries, WEEK)
         matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
         loop.update(1)
     print("\nCompleted trend line analysis")
     loop.close()
 
-    #model = model.KerasTrainer(dataset, "google")
-    #model.train(True, 100, 32)
+    model = model.KerasTrainer(dataset, "google")
+    model.train(True, 100, 32)

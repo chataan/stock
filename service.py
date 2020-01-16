@@ -38,7 +38,7 @@ def run(stock, model_name):
 
     print("Running time series processing... ", end="")
     matrix, prediction = rolling_mean_trend(test, WEEK)
-    matrix = sampling(matrix, STANDARD_SAMPLING_RANGE)
+    matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
     test.set_sampled_matrix(matrix)
     print("DONE!\n")
 
