@@ -126,7 +126,7 @@ def sampling(matrix, sampling_range=STANDARD_SAMPLING_RANGE):
     """ Apply after trend line computation
     samples out the first and last datapoint on a specific range of a trend line """
     sampled = []
-    for _range in range(0, len(matrix) - sampling_range, sampling_range):
+    sampled.append(matrix[0])
+    for _range in range(sampling_range, len(matrix) - sampling_range, sampling_range):
         sampled.append(matrix[_range])
-        sampled.append(matrix[_range + sampling_range - 1])
     return sampled

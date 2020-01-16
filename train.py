@@ -30,7 +30,7 @@ short_term_processor = None
 if __name__ == "__main__":
     os.system('clear')
     google = upload(goog, True)
-    dataset = partition_time_series(google, QUARTER) # each time series will be a quarter-long (90 datapoints)
+    dataset = partition_time_series(google, YEAR) # each time series will be a quarter-long (90 datapoints)
 
     # compute trend line of each time series
     loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
@@ -52,5 +52,5 @@ if __name__ == "__main__":
     plt.title("sampled trend line")
     plt.savefig("sampled.png")
 
-    model = model.KerasTrainer(dataset, "google")
-    model.train(True, 100, 32)
+    #model = model.KerasTrainer(dataset, "google")
+    #model.train(True, 100, 32)

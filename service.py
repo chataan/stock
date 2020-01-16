@@ -33,7 +33,7 @@ def select_model():
     return files[0]
 
 def run(stock, model_name):
-    test = fetch_last_time_series(stock, QUARTER)
+    test = fetch_last_time_series(stock, YEAR)
 
     print("Running time series processing... ", end="")
     matrix, prediction = rolling_mean_trend(test, MONTH)

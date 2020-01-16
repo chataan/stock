@@ -81,17 +81,6 @@ class KerasTrainer:
         lstm.save_weights(model_name)
         print("\nCompleted Keras-LSTM Model Training! All data of the model is saved as a .json (LSTM layer) and .h5 (synapes) files!\n")
 
-        # load the model, evaluate test sets
-        json_file = open((self.name.lower() + '_model.json'), "r")
-        loaded_model_json = json_file.read()
-        json_file.close()
-
-        loaded_model = model_from_json(loaded_model_json)
-        loaded_model.load_weights((self.name + "_model.h5"))
-
-        loaded_model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mse'])
-        accuracy = loaded_model.evaluate(self.test_input, self.test_output, verbose=0)
-
 class Model:
     def __init__(self, model_name):
         """ model_name should be the stock name (ex: google, microsoft ...) 
