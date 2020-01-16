@@ -7,7 +7,8 @@ import numpy as np
 
 DATASET_LABEL = ["TRAINING", "VALIDATING", "TESTING"]
 
-MONTH=29
+WEEK=8
+MONTH=30
 QUARTER=91
 YEAR=366
 
@@ -122,11 +123,16 @@ def rolling_mean_trend(time_series, trend_window_range):
     bias = -slope + y1
     linear_prediction = slope * 3 + bias
     return trend, linear_prediction
-def sampling(matrix, sampling_range=STANDARD_SAMPLING_RANGE):
+def sampling(matrix, itr=0, loop=2, sampling_range=STANDARD_SAMPLING_RANGE):
     """ Apply after trend line computation
     samples out the first and last datapoint on a specific range of a trend line """
-    sampled = []
-    sampled.append(matrix[0])
-    for _range in range(sampling_range, len(matrix) - sampling_range, sampling_range):
-        sampled.append(matrix[_range])
+    if itr == loop:
+        return 1
+    else:
+        sampled = []
+        sampled.append(matrix[0])
+        for _range in range(sampling_range, len(matrix) - sampling_range, sampling_range):
+            sampled.append(matrix[_range])
+        itr += 1
+        sampling(sampled, itr, loop, sampling_range)
     return sampled

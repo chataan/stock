@@ -30,27 +30,18 @@ short_term_processor = None
 if __name__ == "__main__":
     os.system('clear')
     google = upload(goog, True)
-    dataset = partition_time_series(google, YEAR) # each time series will be a quarter-long (90 datapoints)
+    dataset = partition_time_series(google, QUARTER) # each time series will be a quarter-long (90 datapoints)
 
     # compute trend line of each time series
     loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
     for timeseries in dataset:
         loop.set_description('Analyzing time series trend line and spike analysis ' .format(len(dataset)))
         matrix, prediction = rolling_mean_trend(timeseries, MONTH)
-        matrix = sampling(matrix, STANDARD_SAMPLING_RANGE)
+        matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
         loop.update(1)
     print("\nCompleted trend line analysis")
     loop.close()
-
-    count = []
-    for i in range(dataset[0].sampled_size()):
-        count.append(i)
-    plt.plot(count, dataset[0].sampled_matrix(), color='red')
-    plt.xlabel("datapoint count")
-    plt.ylabel("value")
-    plt.title("sampled trend line")
-    plt.savefig("sampled.png")
 
     #model = model.KerasTrainer(dataset, "google")
     #model.train(True, 100, 32)
