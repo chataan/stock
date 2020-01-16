@@ -1,11 +1,12 @@
 
 import os
 import time
+from model import Model
+import matplotlib.pyplot as plt
 from financial import rescale
-from financial import MONTH, QUARTER, YEAR
+from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
 from financial import fetch_last_time_series, sampling, rolling_mean_trend
-from model import Model
 
 def select_model():
     os.system("clear")
@@ -33,10 +34,10 @@ def select_model():
     return files[0]
 
 def run(stock, model_name):
-    test = fetch_last_time_series(stock, YEAR)
+    test = fetch_last_time_series(stock, QUARTER)
 
     print("Running time series processing... ", end="")
-    matrix, prediction = rolling_mean_trend(test, MONTH)
+    matrix, prediction = rolling_mean_trend(test, WEEK)
     matrix = sampling(matrix, STANDARD_SAMPLING_RANGE)
     test.set_sampled_matrix(matrix)
     print("DONE!\n")
@@ -53,3 +54,14 @@ def run(stock, model_name):
     prediction = rescale(prediction, test.minimum(), test.maximum())
     print("Trend line prediction = [", prediction, "]")
     print("Keras Model prediction = [", keras_prediction, "]")
+
+def graph(matrix, _color, save_name, show=False):
+    count = []
+    for i in range(len(matrix)):
+        count.append(i)
+    plt.plot(count, matrix, color=_color)
+    plt.xlabel("Count")
+    plt.ylabel("Value")
+    if show != False:
+        plt.show()
+    plt.savefig(save_name)

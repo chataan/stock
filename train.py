@@ -3,13 +3,13 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+import model as model
 import tqdm as tqdm
 from stock import upload
-from financial import MONTH, QUARTER, YEAR
+from service import graph
+from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
 from financial import partition_time_series, sampling, rolling_mean_trend
-import model as model
-import matplotlib.pyplot as plt
 
 aapl = "Database/AAPL.csv" # Applc Inc.
 goog = "Database/GOOG.csv" # Google Inc.
