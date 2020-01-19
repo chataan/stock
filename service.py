@@ -7,7 +7,26 @@ from financial import rescale
 from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
 from financial import fetch_last_time_series, sampling, rolling_mean_trend
+from pandas_datareader import data
 
+def graph(matrix, _color, save_name, show=False):
+    count = []
+    for i in range(len(matrix)):
+        count.append(i)
+    plt.plot(count, matrix, color=_color)
+    plt.xlabel("Count")
+    plt.ylabel("Value")
+    if show != False:
+        plt.show()
+    plt.savefig(save_name)
+def download_stock():
+    """ stock_id --> ex: AAPL (str)
+        start_date --> ex: 2020-01-19 (str) """
+    stock_id = input("Enter stock ID (ex: AAPL) = ")
+    start_date = input("Enter start date (ex: 2020-01-19) = ")
+    stock = data.DataReader(stock_id, "yahoo", start_date)
+    stock.to_csv("Database/stock.csv")
+    return stock_id
 def select_model():
     os.system("clear")
     files = []
@@ -32,7 +51,6 @@ def select_model():
             os.system("clear")
     print("\n", files[0], "model selected!!")
     return files[0]
-
 def run(stock, model_name):
     test = fetch_last_time_series(stock, QUARTER)
 
@@ -54,14 +72,3 @@ def run(stock, model_name):
     prediction = rescale(prediction, test.minimum(), test.maximum())
     print("Trend line prediction = [", prediction, "]")
     print("Keras Model prediction = [", keras_prediction, "]")
-
-def graph(matrix, _color, save_name, show=False):
-    count = []
-    for i in range(len(matrix)):
-        count.append(i)
-    plt.plot(count, matrix, color=_color)
-    plt.xlabel("Count")
-    plt.ylabel("Value")
-    if show != False:
-        plt.show()
-    plt.savefig(save_name)

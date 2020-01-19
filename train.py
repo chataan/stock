@@ -3,34 +3,28 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+import time
 import model as model
 import tqdm as tqdm
 from stock import upload
-from service import graph
+from service import graph, download_stock
 from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
 from financial import partition_time_series, sampling, rolling_mean_trend
 
-aapl = "Database/AAPL.csv" # Applc Inc.
-goog = "Database/GOOG.csv" # Google Inc.
-msft = "Database/MSFT.csv" # Microsoft Inc.
-nvda = "Database/NVDA.csv" # NVIDIA Inc.
-tsla = "Database/TSLA.csv" # Tesla Inc.
-
-# search given stock query on Google Search Engine 
-#query += " finance.yahoo"
-#search_result = None
-#for link in googlesearch.search(query, tld="co.in", num=1, stop=1, pause=2):
-    #search_result = str(link)
-# acquire the past year worth of stock data
-
-long_term_processor = None
-short_term_processor = None
+os.system('clear')
+print("Running ./train.py for generating/updating model")
+time.sleep(2)
+os.system('clear')
 
 if __name__ == "__main__":
-    os.system('clear')
-    google = upload(goog, True)
-    dataset = partition_time_series(google, QUARTER) # each time series will be a quarter-long (90 datapoints)
+     # use service module to download stock from YAHOO
+     # downloaded stock will be saved as "Database/stock.csv"
+    id = download_stock()
+    print("\nDownloaded ", id, " historical stock data [PATH=Database/stock.csv]")
+
+    stock = upload("Database/stock.csv", True)
+    dataset = partition_time_series(stock, QUARTER) # each time series will be a quarter-long (90 datapoints)
 
     # compute trend line of each time series
     loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
@@ -43,5 +37,7 @@ if __name__ == "__main__":
     print("\nCompleted trend line analysis")
     loop.close()
 
-    model = model.KerasTrainer(dataset, "google")
+    # check if there is an existing model
+
+    model = model.KerasTrainer(dataset, id.lower())
     model.train(True, 100, 32)

@@ -10,7 +10,7 @@ YEAR=0
 MONTH=1
 DATE=2
 OPEN=3
-CLOSE=7
+CLOSE=6
 
 def upload(path, log=True):
     """ Upload datapoints of a stock """
@@ -40,5 +40,6 @@ def upload(path, log=True):
             time.sleep(0.001)
         else:
             pass
+    print(raw)
     print("\n\nUploaded stock data successfully!")
     return raw
