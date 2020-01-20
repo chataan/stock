@@ -25,8 +25,9 @@ def download_stock():
     stock_id = input("Enter stock ID (ex: AAPL) = ")
     start_date = input("Enter start date (ex: 2020-01-19) = ")
     stock = data.DataReader(stock_id, "yahoo", start_date)
-    stock.to_csv("Database/stock.csv")
-    return stock_id
+    csv = "Database/" + stock_id + ".csv"
+    stock.to_csv(csv)
+    return csv, stock_id
 def select_model():
     os.system("clear")
     files = []
@@ -50,7 +51,7 @@ def select_model():
             time.sleep(2)
             os.system("clear")
     print("\n", files[0], "model selected!!")
-    return files[0]
+    return files[select]
 def run(stock, model_name):
     test = fetch_last_time_series(stock, QUARTER)
 

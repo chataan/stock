@@ -20,10 +20,10 @@ os.system('clear')
 if __name__ == "__main__":
      # use service module to download stock from YAHOO
      # downloaded stock will be saved as "Database/stock.csv"
-    id = download_stock()
+    csv, id = download_stock()
     print("\nDownloaded ", id, " historical stock data [PATH=Database/stock.csv]")
 
-    stock = upload("Database/stock.csv", True)
+    stock = upload(csv, True)
     dataset = partition_time_series(stock, QUARTER) # each time series will be a quarter-long (90 datapoints)
 
     # compute trend line of each time series
@@ -37,7 +37,9 @@ if __name__ == "__main__":
     print("\nCompleted trend line analysis")
     loop.close()
 
-    # check if there is an existing model
+    # check if there is an existing model for the corresponding stock ID
+    # if model exists, load existing model and train on it (model.Model: update())
+    # if not, create new model (model.KerasTrainer)
 
     model = model.KerasTrainer(dataset, id.lower())
     model.train(True, 100, 32)

@@ -40,6 +40,5 @@ def upload(path, log=True):
             time.sleep(0.001)
         else:
             pass
-    print(raw)
     print("\n\nUploaded stock data successfully!")
     return raw
