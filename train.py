@@ -40,6 +40,11 @@ if __name__ == "__main__":
     # check if there is an existing model for the corresponding stock ID
     # if model exists, load existing model and train on it (model.Model: update())
     # if not, create new model (model.KerasTrainer)
-
-    model = model.KerasTrainer(dataset, id.lower())
-    model.train(True, 100, 32)
+    try:
+        f = open(id + "_model.h5", "r")
+        model = model.Model(id)
+        model.update(dataset, True, 100, 32)
+        f.close()
+    except IOError:
+        model = model.KerasTrainer(dataset, id.lower())
+        model.train(True, 100, 32)

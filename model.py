@@ -94,21 +94,21 @@ class Model:
         self.json_file = open(model_name + "_model.json", "r")
         self.loaded_json = self.json_file.read()
         self.json_file.close()
-    def update(self, dataset):
+    def update(self, dataset, use_multiprocessing=True, iterations=100, batch_size=32):
         self.model = model_from_json(self.loaded_json)
         self.model.load_weights(self.model_name + "_model.h5")
         self.model.compile(optimizer='adam', loss='mean_squared_error')
         training_input, training_output, validation_input, validation_output = preprocessing(dataset)
         # update the model
-        self.model.fit(training_input, training_output, use_multiprocessing=True, epochs=100, batch_size=32)
-        self.model.fit(validation_input, validation_output, use_multiprocessing=True, epochs=100, validation_data=(validation_input, validation_output))
+        self.model.fit(training_input, training_output, use_multiprocessing=use_multiprocessing, epochs=iterations, batch_size=batch_size)
+        self.model.fit(validation_input, validation_output, use_multiprocessing=use_multiprocessing, epochs=iterations, validation_data=(validation_input, validation_output))
         # save the updated model
         name = self.model_name + "_model.h5"
         json = self.model.to_json()
         with open((self.model_name + "_model.json"), "w") as json_file:
             json_file.write(json)
         self.model.save_weights(name)
-        print("\nCompleted Keras-LSTM Model Training! All data of the model is saved as a .json (LSTM layer) and .h5 (synapes) files!\n")
+        print("\nCompleted Keras-LSTM Model Update!\n")
     def predict(self, data):
         self.model = model_from_json(self.loaded_json)
         self.model.load_weights(self.model_name + "_model.h5")
