@@ -30,7 +30,6 @@ def upload(path, log=True):
         loop = tqdm.tqdm(total = len(data), position = 0, leave = False)
     for line in data:
         line = line.split(",")
-        # convert all the numbers in the line as integers, create a StockDataPoint
         raw.append(float(line[OPEN]))
         raw.append(float(line[CLOSE]))
         count += 1

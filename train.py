@@ -29,8 +29,8 @@ if __name__ == "__main__":
     # compute trend line of each time series
     loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
     for timeseries in dataset:
-        loop.set_description('Analyzing time series trend line and spike analysis ' .format(len(dataset)))
-        matrix, prediction = rolling_mean_trend(timeseries, WEEK)
+        loop.set_description('Time series trend line analysis/sampling... ' .format(len(dataset)))
+        matrix, prediction = rolling_mean_trend(timeseries, MONTH)
         matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
         loop.update(1)
@@ -43,8 +43,8 @@ if __name__ == "__main__":
     try:
         f = open(id + "_model.h5", "r")
         model = model.Model(id)
-        model.update(dataset, True, 100, 32)
+        model.update(dataset, True, 10, 32)
         f.close()
     except IOError:
         model = model.KerasTrainer(dataset, id.lower())
-        model.train(True, 100, 32)
+        model.train(True, 10, 32)

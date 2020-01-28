@@ -56,7 +56,7 @@ def run(stock, model_name):
     test = fetch_last_time_series(stock, QUARTER)
 
     print("Running time series processing... ", end="")
-    matrix, prediction = rolling_mean_trend(test, WEEK)
+    matrix, prediction = rolling_mean_trend(test, MONTH)
     matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
     test.set_sampled_matrix(matrix)
     print("DONE!\n")
@@ -69,7 +69,4 @@ def run(stock, model_name):
         for j in range(result.shape[1]):
             keras_prediction = rescale(result[i][j], test.minimum(), test.maximum())
     
-    # output the predictions
-    prediction = rescale(prediction, test.minimum(), test.maximum())
-    print("Trend line prediction = [", prediction, "]")
-    print("Keras Model prediction = [", keras_prediction, "]")
+    return keras_prediction

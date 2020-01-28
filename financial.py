@@ -70,7 +70,7 @@ class Dataset:
 
 def fetch_last_time_series(stock, timeseries_split_range):
     raw = []
-    for i in range(len(stock) - 1, len(stock) - timeseries_split_range, -1):
+    for i in range(len(stock) - timeseries_split_range, len(stock)):
         raw.append(stock[i])
     return Dataset(raw)
 def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
@@ -136,3 +136,4 @@ def sampling(matrix, itr=0, loop=2, sampling_range=STANDARD_SAMPLING_RANGE):
         itr += 1
         sampling(sampled, itr, loop, sampling_range)
     return sampled
+    

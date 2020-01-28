@@ -10,4 +10,5 @@ if __name__ == "__main__":
     path, id = download_stock()
     st = upload(path, True)
 
-    run(st, model)
+    raw_prediction = run(st, model)
+    print(raw_prediction)
