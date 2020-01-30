@@ -34,7 +34,7 @@ def rescale(value, min, max):
     """ Reverse of a MinMaxScaler: scales up a certain value based on a min max value """
     return (value * (max - min)) + min 
 
-class Dataset:
+class TimeSeries:
     def __init__(self, raw):
         self.dataset_label = ""
         self.raw, self.min, self.max = normalize(raw)
@@ -81,7 +81,7 @@ def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
         raw = []
         for i in range(sets, (sets + timeseries_split_range)):
             raw.append(stock[i])
-        dataset.append(Dataset(raw))
+        dataset.append(TimeSeries(raw))
         raw = []
 
     # set breakpoints to split the dataset into three categories: training, validating
