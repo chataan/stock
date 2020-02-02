@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 
-from stock import upload
-from service import graph, download_stock
-from financial import TimeSeries, QUARTER, rolling_mean_trend
+import service
+import stock
+import financial
+from os import system
+from time import sleep
 
-csv, id = download_stock()
-stock = upload(csv, True)
-timeseries = TimeSeries(stock)
+print("Running experimental environment...")
+sleep(2)
+system('clear')
 
-graph(timeseries.raw_matrix(), 'blue', 'apple', False)
-trend, linear = rolling_mean_trend(timeseries, QUARTER)
-graph(trend, 'red', 'apple_trend', False) 
+if __name__ == "__main__":
+    model = service.select_model()
+    print("Model = [", model, "]\n")
+
+    csv, id = service.download_stock()
+    st = stock.upload(csv, True)
+
+    service.visualize_model_prediction(st, model)

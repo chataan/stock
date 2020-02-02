@@ -1,12 +1,13 @@
 
 import os
 import time
+import tqdm
 from model import Model
 import matplotlib.pyplot as plt
 from financial import rescale
 from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
-from financial import fetch_last_time_series, sampling, rolling_mean_trend
+from financial import fetch_last_time_series, partition_time_series, sampling, rolling_mean_trend
 from pandas_datareader import data
 
 def graph(matrix, _color, save_name, show=False):
@@ -70,3 +71,27 @@ def run(stock, model_name):
             keras_prediction = rescale(result[i][j], test.minimum(), test.maximum())
     
     return keras_prediction
+def visualize_model_prediction(stock, model_name):
+    dataset = partition_time_series(stock, QUARTER, 0)
+    print("Processing time series dataset...\n")
+    for timeseries in dataset:
+        matrix, linear = rolling_mean_trend(timeseries, MONTH)
+        matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
+        timeseries.set_sampled_matrix(matrix)
+    # create a matrix of predictions
+    # graph the matrix with the actual stock price matrix
+    prediction_matrix = []
+    model = Model(model_name)
+    description = "Computing model prediction on time series dataset..."
+    loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
+    for timeseries in dataset:
+        loop.set_description(description .format(len(dataset)))
+        prediction_matrix.append(model.predict(timeseries))
+        loop.update(1)
+    print("DONE!")
+    loop.close()
+    # graph the two matrices
+    for i in range(0, len(stock) - len(prediction)):
+        del stock[i]
+    graph(stock, 'green', 'visualization', False)
+    graph(prediction_matrix, 'red', 'visualization', False)
