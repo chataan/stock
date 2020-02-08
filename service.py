@@ -51,7 +51,7 @@ def select_model():
             print("\nPlease select a model number listed above!\n")
             time.sleep(2)
             os.system("clear")
-    print("\n", files[0], "model selected!!")
+    print("\n", files[select], "model selected!!")
     return files[select]
 def run(stock, model_name):
     test = fetch_last_time_series(stock, QUARTER)
@@ -69,7 +69,6 @@ def run(stock, model_name):
     for i in range(result.shape[0]):
         for j in range(result.shape[1]):
             keras_prediction = rescale(result[i][j], test.minimum(), test.maximum())
-    
     return keras_prediction
 def visualize_model_prediction(stock, model_name):
     dataset = partition_time_series(stock, QUARTER, 0)
@@ -86,12 +85,17 @@ def visualize_model_prediction(stock, model_name):
     loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
     for timeseries in dataset:
         loop.set_description(description .format(len(dataset)))
-        prediction_matrix.append(model.predict(timeseries))
+        result = model.predict(timeseries)
+        prediction = 0.00
+        for i in range(result.shape[0]):
+            for j in range(result.shape[1]):
+                prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
+        prediction_matrix.append(prediction)
         loop.update(1)
     print("DONE!")
     loop.close()
     # graph the two matrices
-    for i in range(0, len(stock) - len(prediction)):
+    for i in range(0, len(stock) - len(prediction_matrix)):
         del stock[i]
     graph(stock, 'green', 'visualization', False)
     graph(prediction_matrix, 'red', 'visualization', False)
