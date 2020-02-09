@@ -11,5 +11,5 @@ if __name__ == "__main__":
     st = upload(path, True)
 
     raw_prediction = run(st, model)
-    print(raw_prediction)
+    print(raw_prediction, "\n")
     git_update()
