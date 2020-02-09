@@ -10,6 +10,11 @@ from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_S
 from financial import fetch_last_time_series, partition_time_series, sampling, rolling_mean_trend
 from pandas_datareader import data
 
+def git_update():
+    os.system("git remote set-url origin git@github.com:junyoung-sim/stock")
+    os.system("git add -A")
+    os.system("git commit -am 'Automated Commision'")
+    os.system("git push")
 def graph(matrix, _color, save_name, show=False):
     count = []
     for i in range(len(matrix)):

@@ -7,7 +7,7 @@ import time
 import model as model
 import tqdm as tqdm
 from stock import upload
-from service import graph, download_stock
+from service import graph, download_stock, git_update
 from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
 from financial import partition_time_series, sampling, rolling_mean_trend
@@ -48,3 +48,4 @@ if __name__ == "__main__":
     except IOError:
         model = model.KerasTrainer(dataset, id.lower())
         model.train(True, 10, 32)
+    git_update()
