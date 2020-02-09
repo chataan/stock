@@ -76,7 +76,6 @@ class KerasTrainer:
         lstm.compile(optimizer='adam', loss='mean_squared_error')
         lstm.fit(self.training_input, self.training_output, use_multiprocessing=multiprocessing, epochs=iterations, batch_size=batch_size) # train each time series 1000 times
         lstm.fit(self.validation_input, self.validation_output, use_multiprocessing=multiprocessing, epochs=iterations, validation_data=(self.validation_input, self.validation_output))
-
         # save the model
         model_name = self.name.lower() + "_model.h5"
         model_json = lstm.to_json()
@@ -84,6 +83,8 @@ class KerasTrainer:
             json_file.write(model_json)
         lstm.save_weights(model_name)
         print("\nCompleted Keras-LSTM Model Training! All data of the model is saved as a .json (LSTM layer) and .h5 (synapes) files!\n")
+        os.system("mv *.h5 Models")
+        os.system("mv *.json Models")
 
 class Model:
     def __init__(self, model_name):
@@ -91,12 +92,12 @@ class Model:
         __init__ will load the Keras model (.json, .h5) """
         self.model = None
         self.model_name = model_name.lower()
-        self.json_file = open(model_name + "_model.json", "r")
+        self.json_file = open("Models/" + model_name + "_model.json", "r")
         self.loaded_json = self.json_file.read()
         self.json_file.close()
     def update(self, dataset, use_multiprocessing=True, iterations=100, batch_size=32):
         self.model = model_from_json(self.loaded_json)
-        self.model.load_weights(self.model_name + "_model.h5")
+        self.model.load_weights("Models/" + self.model_name + "_model.h5")
         self.model.compile(optimizer='adam', loss='mean_squared_error')
         training_input, training_output, validation_input, validation_output = preprocessing(dataset)
         # update the model
@@ -109,9 +110,11 @@ class Model:
             json_file.write(json)
         self.model.save_weights(name)
         print("\nCompleted Keras-LSTM Model Update!\n")
+        os.system("mv *.h5 Models")
+        os.system("mv *.json Models")
     def predict(self, data):
         self.model = model_from_json(self.loaded_json)
-        self.model.load_weights(self.model_name + "_model.h5")
+        self.model.load_weights("Models/" + self.model_name + "_model.h5")
 
         """ data should be a time series """
         x = []

@@ -32,7 +32,7 @@ def download_stock():
 def select_model():
     os.system("clear")
     files = []
-    for r, d, f in os.walk("."):
+    for r, d, f in os.walk("Models"):
         for file in f:
             if '.h5' in file:
                 file = str(file)

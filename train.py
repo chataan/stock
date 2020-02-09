@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # if model exists, load existing model and train on it (model.Model: update())
     # if not, create new model (model.KerasTrainer)
     try:
-        f = open(id + "_model.h5", "r")
+        f = open("Models/" + id + "_model.h5", "r")
         model = model.Model(id)
         model.update(dataset, True, 10, 32)
         f.close()
