@@ -147,4 +147,8 @@ def average_growth(dataset):
         first_dp, last_dp = rescale(first_dp, timeseries.minimum(), timeseries.maximum()), rescale(last_dp, timeseries.minimum(), timeseries.maximum())
         average += (last_dp - first_dp)
     average /= len(dataset)
+    # calculate the percentage of datapoints that exceed the average growth value
+    percentage = 0.00
+    print((timeseries.raw_size() / 2) * len(dataset))
+    
     return average
