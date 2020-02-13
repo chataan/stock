@@ -150,7 +150,7 @@ def average_growth(dataset):
     # calculate the percentage of datapoints that exceed the average growth value
     percentage = 0.00
     for timeseries in dataset:
-        if (rescale(last_dp, timeseries.minimum(), timeseries.maximum()) -  rescale(first_dp, timeseries.minimum(), timeseries.maximum())) >= average:
+        if (rescale(timeseries.raw_datapoint(timeseries.raw_size() - 1), timeseries.minimum(), timeseries.maximum()) -  rescale(timeseries.raw_datapoint(0), timeseries.minimum(), timeseries.maximum())) >= average:
             percentage += 1
     percentage = (percentage * 100) / len(dataset)
     return average, percentage
