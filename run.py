@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 from stock import upload
 from service import select_model, download_stock, run, git_update
 
@@ -15,4 +14,4 @@ if __name__ == "__main__":
         raw_prediction = run(st, model)
         print(raw_prediction, "\n")
         git_update()
-        os.system('clear')
+        print("\n\n\n")

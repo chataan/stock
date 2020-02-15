@@ -50,4 +50,4 @@ if __name__ == "__main__":
             model = model.KerasTrainer(dataset, id.lower())
             model.train(True, 10, 32)
         git_update()
-        os.system('clear')
+        print("\n\n\n")
