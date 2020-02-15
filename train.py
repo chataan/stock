@@ -43,8 +43,8 @@ if __name__ == "__main__":
         # if not, create new model (model.KerasTrainer)
         try:
             f = open("Models/" + id + "_model.h5", "r")
-            model = model.Model(id)
-            model.update(dataset, True, 10, 32)
+            m = model.Model(id)
+            m.update(dataset, True, 10, 32)
             f.close()
         except IOError:
             model = model.KerasTrainer(dataset, id.lower())
