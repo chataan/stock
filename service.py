@@ -35,7 +35,6 @@ def download_stock():
     stock.to_csv(csv)
     return csv, stock_id
 def select_model():
-    os.system("clear")
     files = []
     for r, d, f in os.walk("Models"):
         for file in f:
