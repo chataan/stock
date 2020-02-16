@@ -85,7 +85,9 @@ def long_term_prediction(stock, _range, model_name):
     matrix, prediction = rolling_mean_trend(timeseries, MONTH)
     matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
     timeseries.set_sampled_matrix(matrix)
-    print(len(matrix))
+    
+    raw = timeseries.raw_matrix()
+    print(len(raw))
 
     return prediction_matrix
 def visualize_model_prediction(stock, model_name):
