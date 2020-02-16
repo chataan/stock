@@ -74,6 +74,32 @@ def run(stock, model_name):
         for j in range(result.shape[1]):
             keras_prediction = rescale(result[i][j], test.minimum(), test.maximum())
     return keras_prediction
+def long_term_prediction(stock, _range, model_name):
+    count = 0
+    predictor = Model(model_name)
+    timeseries = fetch_last_time_series(stock, QUARTER)
+    prediction_matrix = timeseries.raw_matrix()
+
+    while count < _range:
+        matrix, prediction = rolling_mean_trend(timeseries, MONTH)
+        matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
+        timeseries.set_sampled_matrix(matrix)
+
+        result = predictor.predict(timeseries)
+        value = 0.00
+        for i in range(result.shape[0]):
+            for j in range(result.shape[1]):
+                value = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
+        prediction_matrix.append(value)
+        # append the prediction value to the raw matrix of the timeseries
+        raw = timeseries.raw_matrix()
+        del raw[0]
+        raw.append(value)
+        timeseries.set_raw_matrix(raw)
+        count += 1
+        if count % 10 == 0:
+            print('Long Term Prediction: [Count = ', count, ']')
+    return prediction_matrix
 def visualize_model_prediction(stock, model_name):
     dataset = partition_time_series(stock, QUARTER, 0)
     print("Processing time series dataset...\n")

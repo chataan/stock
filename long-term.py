@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from stock import upload
-from service import select_model, download_stock, git_update
+from service import graph, select_model, download_stock, long_term_prediction, git_update
 from financial import fetch_last_time_series
 
 if __name__ == "__main__":
@@ -10,7 +10,8 @@ if __name__ == "__main__":
 
     path, id = download_stock()
     st = upload(path, True)
-    timeseries = fetch_last_time_series(st, 90)
-
-    print(timeseries)
+    
+    prediction_matrix = long_term_prediction(st, 30, model)
+    graph(prediction_matrix, 'red', "long_term_prediction_demo", False)
+    
     git_update()
