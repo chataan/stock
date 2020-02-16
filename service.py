@@ -91,8 +91,9 @@ def long_term_prediction(stock, _range, model_name):
             for j in range(result.shape[1]):
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
         prediction_matrix.append(prediction)
-
         raw = timeseries.raw_matrix()
+        for i in range(0, len(raw)):
+            raw[i] = rescale(raw[i], timeseries.minimum(), timeseries.maximum())
         del raw[0]
         raw.append(prediction)
         timeseries.set_raw_matrix(raw)
