@@ -96,7 +96,9 @@ def long_term_prediction(stock, _range, model_name):
     raw = timeseries.raw_matrix()
     del raw[0]
     raw.append(prediction)
-    print(len(raw))
+    timeseries.set_raw_matrix(raw)
+    count += 1
+    print(timeseries.raw_size())
 
     return prediction_matrix
 def visualize_model_prediction(stock, model_name):
