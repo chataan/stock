@@ -138,20 +138,3 @@ def sampling(matrix, itr=0, loop=2, sampling_range=STANDARD_SAMPLING_RANGE):
         itr += 1
         sampling(sampled, itr, loop, sampling_range)
     return sampled
-
-""" DATA ANALYSIS ALGORITHMS """
-
-def average_growth(dataset):
-    average = 0.00
-    for timeseries in dataset:
-        first_dp, last_dp = timeseries.raw_datapoint(0), timeseries.raw_datapoint(timeseries.raw_size() - 1)
-        first_dp, last_dp = rescale(first_dp, timeseries.minimum(), timeseries.maximum()), rescale(last_dp, timeseries.minimum(), timeseries.maximum())
-        average += (last_dp - first_dp)
-    average /= len(dataset)
-    # calculate the percentage of datapoints that exceed the average growth value
-    percentage = 0.00
-    for timeseries in dataset:
-        if (rescale(timeseries.raw_datapoint(timeseries.raw_size() - 1), timeseries.minimum(), timeseries.maximum()) -  rescale(timeseries.raw_datapoint(0), timeseries.minimum(), timeseries.maximum())) >= average:
-            percentage += 1
-    percentage = (percentage * 100) / len(dataset)
-    return average, percentage
