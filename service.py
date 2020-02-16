@@ -93,12 +93,15 @@ def long_term_prediction(stock, _range, model_name):
         prediction_matrix.append(value)
         # append the prediction value to the raw matrix of the timeseries
         raw = timeseries.raw_matrix()
-        del raw[0]
+        for i in range(0, timeseries.raw_size()):
+            raw[i] = rescale(raw[i], timeseries.minimum(), timeseries.maximum())
         raw.append(value)
+        del raw[0]
         timeseries.set_raw_matrix(raw)
         count += 1
         if count % 10 == 0:
             print('Long Term Prediction: [Count = ', count, ']')
+    print("\n\n")
     return prediction_matrix
 def visualize_model_prediction(stock, model_name):
     dataset = partition_time_series(stock, QUARTER, 0)
