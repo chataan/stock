@@ -78,7 +78,9 @@ def long_term_prediction(stock, _range, model_name):
     count = 0
     predictor = Model(model_name)
     timeseries = fetch_last_time_series(stock, QUARTER)
-    prediction_matrix = timeseries.raw_matrix()
+    prediction_matrix = []
+    for val in timeseries.raw_matrix():
+        prediction_matrix.append(rescale(val, timeseries.minimum(), timeseries.maximum()))
 
     while count < _range:
         matrix, prediction = rolling_mean_trend(timeseries, MONTH)
@@ -92,11 +94,10 @@ def long_term_prediction(stock, _range, model_name):
                 value = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
         prediction_matrix.append(value)
         # append the prediction value to the raw matrix of the timeseries
-        raw = timeseries.raw_matrix()
+        raw = []
         for i in range(0, timeseries.raw_size()):
-            raw[i] = rescale(raw[i], timeseries.minimum(), timeseries.maximum())
+            raw.append(rescale(timeseries.raw_datapoint(i), timeseries.minimum(), timeseries.maximum()))
         raw.append(value)
-        del raw[0]
         timeseries.set_raw_matrix(raw)
         count += 1
         if count % 10 == 0:
