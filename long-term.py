@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     path, id = download_stock()
     st = upload(path, True)
-    timeseries = fetch_last_series(st, 90)
+    timeseries = fetch_last_time_series(st, 90)
 
     print(timeseries)
     git_update()
