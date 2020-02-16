@@ -92,8 +92,10 @@ def long_term_prediction(stock, _range, model_name):
         for j in range(result.shape[1]):
             prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
     prediction_matrix.append(prediction)
-    print(prediction)
+
     raw = timeseries.raw_matrix()
+    del raw[0]
+    print(len(raw))
 
     return prediction_matrix
 def visualize_model_prediction(stock, model_name):
