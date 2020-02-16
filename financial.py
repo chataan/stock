@@ -67,8 +67,6 @@ class TimeSeries:
         self.dataset_label = label
     def set_raw_matrix(self, matrix):
         self.raw, self.min, self.max = normalize(matrix)
-        self.final_close_value = self.raw[len(self.raw) - 1]
-        del self.raw[len(self.raw) - 1]
     def set_sampled_matrix(self, matrix):
         self.sampled = matrix
 
