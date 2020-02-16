@@ -81,7 +81,12 @@ def long_term_prediction(stock, _range, model_name):
     prediction_matrix = []
     for val in timeseries.raw_matrix():
         prediction_matrix.append(rescale(val, timeseries.minimum(), timeseries.maximum()))
-    print(timeseries.raw_size())
+    
+    matrix, prediction = rolling_mean_trend(timeseries, MONTH)
+    matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
+    timeseries.set_sampled_matrix(matrix)
+    print(len(matrix))
+
     return prediction_matrix
 def visualize_model_prediction(stock, model_name):
     dataset = partition_time_series(stock, QUARTER, 0)
