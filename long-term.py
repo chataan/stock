@@ -11,7 +11,7 @@ if __name__ == "__main__":
     path, id = download_stock()
     st = upload(path, True)
     
-    prediction_matrix = long_term_prediction(st, 30, model)
+    prediction_matrix = long_term_prediction(st, 5, model)
     graph(prediction_matrix, 'red', "long_term_prediction_demo", False)
     
     git_update()
