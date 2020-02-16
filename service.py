@@ -86,8 +86,14 @@ def long_term_prediction(stock, _range, model_name):
     matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
     timeseries.set_sampled_matrix(matrix)
     
+    prediction = 0.00
+    result = predictor.predict(timeseries)
+    for i in range(result.shape[0]):
+        for j in range(result.shape[1]):
+            prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
+    prediction_matrix.append(prediction)
+    print(prediction)
     raw = timeseries.raw_matrix()
-    print(len(raw))
 
     return prediction_matrix
 def visualize_model_prediction(stock, model_name):
