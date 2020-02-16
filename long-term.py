@@ -12,6 +12,7 @@ if __name__ == "__main__":
     st = upload(path, True)
     
     prediction_matrix = long_term_prediction(st, 5, model)
+    print(prediction_matrix)
     graph(prediction_matrix, 'red', "long_term_prediction_demo", False)
     
     git_update()
