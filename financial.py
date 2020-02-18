@@ -138,3 +138,9 @@ def sampling(matrix, itr=0, loop=2, sampling_range=STANDARD_SAMPLING_RANGE):
         itr += 1
         sampling(sampled, itr, loop, sampling_range)
     return sampled
+
+""" DATA ANALYSIS FUNCTIONS """
+
+def n_shape_analysis(dataset):
+    """ RETURNS: average frequency of growth N-Shape per timeseries length
+                 average change in N-Shape value """
