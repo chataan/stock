@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from stock import upload
-from service import graph, select_model, download_stock, long_term_prediction, git_update
+from service import graph, select_model, download_stock, sequential_prediction, git_update
 from financial import fetch_last_time_series
 
 if __name__ == "__main__":
@@ -11,8 +11,9 @@ if __name__ == "__main__":
     path, id = download_stock()
     st = upload(path, True)
     
-    prediction_matrix = long_term_prediction(st, 10, model)
+    prediction_matrix = sequential_prediction(st, 10, model)
     print(prediction_matrix)
-    graph(prediction_matrix, 'red', "long_term_prediction_demo", False)
+    graph_title = model + "_sequential_prediction_demo"
+    graph(prediction_matrix, 'red', graph_title, False)
     
     git_update()

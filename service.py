@@ -74,7 +74,7 @@ def run(stock, model_name):
         for j in range(result.shape[1]):
             keras_prediction = rescale(result[i][j], test.minimum(), test.maximum())
     return keras_prediction
-def long_term_prediction(stock, _range, model_name):
+def sequential_prediction(stock, _range, model_name):
     count = 0
     predictor = Model(model_name)
     timeseries = fetch_last_time_series(stock, QUARTER)
