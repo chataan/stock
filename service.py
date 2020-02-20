@@ -81,9 +81,10 @@ def sequential_prediction(stock, _range, model_name):
     prediction_matrix = []
     
     while count < _range:
-        matrix, prediction = rolling_mean_trend(timeseries, MONTH)
+        matrix = rolling_mean_trend(timeseries, MONTH)
         matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
+        timeseries.normalize_timeseries()
     
         prediction = 0.00
         result = predictor.predict(timeseries)
