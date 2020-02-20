@@ -102,7 +102,7 @@ class Model:
         training_input, training_output, validation_input, validation_output = preprocessing(dataset)
         # update the model
         self.model.fit(training_input, training_output, use_multiprocessing=use_multiprocessing, epochs=iterations,  validation_data=(training_input, training_output))
-        self.model.fit(validation_input, validation_output, use_multiprocessing=use_multiprocessing, epochs=iterations, validation_data=(validation_input, validation_output))
+        self.model.fit(validation_input, validation_output, use_multiprocessing=use_multiprocessing, epochs=iterations)
         # save the updated model
         name = self.model_name + "_model.h5"
         json = self.model.to_json()
