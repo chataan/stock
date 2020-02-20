@@ -141,6 +141,13 @@ def sampling(matrix, itr=0, loop=2, sampling_range=STANDARD_SAMPLING_RANGE):
 
 """ DATA ANALYSIS FUNCTIONS """
 
-def n_shape_analysis(dataset):
+def n_shape_analysis(stock):
     """ RETURNS: average frequency of growth N-Shape per timeseries length
                  average change in N-Shape value """
+    n_shape_matrix = []
+    for _range in range(0, len(stock) - 4):
+        n_shape = []
+        for i in range(_range, _range + 4):
+            n_shape.append(stock[i])
+        n_shape_matrix.append(n_shape)
+    print(len(n_shape_matrix))
