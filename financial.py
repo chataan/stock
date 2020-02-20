@@ -149,5 +149,6 @@ def n_shape_analysis(stock):
         n_shape = []
         for i in range(_range, _range + 4):
             n_shape.append(stock[i])
+        print(n_shape)
         n_shape_matrix.append(n_shape)
-    print(len(n_shape_matrix))
+    return n_shape_matrix

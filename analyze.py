@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from stock import upload
-from service import download_stock, git_update
+from service import download_stock, git_update, graph
 from financial import partition_time_series, n_shape_analysis
 
 if __name__ == "__main__":
