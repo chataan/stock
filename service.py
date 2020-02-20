@@ -91,6 +91,7 @@ def sequential_prediction(stock, _range, model_name):
         for i in range(result.shape[0]):
             for j in range(result.shape[1]):
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
+        
         prediction_matrix.append(prediction)
         raw = timeseries.raw_matrix()
         for i in range(0, len(raw)):

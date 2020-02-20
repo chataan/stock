@@ -30,6 +30,8 @@ def normalize(matrix):
     for i in range(len(matrix)):
         matrix[i] = (matrix[i] - min) / (max - min)
     return matrix, min, max
+def normalize_value(value, min, max):
+    return (value - min) / (max - min)
 def rescale(value, min, max):
     """ Reverse of a MinMaxScaler: scales up a certain value based on a min max value """
     return (value * (max - min)) + min 
@@ -40,8 +42,9 @@ class TimeSeries:
         self.raw = raw
         self.min = 0.00
         self.max = 0.00
-        self.final_close_value = 0.00
+        self.final_close_value = self.raw[len(self.raw) - 1]
         self.sampled = []
+        del self.raw[len(self.raw) - 1]
     def maximum(self):
         return self.max
     def minimum(self):
@@ -73,8 +76,7 @@ class TimeSeries:
     def normalize_timeseries(self):
         self.raw, self.min, self.max = normalize(self.raw)
         self.sampled, _min, _max = normalize(self.sampled)
-        self.final_close_value = self.raw[len(self.raw) - 1]
-        del self.sampled[len(self.sampled) - 1]
+        self.final_close_value = normalize_value(self.final_close_value, self.min, self.max)
 
 def fetch_last_time_series(stock, timeseries_split_range):
     raw = []
