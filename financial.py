@@ -119,6 +119,7 @@ def moving_average(timeseries, trend_window_range):
     for _range in range(0, timeseries.raw_size() - trend_window_range):
         avg = 0.00
         for i in range(_range, _range + trend_window_range):
+            if i >= timese
                 avg += timeseries.raw_datapoint(i)
         avg /= trend_window_range
         trend.append(avg)
