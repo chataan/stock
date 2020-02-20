@@ -111,22 +111,22 @@ def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
     print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
     return dataset
 
-def moving_average(time_series, trend_window_range):
+def moving_average(timeseries, trend_window_range):
     """ Moving average analysis to detect trend in stock price variability """
-    """ type(time_series) should be "Dataset" """
+    """ type(timeseries) should be "Dataset" """
     """ RETURNS: Rolling mean trend 1D matrix, a prediction value """
     trend = []
-    for _range in range(0, time_series.raw_size() - trend_window_range):
+    for _range in range(0, timeseries.raw_size() - trend_window_range):
         avg = 0.00
         for i in range(_range, _range + trend_window_range):
-            avg += time_series.raw_datapoint(i)
+                avg += timeseries.raw_datapoint(i)
         avg /= trend_window_range
         trend.append(avg)
-    for _range in range(time_series.raw_size() - trend_window_range, time_series.raw_size()):
+    for _range in range(timeseries.raw_size() - trend_window_range, timeseries.raw_size()):
         avg = 0.00
-        for i in range(_range, time_series.raw_size()):
-            avg += time_series.raw_datapoint(i)
-        avg /= time_series.raw_size() - _range
+        for i in range(_range, timeseries.raw_size()):
+            avg += timeseries.raw_datapoint(i)
+        avg /= (timeseries.raw_size() - _range)
         trend.append(avg)
     return trend
 def sampling(matrix, itr=0, loop=2, sampling_range=STANDARD_SAMPLING_RANGE):
