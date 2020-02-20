@@ -31,9 +31,10 @@ if __name__ == "__main__":
         loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
         for timeseries in dataset:
             loop.set_description('Time series trend line analysis/sampling... ' .format(len(dataset)))
-            matrix, prediction = rolling_mean_trend(timeseries, MONTH)
+            matrix = rolling_mean_trend(timeseries, MONTH)
             matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
             timeseries.set_sampled_matrix(matrix)
+            timeseries.normalize_timeseries()
             loop.update(1)
         print("\nCompleted trend line analysis")
         loop.close()

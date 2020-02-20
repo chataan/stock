@@ -37,10 +37,11 @@ def rescale(value, min, max):
 class TimeSeries:
     def __init__(self, raw):
         self.dataset_label = ""
-        self.raw, self.min, self.max = normalize(raw)
-        self.final_close_value = self.raw[len(self.raw) - 1]
+        self.raw = raw
+        self.min = 0.00
+        self.max = 0.00
+        self.final_close_value = 0.00
         self.sampled = []
-        del self.raw[len(raw) - 1] # exclude the last datapoint, which is the final close value
     def maximum(self):
         return self.max
     def minimum(self):
@@ -69,6 +70,11 @@ class TimeSeries:
         self.raw, self.min, self.max = normalize(matrix)
     def set_sampled_matrix(self, matrix):
         self.sampled = matrix
+    def normalize_timeseries(self):
+        self.raw, self.min, self.max = normalize(self.raw)
+        self.sampled, _min, _max = normalize(self.sampled)
+        self.final_close_value = self.raw[len(self.raw) - 1]
+        del self.sampled[len(self.sampled) - 1]
 
 def fetch_last_time_series(stock, timeseries_split_range):
     raw = []
@@ -119,12 +125,7 @@ def rolling_mean_trend(time_series, trend_window_range):
             avg += time_series.raw_datapoint(i)
         avg /= time_series.raw_size() - _range
         trend.append(avg)
-    # compute linear slope of the last two datapoints to forecast the next possible datapoint
-    y1, y2 = trend[len(trend) - 2], trend[len(trend) - 1]
-    slope = y2 - y1
-    bias = -slope + y1
-    linear_prediction = slope * 3 + bias
-    return trend, linear_prediction
+    return trend
 def sampling(matrix, itr=0, loop=2, sampling_range=STANDARD_SAMPLING_RANGE):
     """ Apply after trend line computation
     samples out the first and last datapoint on a specific range of a trend line """
