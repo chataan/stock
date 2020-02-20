@@ -119,15 +119,14 @@ def moving_average(timeseries, trend_window_range):
     for _range in range(0, timeseries.raw_size() - trend_window_range):
         avg = 0.00
         for i in range(_range, _range + trend_window_range):
-            if i >= timese
+            if i >= timeseries.raw_size():
+                break
+            else:
                 avg += timeseries.raw_datapoint(i)
-        avg /= trend_window_range
-        trend.append(avg)
-    for _range in range(timeseries.raw_size() - trend_window_range, timeseries.raw_size()):
-        avg = 0.00
-        for i in range(_range, timeseries.raw_size()):
-            avg += timeseries.raw_datapoint(i)
-        avg /= (timeseries.raw_size() - _range)
+        if _range + trend_window_range < timeseries.raw_size():
+            avg /= trend_window_range
+        else:
+            avg /= timeseries.raw_size() - _range
         trend.append(avg)
     return trend
 def sampling(matrix, itr=0, loop=2, sampling_range=STANDARD_SAMPLING_RANGE):
