@@ -70,7 +70,7 @@ class TimeSeries:
     def set_dataset_label(self, label):
         self.dataset_label = label
     def set_raw_matrix(self, matrix):
-        self.raw, self.min, self.max = normalize(matrix)
+        self.raw = matrix
     def set_sampled_matrix(self, matrix):
         self.sampled = matrix
     def normalize_timeseries(self):

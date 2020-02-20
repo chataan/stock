@@ -85,7 +85,7 @@ def sequential_prediction(stock, _range, model_name):
         matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
         timeseries.normalize_timeseries()
-    
+
         prediction = 0.00
         result = predictor.predict(timeseries)
         for i in range(result.shape[0]):
