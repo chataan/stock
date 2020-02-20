@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from financial import rescale
 from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
-from financial import fetch_last_time_series, partition_time_series, sampling, rolling_mean_trend
+from financial import fetch_last_time_series, partition_time_series, sampling, moving_average
 from pandas_datareader import data
 
 def git_update():
@@ -57,31 +57,14 @@ def select_model():
             os.system("clear")
     print("\n", files[select], "model selected!!")
     return files[select]
-def run(stock, model_name):
-    test = fetch_last_time_series(stock, QUARTER)
 
-    print("Running time series processing... ", end="")
-    matrix, prediction = rolling_mean_trend(test, MONTH)
-    matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
-    test.set_sampled_matrix(matrix)
-    print("DONE!\n")
-
-    predictor = Model(model_name)
-    result = predictor.predict(test)
-    
-    keras_prediction = 0.00
-    for i in range(result.shape[0]):
-        for j in range(result.shape[1]):
-            keras_prediction = rescale(result[i][j], test.minimum(), test.maximum())
-    return keras_prediction
 def sequential_prediction(stock, _range, model_name):
-    count = 0
     predictor = Model(model_name)
     timeseries = fetch_last_time_series(stock, QUARTER)
     prediction_matrix = []
     
-    while count < _range:
-        matrix = rolling_mean_trend(timeseries, MONTH)
+    for count in range(_range):
+        matrix = moving_average(timeseries, MONTH)
         matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
         timeseries.normalize_timeseries()
@@ -108,7 +91,7 @@ def visualize_model_prediction(stock, model_name):
     dataset = partition_time_series(stock, QUARTER, 0)
     print("Processing time series dataset...\n")
     for timeseries in dataset:
-        matrix, linear = rolling_mean_trend(timeseries, MONTH)
+        matrix, linear = moving_average(timeseries, MONTH)
         matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
     # create a matrix of predictions

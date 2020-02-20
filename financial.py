@@ -24,7 +24,7 @@ def normalize(matrix):
         if val < min:
             min = val
         elif val > max:
-            max = val;
+            max = val
         else:
             pass
     for i in range(len(matrix)):
@@ -110,7 +110,8 @@ def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
     print("Completed stock time series partitioning! [Training = {0}, Validation = {1}]" .format(amount_of_training_datasets, amount_of_validation_datasets))
     print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
     return dataset
-def rolling_mean_trend(time_series, trend_window_range):
+
+def moving_average(time_series, trend_window_range):
     """ Moving average analysis to detect trend in stock price variability """
     """ type(time_series) should be "Dataset" """
     """ RETURNS: Rolling mean trend 1D matrix, a prediction value """
@@ -141,17 +142,3 @@ def sampling(matrix, itr=0, loop=2, sampling_range=STANDARD_SAMPLING_RANGE):
         itr += 1
         sampling(sampled, itr, loop, sampling_range)
     return sampled
-
-""" DATA ANALYSIS FUNCTIONS """
-
-def n_shape_analysis(stock):
-    """ RETURNS: average frequency of growth N-Shape per timeseries length
-                 average change in N-Shape value """
-    n_shape_matrix = []
-    for _range in range(0, len(stock) - 4):
-        n_shape = []
-        for i in range(_range, _range + 4):
-            n_shape.append(stock[i])
-        print(n_shape)
-        n_shape_matrix.append(n_shape)
-    return n_shape_matrix

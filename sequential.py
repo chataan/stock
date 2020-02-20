@@ -12,7 +12,7 @@ if __name__ == "__main__":
     path, id = download_stock()
     st = upload(path, True)
     
-    prediction_matrix = sequential_prediction(st, 10, model)
+    prediction_matrix = sequential_prediction(st, 3, model)
     print(prediction_matrix)
     graph_title = model + "_sequential_prediction_demo"
     graph(prediction_matrix, 'red', graph_title, False)

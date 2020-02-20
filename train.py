@@ -10,7 +10,7 @@ from stock import upload
 from service import graph, download_stock, git_update
 from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
-from financial import partition_time_series, sampling, rolling_mean_trend
+from financial import partition_time_series, sampling, moving_average
 
 os.system('clear')
 print("Running ./train.py for generating/updating model")
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
         for timeseries in dataset:
             loop.set_description('Time series trend line analysis/sampling... ' .format(len(dataset)))
-            matrix = rolling_mean_trend(timeseries, MONTH)
+            matrix = moving_average(timeseries, MONTH)
             matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
             timeseries.set_sampled_matrix(matrix)
             timeseries.normalize_timeseries()
