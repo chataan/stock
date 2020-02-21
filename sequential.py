@@ -47,4 +47,3 @@ if __name__ == "__main__":
     graph(prediction_matrix, 'red', graph_title, False)
     
     git_update()
-    os.system('clear')

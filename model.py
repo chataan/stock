@@ -55,6 +55,11 @@ class KerasTrainer:
         self.validation_output = []
         if dataset != None:
             self.training_input, self.training_output, self.validation_input, self.validation_output = preprocessing(dataset)
+    def feed(self, training_input, training_output, validation_input, validation_output):
+        self.training_input, self.training_output = np.array(training_input), np.array(training_output)
+        self.validation_input, self.validation_output = np.array(validation_input), np.array(validation_output)
+        self.training_input = np.reshape(self.training_input, (self.training_input.shape[0], self.training_input.shape[1], 1))
+        self.validation_input = np.reshape(self.validation_input, (self.validation_input.shape[0], self.validation_input.shape[1], 1))
     def train(self, multiprocessing=True, iterations=1000, batch_size=32):
         print("")
         cells = int(self.training_input.shape[1] * 2 / 3)
