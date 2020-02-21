@@ -111,10 +111,6 @@ def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
     print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
     return dataset
 
-
-
-
-
 def moving_average(timeseries, trend_window_range):
     """ Moving average analysis to detect trend in stock price variability """
     """ type(timeseries) should be "Dataset" """
