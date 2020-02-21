@@ -60,6 +60,8 @@ class KerasTrainer:
         self.validation_input, self.validation_output = np.array(validation_input), np.array(validation_output)
         self.training_input = np.reshape(self.training_input, (self.training_input.shape[0], self.training_input.shape[1], 1))
         self.validation_input = np.reshape(self.validation_input, (self.validation_input.shape[0], self.validation_input.shape[1], 1))
+        print(self.training_input, self.training_output)
+        print(self.validation_input, self.validation_output)
     def train(self, multiprocessing=True, iterations=1000, batch_size=32):
         print("")
         cells = int(self.training_input.shape[1] * 2 / 3)
