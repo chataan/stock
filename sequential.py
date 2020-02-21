@@ -40,9 +40,10 @@ if __name__ == "__main__":
         count += 1
         if count % 10 == 0:
             print("Long Term Prediction [Process Count = ", count, "]")
-    print("\n\n")
+    
+    print("\n\n", prediction_matrix, "\n\n")
 
-    graph_title = model + "_sequential_prediction_demo"
+    graph_title = "Images/" + model + "_sequential_prediction_demo"
     graph(prediction_matrix, 'red', graph_title, False)
     
     git_update()
