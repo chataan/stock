@@ -24,7 +24,7 @@ if __name__ == "__main__":
     loop.update(1)
     print("\nCompleted timeseries analysis")
     loop.close()
-    
+
     training_input = []
     training_output = []
     validation_input = []
@@ -46,5 +46,5 @@ if __name__ == "__main__":
     except IOError:
         m = KerasTrainer()
         m.feed(training_input, training_output, validation_input, validation_output)
-        m.train(True, "'Trend Models'", 10, 32)
+        m.train(True, "Trend Models", 10, 32)
     git_update()
