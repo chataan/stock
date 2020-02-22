@@ -41,6 +41,7 @@ if __name__ == "__main__":
     except IOError:
         m = KerasTrainer()
         m.feed(training_input, training_output, validation_input, validation_output)
+        m.train(True, 10, 32)
     git_update()
     
         
