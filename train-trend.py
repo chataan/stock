@@ -49,10 +49,10 @@ if __name__ == "__main__":
                 validation_output.append(0.00) # 0.00 for DECREASING TREND
     
     try:
-        f = open("'Trend Models'/" + id + ".h5", "r")
+        f = open("Trend-Models/" + id + ".h5", "r")
         m = Model(id)
     except IOError:
         m = KerasTrainer()
         m.feed(id.lower(), training_input, training_output, validation_input, validation_output)
-        m.train("Trend-Models", True, 10, 32)
+        m.train("Trend-Models/", True, 10, 32)
     git_update()
