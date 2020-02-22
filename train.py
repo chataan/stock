@@ -49,6 +49,6 @@ if __name__ == "__main__":
             f.close()
         except IOError:
             m = model.KerasTrainer(dataset, id.lower())
-            m.train(True, 10, 32)
+            m.train(True, "Models", 10, 32)
         git_update()
         print("\n\n\n")

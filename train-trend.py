@@ -14,11 +14,16 @@ if __name__ == "__main__":
     data = upload(path)
     dataset = partition_time_series(data, QUARTER, 0)
     
+    loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
     for timeseries in dataset:
+        loop.set_description('Time series trend line analysis/sampling... ' .format(len(dataset)))
         matrix = moving_average(timeseries, MONTH)
         matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
         timeseries.normalize_timeseries()
+    loop.update(1)
+    print("\nCompleted timeseries analysis")
+    loop.close()
     
     training_input = []
     training_output = []
@@ -41,7 +46,5 @@ if __name__ == "__main__":
     except IOError:
         m = KerasTrainer()
         m.feed(training_input, training_output, validation_input, validation_output)
-        m.train(True, 10, 32)
+        m.train(True, "'Trend Models'", 10, 32)
     git_update()
-    
-        

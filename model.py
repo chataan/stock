@@ -60,11 +60,11 @@ class KerasTrainer:
         self.validation_input, self.validation_output = np.array(validation_input), np.array(validation_output)
         self.training_input = np.reshape(self.training_input, (self.training_input.shape[0], self.training_input.shape[1], 1))
         self.validation_input = np.reshape(self.validation_input, (self.validation_input.shape[0], self.validation_input.shape[1], 1))
-        print("Training Input = ", self.training_input)
-        print("Training Output = ", self.training_output)
-        print("Validation Input = ", self.validation_input)
-        print("Validation Output = ", self.validation_output)
-    def train(self, multiprocessing=True, iterations=1000, batch_size=32):
+        #print("Training Input = ", self.training_input)
+        #print("Training Output = ", self.training_output)
+        #print("Validation Input = ", self.validation_input)
+        #print("Validation Output = ", self.validation_output)
+    def train(self, save_dir, multiprocessing=True, iterations=1000, batch_size=32):
         print("")
         cells = int(self.training_input.shape[1] * 2 / 3)
         lstm = Sequential() # initialize RNN
@@ -83,7 +83,7 @@ class KerasTrainer:
         lstm.add(Dense(units=1))
 
         lstm.compile(optimizer='adam', loss='mean_squared_error')
-        lstm.fit(self.training_input, self.training_output, use_multiprocessing=multiprocessing, epochs=iterations, batch_size=batch_size) # train each time series 1000 times
+        lstm.fit(self.training_input, self.training_output, use_multiprocessing=multiprocessing, epochs=iterations, batch_size=batch_size)
         lstm.fit(self.validation_input, self.validation_output, use_multiprocessing=multiprocessing, epochs=iterations, validation_data=(self.validation_input, self.validation_output))
         # save the model
         model_name = self.name.lower() + "_model.h5"
@@ -92,8 +92,8 @@ class KerasTrainer:
             json_file.write(model_json)
         lstm.save_weights(model_name)
         print("\nCompleted Keras-LSTM Model Training! All data of the model is saved as a .json (LSTM layer) and .h5 (synapes) files!\n")
-        os.system("mv *.h5 Models")
-        os.system("mv *.json Models")
+        os.system("mv *.h5 " + save_dir)
+        os.system("mv *.json " + save_dir)
 
 class Model:
     def __init__(self, model_name):
