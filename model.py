@@ -120,7 +120,6 @@ class Model:
             self.model = model_from_json(self.loaded_json)
             self.model.load_weights("Models/" + self.model_name + "_model.h5")
         else:
-            print("Aaaaaaaaaaaaaaa")
             self.json_file = open("Trend-Models/" + model_name + "_model.json", "r")
             self.loaded_json = self.json_file.read()
             self.model = model_from_json(self.loaded_json)
