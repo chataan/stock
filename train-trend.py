@@ -26,7 +26,7 @@ if __name__ == "__main__":
     loop.close()
 
     try:
-        f = open("Trend-Models/" + id + ".h5", "r")
+        f = open("Trend-Models/" + id + "_model.h5", "r")
         m = Model(id, "TREND_MODEL")
         m.update(dataset, True, 10, 32)
     except IOError:
