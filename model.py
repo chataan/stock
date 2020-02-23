@@ -43,6 +43,31 @@ def preprocessing(dataset):
         print('\n')
         loop.close()
         return training_input, training_output, validation_input, validation_output
+def trend_model_preprocessing(dataset):
+    training_input = []
+    training_output = []
+    validation_input = []
+    validation_output = []
+    training_break_point = int((len(dataset) * 60) / 100)
+    for i in range(0, len(dataset) - 7):
+        if i < training_break_point - 7:
+            training_input.append(dataset[i].sampled_matrix())
+            output = dataset[i + 7].sampled_matrix()
+            if output[len(output) - 1] - output[0] > 0: # increasing trend
+                training_output.append(1.00) # 1.00 for INCREASING TREND
+            else:
+                training_output.append(0.00) # 0.00 for DECREASING TREND
+        else:
+            validation_input.append(dataset[i].sampled_matrix())
+            output = dataset[i + 7].sampled_matrix()
+            if output[len(output) - 1] - output[0] > 0: # increasing trend
+                validation_output.append(1.00) # 1.00 for INCREASING TREND
+            else:
+                validation_output.append(0.00) # 0.00 for DECREASING TREND
+    training_input, validation_input = np.array(training_input), np.array(validation_input)
+    training_input = np.reshape(training_input, (training_input.shape[0], training_input.shape[1], 1))
+    validation_input = np.reshape(validation_input, (validation_input.shape[0], validation_input.shape[1], 1))
+    return training_input, training_output, validation_input, validation_output
 
 class KerasTrainer:
     """ This predictor will generate a LSTM prediction model """
@@ -57,25 +82,9 @@ class KerasTrainer:
         if (dataset != None) & (self.model_type == "PREDICTION_MODEL"):
             self.training_input, self.training_output, self.validation_input, self.validation_output = preprocessing(dataset)
         elif (dataset != None) & (self.model_type == "TREND_MODEL"):
-            training_break_point = int((len(dataset) * 60) / 100)
-            for i in range(0, len(dataset) - 7):
-                if i < training_break_point - 7:
-                    self.training_input.append(dataset[i].sampled_matrix())
-                    output = dataset[i + 7].sampled_matrix()
-                    if output[len(output) - 1] - output[0] > 0: # increasing trend
-                        self.training_output.append(1.00) # 1.00 for INCREASING TREND
-                    else:
-                        self.training_output.append(0.00) # 0.00 for DECREASING TREND
-                else:
-                    self.validation_input.append(dataset[i].sampled_matrix())
-                    output = dataset[i + 7].sampled_matrix()
-                    if output[len(output) - 1] - output[0] > 0: # increasing trend
-                        self.validation_output.append(1.00) # 1.00 for INCREASING TREND
-                    else:
-                        self.validation_output.append(0.00) # 0.00 for DECREASING TREND
-            self.training_input, self.validation_input = np.array(self.training_input), np.array(self.validation_input)
-            self.training_input = np.reshape(self.training_input, (self.training_input.shape[0], self.training_input.shape[1], 1))
-            self.validation_input = np.reshape(self.validation_input, (self.validation_input.shape[0], self.validation_input.shape[1], 1))
+            self.training_input, self.training_output, self.validation_input, self.validation_output = trend_model_preprocessing(dataset)
+        else:
+            pass
     def train(self, save_dir, multiprocessing=True, iterations=1000, batch_size=32):
         print("")
         cells = int(self.training_input.shape[1] * 2 / 3)
@@ -134,25 +143,7 @@ class Model:
         if self.model_type == "PREDICTION_MODEL":
             training_input, training_output, validation_input, validation_output = preprocessing(dataset)
         else:
-            training_break_point = int((len(dataset) * 60) / 100)
-            for i in range(0, len(dataset) - 7):
-                if i < training_break_point - 7:
-                    training_input.append(dataset[i].sampled_matrix())
-                    output = dataset[i + 7].sampled_matrix()
-                    if output[len(output) - 1] - output[0] > 0: # increasing trend
-                        training_output.append(1.00) # 1.00 for INCREASING TREND
-                    else:
-                        training_output.append(0.00) # 0.00 for DECREASING TREND
-                else:
-                    validation_input.append(dataset[i].sampled_matrix())
-                    output = dataset[i + 7].sampled_matrix()
-                    if output[len(output) - 1] - output[0] > 0: # increasing trend
-                        validation_output.append(1.00) # 1.00 for INCREASING TREND
-                    else:
-                        validation_output.append(0.00) # 0.00 for DECREASING TREND
-            training_input, validation_input = np.array(training_input), np.array(validation_input)
-            training_input = np.reshape(training_input, (training_input.shape[0], training_input.shape[1], 1))
-            validation_input = np.reshape(validation_input, (validation_input.shape[0], validation_input.shape[1], 1))
+            training_input, training_output, validation_input, validation_output = trend_model_preprocessing(dataset)
         # update the model
         self.model.fit(training_input, training_output, use_multiprocessing=use_multiprocessing, epochs=iterations,  validation_data=(training_input, training_output))
         self.model.fit(validation_input, validation_output, use_multiprocessing=use_multiprocessing, epochs=iterations)
