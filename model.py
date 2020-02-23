@@ -95,17 +95,24 @@ class KerasTrainer:
         os.system("mv *.json " + save_dir)
 
 class Model:
-    def __init__(self, model_name):
+    def __init__(self, model_name, model_type):
         """ model_name should be the stock name (ex: google, microsoft ...) 
         __init__ will load the Keras model (.json, .h5) """
         self.model = None
         self.model_name = model_name.lower()
-        self.json_file = open("Models/" + model_name + "_model.json", "r")
-        self.loaded_json = self.json_file.read()
+        self.model_type = model_type
+        if self.model_type == "PREDICTION_MODEL":
+            self.json_file = open("Models/" + model_name + "_model.json", "r")
+            self.loaded_json = self.json_file.read()
+            self.model = model_from_json(self.loaded_json)
+            self.model.load_weights("Models/" + self.model_name + "_model.h5")
+        else:
+            self.json_file = open("Trend-Models/" + model_name + "_model.json", "r")
+            self.loaded_json = self.json_file.read()
+            self.model = model_from_json(self.loaded_json)
+            self.model.load_weights("Trend-Models/" + self.model_name + "_model.h5")
         self.json_file.close()
     def update(self, dataset, use_multiprocessing=True, iterations=100, batch_size=32):
-        self.model = model_from_json(self.loaded_json)
-        self.model.load_weights("Models/" + self.model_name + "_model.h5")
         self.model.compile(optimizer='adam', loss='mean_squared_error')
         training_input, training_output, validation_input, validation_output = preprocessing(dataset)
         # update the model
@@ -118,12 +125,13 @@ class Model:
             json_file.write(json)
         self.model.save_weights(name)
         print("\nCompleted Keras-LSTM Model Update!\n")
-        os.system("mv *.h5 Models")
-        os.system("mv *.json Models")
+        if self.model_type == "PREDICTION":
+            os.system("mv *.h5 Models")
+            os.system("mv *.json Models")
+        else:
+            os.system("mv *.h5 Trend-Models")
+            os.system("mv *.json Trend-Models")
     def predict(self, data):
-        self.model = model_from_json(self.loaded_json)
-        self.model.load_weights("Models/" + self.model_name + "_model.h5")
-
         """ data should be a time series """
         x = []
         x.append(data.sampled_matrix())

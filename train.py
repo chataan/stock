@@ -44,7 +44,7 @@ if __name__ == "__main__":
         # if not, create new model (model.KerasTrainer)
         try:
             f = open("Models/" + id + "_model.h5", "r")
-            m = model.Model(id)
+            m = model.Model(id, "PREDICTION_MODEL")
             m.update(dataset, True, 10, 32)
             f.close()
         except IOError:

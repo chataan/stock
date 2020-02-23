@@ -50,7 +50,7 @@ if __name__ == "__main__":
     
     try:
         f = open("Trend-Models/" + id + ".h5", "r")
-        m = Model(id)
+        m = Model(id, "TREND_MODEL")
     except IOError:
         m = KerasTrainer()
         m.feed(id.lower(), training_input, training_output, validation_input, validation_output)
