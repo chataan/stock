@@ -28,6 +28,7 @@ if __name__ == "__main__":
     try:
         f = open("Trend-Models/" + id + ".h5", "r")
         m = Model(id, "TREND_MODEL")
+        m.update(dataset, True, 10, 32)
     except IOError:
         m = KerasTrainer(dataset, id.lower(), "TREND_MODEL")
         m.train("Trend-Models/", True, 10, 32)
