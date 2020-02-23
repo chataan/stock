@@ -14,7 +14,7 @@ if __name__ == "__main__":
     path, id = download_stock()
     st = upload(path, True)
 
-    predictor = Model(model)
+    predictor = Model(model, "PREDICTION_MODEL")
     timeseries = fetch_last_time_series(st, QUARTER)
     prediction_matrix = []
     
