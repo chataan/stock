@@ -24,6 +24,8 @@ if __name__ == "__main__":
         timeseries.set_sampled_matrix(matrix)
         timeseries.normalize_timeseries()
 
+        print(timeseries.raw_datapoint(timeseries.raw_size() - 1) - trend[len(trend) - 1])
+
         prediction = 0.00
         result = predictor.predict(timeseries)
         for i in range(result.shape[0]):
