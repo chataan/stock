@@ -31,7 +31,7 @@ if __name__ == "__main__":
         loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
         for timeseries in dataset:
             loop.set_description('Time series trend line analysis/sampling... ' .format(len(dataset)))
-            matrix = moving_average(timeseries, 7)
+            matrix = moving_average(timeseries, 3)
             matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
             timeseries.set_sampled_matrix(matrix)
             timeseries.normalize_timeseries()
