@@ -20,6 +20,7 @@ if __name__ == "__main__":
     
     for count in range(3):
         trend = moving_average(timeseries, 3)
+        print(timeseries.raw_datapoint(timeseries.raw_size() - 1))
         trend_close_diff = timeseries.raw_datapoint(timeseries.raw_size() - 1) - trend[len(trend) - 1]
         matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
