@@ -19,7 +19,7 @@ if __name__ == "__main__":
     prediction_matrix = []
     
     for count in range(3):
-        matrix = moving_average(timeseries, MONTH)
+        matrix = moving_average(timeseries, 7)
         matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
         timeseries.normalize_timeseries()
