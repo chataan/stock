@@ -15,14 +15,12 @@ if __name__ == "__main__":
     st = upload(path, True)
 
     predictor = Model(model, "PREDICTION_MODEL")
-    timeseries = fetch_last_time_series(st, QUARTER)
+    timeseries, final_close = fetch_last_time_series(st, QUARTER)
     prediction_matrix = []
 
-    print(timeseries.raw_datapoint(timeseries.raw_size() - 1))
-    
     for count in range(3):
         trend = moving_average(timeseries, 3)
-        trend_close_diff = timeseries.raw_datapoint(timeseries.raw_size() - 1) - trend[len(trend) - 1]
+        trend_close_diff = final_close - trend[len(trend) - 1]
         matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
         timeseries.normalize_timeseries()
@@ -34,7 +32,6 @@ if __name__ == "__main__":
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
                 # compare the distance of the last close price
                 # and the moving average trend line to add bias to the prediction
-                print(prediction, prediction + trend_close_diff)
                 prediction += trend_close_diff
         prediction_matrix.append(prediction)
         raw = timeseries.raw_matrix()

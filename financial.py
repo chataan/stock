@@ -82,7 +82,7 @@ def fetch_last_time_series(stock, timeseries_split_range):
     raw = []
     for i in range(len(stock) - timeseries_split_range, len(stock)):
         raw.append(stock[i])
-    return TimeSeries(raw)
+    return TimeSeries(raw), stock[len(stock) - 1]
 def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
     dataset = []
     # discard 35% (default) of the stock datapoint (since too old datapoints = obsolete)
