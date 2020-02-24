@@ -31,10 +31,6 @@ if __name__ == "__main__":
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
                 # compare the distance of the last close price
                 # and the moving average trend line to add bias to the prediction
-                if i == 0:
-                    prediction += timeseries.raw_datapoint(timeseries.raw_size() - 1) - trend[len(trend) - 1]
-                else:
-                    prediction += prediction_matrix[i - 1] - trend[len(trend) - 1]
         
         prediction_matrix.append(prediction)
         raw = timeseries.raw_matrix()
