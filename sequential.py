@@ -19,8 +19,8 @@ if __name__ == "__main__":
     prediction_matrix = []
     
     for count in range(3):
-        matrix = moving_average(timeseries, 7)
-        matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
+        trend = moving_average(timeseries, 7)
+        matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
         timeseries.normalize_timeseries()
 
@@ -29,6 +29,9 @@ if __name__ == "__main__":
         for i in range(result.shape[0]):
             for j in range(result.shape[1]):
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
+                # compare the distance of the last close price
+                # and the moving average trend line to add bias to the prediction
+                prediction += st[len(st) - 1] - trend[len(trend) - 1]
         
         prediction_matrix.append(prediction)
         raw = timeseries.raw_matrix()
