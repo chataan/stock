@@ -22,6 +22,13 @@ if __name__ == "__main__":
         trend = moving_average(timeseries, 7)
         matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
+
+        trendline_diff_range = 0.00
+        # calculate average difference of the price and moving average trend line
+        for i in range(timeseries.raw_size() - len(trend), len(trend)):
+            trendline_diff_range += timeseries.raw_datapoint(i) - trend[i]
+        trendline_diff_range /= timeseries.raw_size()
+
         timeseries.normalize_timeseries()
 
         prediction = 0.00
@@ -31,7 +38,8 @@ if __name__ == "__main__":
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
                 # compare the distance of the last close price
                 # and the moving average trend line to add bias to the prediction
-                prediction += st[len(st) - 1] - trend[len(trend) - 1]
+                last_close_price = rescale(timeseries.raw_datapoint(timeseries.raw_size() - 1), timeseries.minimum(), timeseries.maximum())
+                prediction += ((last_close_price - trend[len(trend) - 1]) + trendline_diff_range) / 2
         
         prediction_matrix.append(prediction)
         raw = timeseries.raw_matrix()
