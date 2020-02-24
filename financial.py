@@ -74,7 +74,7 @@ class TimeSeries:
     def set_sampled_matrix(self, matrix):
         self.sampled = matrix
     def normalize_timeseries(self):
-        self.raw, self.min, self.max = normalize(self.raw)
+        normalized, self.min, self.max = normalize(self.raw)
         self.sampled, _min, _max = normalize(self.sampled)
         self.final_close_value = normalize_value(self.final_close_value, self.min, self.max)
 
