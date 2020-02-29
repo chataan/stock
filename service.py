@@ -25,11 +25,14 @@ def graph(matrix, _color, save_name, show=False):
     if show != False:
         plt.show()
     plt.savefig(save_name)
-def download_stock():
+def download_stock(stock_id="", start_date=""):
     """ stock_id --> ex: AAPL (str)
         start_date --> ex: 2020-01-19 (str) """
-    stock_id = input("Enter stock ID (ex: AAPL) = ")
-    start_date = input("Enter start date (ex: 2020-01-19) = ")
+    if (stock_id == "") & (start_date == ""):
+        stock_id = input("Enter stock ID (ex: AAPL) = ")
+        start_date = input("Enter start date (ex: 2020-01-19) = ")
+    else:
+        pass
     stock = data.DataReader(stock_id, "yahoo", start_date)
     csv = "Database/" + stock_id + ".csv"
     stock.to_csv(csv)
@@ -90,7 +93,6 @@ def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
     print("Completed stock time series partitioning! [Training = {0}, Validation = {1}]" .format(amount_of_training_datasets, amount_of_validation_datasets))
     print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
     return dataset
-
 
 def visualize_model_prediction(stock, model_name):
     dataset = partition_time_series(stock, QUARTER, 0)

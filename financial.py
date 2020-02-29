@@ -78,6 +78,11 @@ class TimeSeries:
         self.sampled, _min, _max = normalize(self.sampled)
         self.final_close_value = normalize_value(self.final_close_value, self.min, self.max)
 
+class Market:
+    def __init__(self, list_of_stocks):
+        """ Argument <list_of_stocks> = 'string' list containing a list of stock IDs """
+        self.stock_list = list_of_stocks
+
 def moving_average(timeseries, trend_window_range):
     """ Moving average analysis to detect trend in stock price variability """
     """ type(timeseries) should be "Dataset" """
