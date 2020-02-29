@@ -7,10 +7,10 @@ import time
 import model as model
 import tqdm as tqdm
 from stock import upload
-from service import graph, download_stock, git_update
+from service import graph, download_stock, partition_time_series, git_update
 from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
-from financial import partition_time_series, sampling, moving_average
+from financial import sampling, moving_average
 
 os.system('clear')
 print("Running ./train.py for generating/updating model")

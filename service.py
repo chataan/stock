@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from financial import rescale
 from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
-from financial import fetch_last_time_series, partition_time_series, sampling, moving_average
+from financial import TimeSeries, sampling, moving_average
 from pandas_datareader import data
 
 def git_update():
@@ -58,35 +58,40 @@ def select_model():
     print("\n", files[select], "model selected!!")
     return files[select]
 
-def sequential_prediction(stock, _range, model_name):
-    predictor = Model(model_name)
-    timeseries = fetch_last_time_series(stock, QUARTER)
-    prediction_matrix = []
-    
-    for count in range(_range):
-        matrix = moving_average(timeseries, MONTH)
-        matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
-        timeseries.set_sampled_matrix(matrix)
-        timeseries.normalize_timeseries()
+def fetch_last_time_series(stock, timeseries_split_range):
+    raw = []
+    for i in range(len(stock) - timeseries_split_range, len(stock)):
+        raw.append(stock[i])
+    return TimeSeries(raw), stock[len(stock) - 1]
+def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
+    dataset = []
+    # discard 35% (default) of the stock datapoint (since too old datapoints = obsolete)
+    ignore_breakpoint = int((len(dataset) * ignore_percentage) / 100)
+    for sets in range(ignore_breakpoint, (len(stock) - timeseries_split_range + 1)):
+        raw = []
+        for i in range(sets, (sets + timeseries_split_range)):
+            raw.append(stock[i])
+        dataset.append(TimeSeries(raw))
+        raw = []
 
-        prediction = 0.00
-        result = predictor.predict(timeseries)
-        for i in range(result.shape[0]):
-            for j in range(result.shape[1]):
-                prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
-        
-        prediction_matrix.append(prediction)
-        raw = timeseries.raw_matrix()
-        for i in range(0, len(raw)):
-            raw[i] = rescale(raw[i], timeseries.minimum(), timeseries.maximum())
-        del raw[0]
-        raw.append(prediction)
-        timeseries.set_raw_matrix(raw)
-        count += 1
-        if count % 10 == 0:
-            print("Long Term Prediction [Process Count = ", count, "]")
-    print("\n\n")
-    return prediction_matrix
+    # set breakpoints to split the dataset into three categories: training, validating
+    training_dataset_breakpoint = int((len(dataset) * 80) / 100)
+    validation_dataset_breakpoint = training_dataset_breakpoint + int((len(dataset) * 20) / 100)
+
+    amount_of_training_datasets = 0
+    amount_of_validation_datasets = 0
+    for i in range(len(dataset)):
+        if i <= training_dataset_breakpoint:
+            dataset[i].set_dataset_label("TRAINING")
+            amount_of_training_datasets += 1
+        else:
+            dataset[i].set_dataset_label("VALIDATING")
+            amount_of_validation_datasets += 1
+    print("Completed stock time series partitioning! [Training = {0}, Validation = {1}]" .format(amount_of_training_datasets, amount_of_validation_datasets))
+    print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
+    return dataset
+
+
 def visualize_model_prediction(stock, model_name):
     dataset = partition_time_series(stock, QUARTER, 0)
     print("Processing time series dataset...\n")

@@ -2,8 +2,8 @@
 
 import os
 from stock import upload
-from service import graph, select_model, download_stock, sequential_prediction, git_update
-from financial import fetch_last_time_series, rescale, moving_average, sampling, QUARTER, MONTH, STANDARD_SAMPLING_RANGE
+from service import graph, select_model, download_stock, fetch_last_time_series, git_update
+from financial import rescale, moving_average, sampling, QUARTER, MONTH, STANDARD_SAMPLING_RANGE
 from model import Model
 
 if __name__ == "__main__":

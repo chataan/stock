@@ -78,39 +78,6 @@ class TimeSeries:
         self.sampled, _min, _max = normalize(self.sampled)
         self.final_close_value = normalize_value(self.final_close_value, self.min, self.max)
 
-def fetch_last_time_series(stock, timeseries_split_range):
-    raw = []
-    for i in range(len(stock) - timeseries_split_range, len(stock)):
-        raw.append(stock[i])
-    return TimeSeries(raw), stock[len(stock) - 1]
-def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
-    dataset = []
-    # discard 35% (default) of the stock datapoint (since too old datapoints = obsolete)
-    ignore_breakpoint = int((len(dataset) * ignore_percentage) / 100)
-    for sets in range(ignore_breakpoint, (len(stock) - timeseries_split_range + 1)):
-        raw = []
-        for i in range(sets, (sets + timeseries_split_range)):
-            raw.append(stock[i])
-        dataset.append(TimeSeries(raw))
-        raw = []
-
-    # set breakpoints to split the dataset into three categories: training, validating
-    training_dataset_breakpoint = int((len(dataset) * 80) / 100)
-    validation_dataset_breakpoint = training_dataset_breakpoint + int((len(dataset) * 20) / 100)
-
-    amount_of_training_datasets = 0
-    amount_of_validation_datasets = 0
-    for i in range(len(dataset)):
-        if i <= training_dataset_breakpoint:
-            dataset[i].set_dataset_label("TRAINING")
-            amount_of_training_datasets += 1
-        else:
-            dataset[i].set_dataset_label("VALIDATING")
-            amount_of_validation_datasets += 1
-    print("Completed stock time series partitioning! [Training = {0}, Validation = {1}]" .format(amount_of_training_datasets, amount_of_validation_datasets))
-    print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
-    return dataset
-
 def moving_average(timeseries, trend_window_range):
     """ Moving average analysis to detect trend in stock price variability """
     """ type(timeseries) should be "Dataset" """
