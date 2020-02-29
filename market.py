@@ -50,6 +50,6 @@ class Market:
 
 if __name__ == "__main__":
     os.system("clear")
-    us_market = ['^ixic', '^gspc', '^nya', '^xax']
+    us_market = ['^ixic', '^gspc', '^nya', '^xax', '^dji']
     US = Market('US Market', us_market, '2019-02-28')
     git_update()
