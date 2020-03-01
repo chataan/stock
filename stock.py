@@ -12,7 +12,7 @@ DATE=2
 OPEN=3
 CLOSE=6
 
-def upload(path, log=True):
+def upload(path, period, log=True):
     """ Upload datapoints of a stock """
     uploaded = []
     data = []
@@ -28,8 +28,8 @@ def upload(path, log=True):
     print("\nReading stock data from [", path, "]")
     if log == True:
         loop = tqdm.tqdm(total = len(data), position = 0, leave = False)
-    for line in data:
-        line = line.split(",")
+    for i in range(0, len(data), period):
+        line = data[i].split(",")
         raw.append(float(line[CLOSE]))
         count += 1
         if log == True:

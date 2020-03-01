@@ -24,7 +24,7 @@ if __name__ == "__main__":
         csv, id = download_stock()
         print("\nDownloaded ", id, " historical stock data [PATH=Database/stock.csv]")
 
-        stock = upload(csv, True)
+        stock = upload(csv, 1, True)
         dataset = partition_time_series(stock, QUARTER) # each time series will be a quarter-long (90 datapoints)
 
         # compute trend line of each time series

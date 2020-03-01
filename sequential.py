@@ -12,7 +12,7 @@ if __name__ == "__main__":
     print("Model = [", model, "]\n")
 
     path, id = download_stock()
-    st = upload(path, True)
+    st = upload(path, 1, True)
 
     predictor = Model(model, "PREDICTION_MODEL")
     timeseries, final_close = fetch_last_time_series(st, QUARTER)
