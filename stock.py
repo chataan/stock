@@ -27,7 +27,7 @@ def upload(path, period, log=True):
     count = 0
     print("\nReading stock data from [", path, "]")
     if log == True:
-        loop = tqdm.tqdm(total = len(data), position = 0, leave = False)
+        loop = tqdm.tqdm(total = int(len(data) / period), position = 0, leave = False)
     for i in range(0, len(data), period):
         line = data[i].split(",")
         raw.append(float(line[CLOSE]))
