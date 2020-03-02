@@ -20,3 +20,4 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
             cash = total_asset - stock_asset
         previous_asset = total_asset
         print("Total = ", total_asset, " [ Stock = ", stock_asset, ", Cash = ", cash, "] --> Shares: ", shares, ", < CHANGE=", change, ">")
+    print(stock[0])

@@ -8,4 +8,4 @@ from invest import momentum_investing
 if __name__ == "__main__":
     csv, id = download_stock()
     stock = upload(csv, 5, True)
-    momentum_investing(stock, 10000000, 8, 4)
+    momentum_investing(stock, 10000000, 12, 5)
