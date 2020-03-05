@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     for count in range(3):
         trend = moving_average(timeseries, MONTH)
-        trend_close_diff = (final_close - trend[len(trend) - 1]) * fear_index
+        trend_close_diff = (final_close - trend[len(trend) - 1])
 
         recent_bias = 0.00
         for i in range(len(trend) - 1, len(trend) - 3, -1):
