@@ -25,10 +25,14 @@ if __name__ == "__main__":
         trend_close_diff = final_close - trend[len(trend) - 1]
 
         recent_bias = 0.00
-        for i in range(len(trend) - 1, len(trend) - 3, -1):
-            if (trend[i] > trend[i - 1]) | (trend[i] < trend[i - 1]):
-                recent_bias += trend[i] - trend[i - 1]
-        recent_bias /= 3
+        for i in range(len(trend) - 1, len(trend) - 5, -1):
+            if trend[len(trend) - 1] > trend[len(trend) - 5]:
+                if trend[i] > trend[i - 1]:
+                    recent_bias += trend[i] - trend[i]
+            else:
+                if trend[i] < trend[i - 1]:
+                    recent_bias += trend[i] - trend[i]
+        recent_bias /= 4
         recent_bias *= fear_index
 
         matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
