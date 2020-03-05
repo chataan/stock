@@ -45,6 +45,7 @@ if __name__ == "__main__":
             print("Long Term Prediction [Process Count = ", count, "]")
     
     print("\n\n", prediction_matrix, "\n\n")
+    print(trend_close_diff)
 
     graph_title = "Images/" + model + "_sequential_prediction_demo.png"
     graph(prediction_matrix, 'red', graph_title, False)
