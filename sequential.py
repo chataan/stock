@@ -18,9 +18,19 @@ if __name__ == "__main__":
     timeseries, final_close = fetch_last_time_series(st, QUARTER)
     prediction_matrix = []
 
+    fear_index = int(input("\nInsert fear index [1 ~ 10]: "))
+
     for count in range(3):
         trend = moving_average(timeseries, MONTH)
         trend_close_diff = final_close - trend[len(trend) - 1]
+
+        recent_bias = 0.00
+        for i in range(len(trend) - 1, len(trend) - 3, -1):
+            if (trend[i] > trend[i - 1]) | (trend[i] < trend[i - 1]):
+                recent_bias += trend[i] - trend[i - 1]
+        recent_bias /= 3
+        recent_bias *= fear_index
+
         matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
         timeseries.normalize_timeseries()
@@ -30,9 +40,8 @@ if __name__ == "__main__":
         for i in range(result.shape[0]):
             for j in range(result.shape[1]):
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
-                # compare the distance of the last close price
-                # and the moving average trend line to add bias to the prediction
-                prediction += trend_close_diff
+                # compare the distance of the last close price and the moving average trend line to add bias to the prediction
+                prediction += trend_close_diff + recent_bias
         prediction_matrix.append(prediction)
         raw = timeseries.raw_matrix()
         for i in range(0, len(raw)):
