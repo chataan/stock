@@ -23,7 +23,7 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
         for i in range(_range, _range - evaluate_range, -1):
             if stock[_range] > stock[i]:
                 momentum += 1
-        if momentum >= 8:
+        if momentum >= 9:
             momentum = 12
         else:
             momentum = 0
