@@ -15,9 +15,9 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
     bh_change_matrix = []
     for _range in range(evaluate_range, len(stock) - evaluate_range, evaluate_period):
         momentum = 0
-        total_asset = int(cash + (int(stock[_range]) * shares))
+        total_asset = int(cash + (stock[_range] * shares))
         change = ((total_asset - principal) / principal) * 100
-        bh_change = (int(stock[_range]) - stock[evaluate_range]) * 100 / stock[evaluate_range]
+        bh_change = (stock[_range] - stock[evaluate_range]) * 100 / stock[evaluate_range]
         change_matrix.append(change)
         bh_change_matrix.append(bh_change)
         for i in range(_range, _range - evaluate_range, -1):
@@ -28,11 +28,11 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
         else:
             momentum = evaluate_range / 2
         stock_asset = int(total_asset * (momentum / evaluate_range))
-        shares = int(stock_asset / int(stock[_range]))
-        stock_asset = shares * int(stock[_range])
-        cash = total_asset - shares * int(stock[_range])
+        shares = int(stock_asset / stock[_range])
+        stock_asset = shares * stock[_range]
+        cash = total_asset - shares * stock[_range]
         previous_asset = total_asset
-        print("Total = ", total_asset, " [ Stock = ", stock_asset, ", Cash = ", cash, "] --> Shares: ", shares, ", < CHANGE=", change, ">", "<BH Change = ", bh_change, ">", int(stock[_range]))
+        print("Total = ", total_asset, " [ Stock = ", stock_asset, ", Cash = ", cash, "] --> Shares: ", shares, ", < CHANGE=", change, ">", "<BH Change = ", bh_change, ">", stock[_range])
     print("Final Profit = ", (total_asset - principal) * 100 / principal)
     print(stock[0])
     graph(change_matrix, 'red', 'momentum.jpg', False)
