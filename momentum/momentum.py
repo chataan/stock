@@ -23,12 +23,12 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
         for i in range(_range, _range - evaluate_range, -1):
             if stock[_range] > stock[i]:
                 momentum += 1
-        if momentum >= 8:
-            momentum = 12
-        elif momentum < 4:
+        if momentum >= evaluate_range * 8 / 12:
+            momentum = evaluate_range
+        elif momentum < evaluate_range * 4 / 12:
             momentum = 0
         else:
-            momentum = 6
+            momentum = evaluate_range / 2
         stock_asset = int(total_asset * (momentum / evaluate_range))
         shares = int(stock_asset / int(stock[_range]))
         stock_asset = shares * int(stock[_range])
@@ -43,5 +43,5 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
 if __name__ == "__main__":
     csv, id = download_stock()
     stock = upload(csv, 5, True)
-    momentum_investing(stock, 100000000, 12, 1)
+    momentum_investing(stock, 100000000, 9, 1)
     git_update()
