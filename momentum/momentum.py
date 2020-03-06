@@ -19,10 +19,9 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
         for i in range(_range, _range - evaluate_range, -1):
             if stock[_range] > stock[i]:
                 momentum += 1
-        if momentum != 0:
-            stock_asset = int(total_asset * (momentum / evaluate_range))
-            shares = int(stock_asset / stock[_range])
-            cash = total_asset - shares * stock[_range]
+        stock_asset = int(total_asset * (momentum / evaluate_range))
+        shares = int(stock_asset / stock[_range])
+        cash = total_asset - shares * stock[_range]
         previous_asset = total_asset
         print("Total = ", total_asset, " [ Stock = ", stock_asset, ", Cash = ", cash, "] --> Shares: ", shares, ", < CHANGE=", change, ">", "<BH Change = ", bh_change, ">")
     print("Final Profit = ", (total_asset - principal) * 100 / principal)
