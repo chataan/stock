@@ -43,5 +43,5 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
 if __name__ == "__main__":
     csv, id = download_stock()
     stock = upload(csv, 5, True)
-    momentum_investing(stock, 100000000, 9, 1)
+    momentum_investing(stock, 100000000, 12, 1)
     git_update()
