@@ -34,7 +34,7 @@ def download_stock(stock_id="", start_date=""):
     else:
         pass
     stock = data.DataReader(stock_id, "yahoo", start_date)
-    csv = "Database/" + stock_id + ".csv"
+    csv = "../Database/" + stock_id + ".csv"
     stock.to_csv(csv)
     return csv, stock_id
 def select_model():
