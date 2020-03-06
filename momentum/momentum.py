@@ -23,7 +23,7 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
         for i in range(_range, _range - evaluate_range, -1):
             if stock[_range] > stock[i]:
                 momentum += 1
-        if momentum >= 9:
+        if momentum >= 8:
             momentum = 12
         else:
             momentum = 0
@@ -41,5 +41,5 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
 if __name__ == "__main__":
     csv, id = download_stock()
     stock = upload(csv, 5, True)
-    momentum_investing(stock, 100000000, 12, 5)
+    momentum_investing(stock, 100000000, 12, 1)
     git_update()
