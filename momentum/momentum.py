@@ -26,7 +26,7 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
         if momentum >= evaluate_range * 8 / 12:
             momentum = evaluate_range
         else:
-            momentum = evaluate_range * 3 / 4
+            momentum = evaluate_range / 2
         stock_asset = int(total_asset * (momentum / evaluate_range))
         shares = int(stock_asset / int(stock[_range]))
         stock_asset = shares * int(stock[_range])
