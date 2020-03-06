@@ -128,11 +128,6 @@ class Model:
             self.loaded_json = self.json_file.read()
             self.model = model_from_json(self.loaded_json)
             self.model.load_weights("Models/" + self.model_name + "_model.h5")
-        else:
-            self.json_file = open("Trend-Models/" + model_name + "_model.json", "r")
-            self.loaded_json = self.json_file.read()
-            self.model = model_from_json(self.loaded_json)
-            self.model.load_weights("Trend-Models/" + self.model_name + "_model.h5")
         self.json_file.close()
     def update(self, dataset, use_multiprocessing=True, iterations=100, batch_size=32):
         training_input = []
