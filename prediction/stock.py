@@ -30,7 +30,7 @@ def upload(path, period, log=True):
         loop = tqdm.tqdm(total = int(len(data) / period), position = 0, leave = False)
     for i in range(0, len(data), period):
         line = data[i].split(",")
-        raw.append(int(line[CLOSE]))
+        raw.append(float(line[CLOSE]))
         count += 1
         if log == True:
             loop.set_description('Reading stock data...' .format(len(data)))

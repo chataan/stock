@@ -23,7 +23,7 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
         for i in range(_range, _range - evaluate_range, -1):
             if stock[_range] > stock[i]:
                 momentum += 1
-        if momentum >= evaluate_range * 10 / 12:
+        if momentum >= evaluate_range * 8 / 12:
             momentum = evaluate_range
         else:
             momentum = evaluate_range / 2
@@ -37,6 +37,9 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
     print(stock[0])
     graph(change_matrix, 'red', 'momentum.jpg', False)
     graph(bh_change_matrix, 'blue', 'momentum.jpg', False)
+
+# momentum 비중 높으면 --> 채권 비중을 주식 비중으로 이동
+# momentum 비중 낮으면 --> 주식 비중을 채권 비중으로 이동
 
 if __name__ == "__main__":
     csv, id = download_stock()
