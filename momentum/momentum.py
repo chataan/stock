@@ -25,7 +25,7 @@ def momentum_investing(stock, principal, evaluate_range, evaluate_period):
                 momentum += 1
         if momentum >= 8:
             momentum = 12
-        elif momentum < 3:
+        elif momentum < 4:
             momentum = 0
         else:
             momentum = 6
