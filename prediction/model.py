@@ -152,9 +152,6 @@ class Model:
         if self.model_type == "PREDICTION":
             os.system("mv *.h5 Models")
             os.system("mv *.json Models")
-        else:
-            os.system("mv *.h5 Trend-Models")
-            os.system("mv *.json Trend-Models")
     def predict(self, data):
         """ data should be a time series """
         x = []

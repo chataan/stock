@@ -21,7 +21,7 @@ if __name__ == "__main__":
     while True:
         # use service module to download stock from YAHOO
         # downloaded stock will be saved as "Database/stock.csv"
-        csv, id = download_stock()
+        csv, id, date = download_stock()
         print("\nDownloaded ", id, " historical stock data [PATH=Database/stock.csv]")
 
         stock = upload(csv, 1, True)
