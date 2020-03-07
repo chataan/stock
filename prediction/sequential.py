@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     bias_momentum = 0.00 # smaller the better
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 5, -1):
-        if timeseries.raw_datapoint(i) > timeseries.raw_datapoint(i - 1):
+        if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
             bias_momentum += 1
     if bias_momentum >= 3:
         bias_momentum = 5.00
