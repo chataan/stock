@@ -34,7 +34,7 @@ if __name__ == "__main__":
             bias_momentum += 1
             bias_momentum *= (vix_average / 10)
 
-    for count in range(3):
+    for count in range(5):
         trend = moving_average(timeseries, MONTH)
         matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
