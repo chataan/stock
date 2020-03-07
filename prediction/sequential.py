@@ -18,9 +18,9 @@ if __name__ == "__main__":
     timeseries, final_close = fetch_last_time_series(st, QUARTER)
     prediction_matrix = []
 
+    # compute bias using momentum calculations with VIX index
     path, id, date = download_stock("^vix", date)
     vix = upload(path, 1, False)
-        
     vix_average = 0.00
     vix_timeseries, last_vix = fetch_last_time_series(vix, 10)
     for i in range(vix_timeseries.raw_size()):

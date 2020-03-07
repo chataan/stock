@@ -4,6 +4,7 @@ import time
 import tqdm
 from model import Model
 import matplotlib.pyplot as plt
+from stock import upload
 from financial import rescale
 from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE
@@ -93,51 +94,4 @@ def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
     print("Completed stock time series partitioning! [Training = {0}, Validation = {1}]" .format(amount_of_training_datasets, amount_of_validation_datasets))
     print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
     return dataset
-
-def visualize_model_prediction(stock, model_name, date):
-    path, id, date = download_stock("^vix", date)
-    vix = upload(path, 1, False)
-    vix_timeseries = partition_time_series(vix, QUARTER, 0)
-    dataset = partition_time_series(stock, QUARTER, 0)
-    print("Processing time series dataset...\n")
-
-    for timeseries in dataset:
-        matrix, linear = moving_average(timeseries, MONTH)
-        matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
-        timeseries.set_sampled_matrix(matrix)
-    # create a matrix of predictions
-    # graph the matrix with the actual stock price matrix
-    prediction_matrix = []
-    model = Model(model_name)
-    description = "Computing model prediction on time series dataset..."
-    loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
-    for i in range(len(dataset)):
-        loop.set_description(description .format(len(dataset)))
-        result = model.predict(dataset[i])
-
-        # calculate bias momentum (VIX index)
-        vix_average = 0.00
-        for v in range(vix_timeseries[i].raw_size() - 1, vix_timeseries[i].raw_size() - 10, -1):
-            vix_average += vix_timeseries.raw_datapoint(i)
-        vix_average /= 10
-
-        bias_momentum = 0.00 # smaller the better
-        for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
-            if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
-                bias_momentum += 1
-                bias_momentum *= (vix_average / 10)
-
-        prediction = 0.00
-        for i in range(result.shape[0]):
-            for j in range(result.shape[1]):
-                prediction = rescale(result[i][j], dataset[i].minimum(), dataset[i].maximum())
-                prediction -= bias_momentum
-        prediction_matrix.append(prediction)
-        loop.update(1)
-    print("DONE!")
-    loop.close()
-    # graph the two matrices
-    for i in range(0, len(stock) - len(prediction_matrix)):
-        del stock[i]
-    graph(stock, 'green', 'visualization', False)
-    graph(prediction_matrix, 'red', 'visualization', False)
+    
