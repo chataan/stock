@@ -94,9 +94,13 @@ def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
     print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
     return dataset
 
-def visualize_model_prediction(stock, model_name):
+def visualize_model_prediction(stock, model_name, date):
+    path, id, date = download_stock("^vix", date)
+    vix = upload(path, 1, False)
+    vix_timeseries = partition_time_series(vix, QUARTER, 0)
     dataset = partition_time_series(stock, QUARTER, 0)
     print("Processing time series dataset...\n")
+
     for timeseries in dataset:
         matrix, linear = moving_average(timeseries, MONTH)
         matrix = sampling(matrix, 0, 2, STANDARD_SAMPLING_RANGE)
@@ -107,13 +111,27 @@ def visualize_model_prediction(stock, model_name):
     model = Model(model_name)
     description = "Computing model prediction on time series dataset..."
     loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
-    for timeseries in dataset:
+    for i in range(len(dataset)):
         loop.set_description(description .format(len(dataset)))
-        result = model.predict(timeseries)
+        result = model.predict(dataset[i])
+
+        # calculate bias momentum (VIX index)
+        vix_average = 0.00
+        for v in range(vix_timeseries[i].raw_size() - 1, vix_timeseries[i].raw_size() - 10, -1):
+            vix_average += vix_timeseries.raw_datapoint(i)
+        vix_average /= 10
+
+        bias_momentum = 0.00 # smaller the better
+        for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
+            if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
+                bias_momentum += 1
+                bias_momentum *= (vix_average / 10)
+
         prediction = 0.00
         for i in range(result.shape[0]):
             for j in range(result.shape[1]):
-                prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
+                prediction = rescale(result[i][j], dataset[i].minimum(), dataset[i].maximum())
+                prediction -= bias_momentum
         prediction_matrix.append(prediction)
         loop.update(1)
     print("DONE!")

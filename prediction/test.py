@@ -14,7 +14,7 @@ if __name__ == "__main__":
     model = service.select_model()
     print("Model = [", model, "]\n")
 
-    csv, id = service.download_stock()
+    csv, id, date = service.download_stock()
     st = stock.upload(csv, True)
 
-    service.visualize_model_prediction(st, model)
+    service.visualize_model_prediction(st, model, date)
