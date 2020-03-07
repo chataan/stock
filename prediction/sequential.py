@@ -51,7 +51,7 @@ if __name__ == "__main__":
             for j in range(result.shape[1]):
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
                 # compare the distance of the last close price and the moving average trend line to add bias to the prediction
-                prediction += bias_momentum * vix_average
+                prediction -= (vix_average * bias_momentum)
         prediction_matrix.append(prediction)
         raw = timeseries.raw_matrix()
         for i in range(0, len(raw)):
