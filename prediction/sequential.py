@@ -36,6 +36,8 @@ if __name__ == "__main__":
         bias_momentum = 5.00
     else:
         pass
+    
+    print(vix_average * bias_momentum)
 
     for count in range(3):
         trend = moving_average(timeseries, MONTH)
