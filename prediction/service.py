@@ -36,7 +36,7 @@ def download_stock(stock_id="", start_date=""):
     stock = data.DataReader(stock_id, "yahoo", start_date)
     csv = "../Database/" + stock_id + ".csv"
     stock.to_csv(csv)
-    return csv, stock_id
+    return csv, stock_id, start_date
 def select_model():
     files = []
     for r, d, f in os.walk("Models"):
