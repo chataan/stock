@@ -18,26 +18,27 @@ if __name__ == "__main__":
     timeseries, final_close = fetch_last_time_series(st, QUARTER)
     prediction_matrix = []
 
+    path, id, date = download_stock("^vix", date)
+    vix = upload(path, 1, False)
+        
+    vix_average = 0.00
+    vix_timeseries, last_vix = fetch_last_time_series(vix, 10)
+    for i in range(vix_timeseries.raw_size()):
+        vix_average += vix_timeseries.raw_datapoint(i)
+    vix_average /= vix_timeseries.raw_size()
+    print(vix_average)
+
+    bias_momentum = 0.00 # smaller the better
+    for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 5, -1):
+        if timeseries.raw_datapoint(i) > timeseries.raw_datapoint(i - 1):
+            bias_momentum += 1
+    if bias_momentum >= 3:
+        bias_momentum = 5.00
+    else:
+        pass
+
     for count in range(3):
         trend = moving_average(timeseries, MONTH)
-        path, id, date = download_stock("^vix", date)
-        vix = upload(path, 1, False)
-        
-        vix_average = 0.00
-        vix_timeseries, last_vix = fetch_last_time_series(vix, 10)
-        for i in range(vix_timeseries.raw_size()):
-            vix_average += vix_timeseries.raw_datapoint(i)
-        vix_average /= vix_timeseries.raw_size()
-
-        bias_momentum = 0.00 # smaller the better
-        for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 5, -1):
-            if timeseries.raw_datapoint(i) > timeseries.raw_datapoint(i - 1):
-                bias_momentum += 1
-        if bias_momentum >= 3:
-            bias_momentum = 5.00
-        else:
-            pass
-
         matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
         timeseries.normalize_timeseries()
