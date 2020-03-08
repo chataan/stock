@@ -32,7 +32,7 @@ if __name__ == "__main__":
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
         if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
             bias_momentum += 1
-            bias_momentum *= (vix_average / 15)
+            bias_momentum *= (vix_average / 11)
 
     for count in range(5):
         trend = moving_average(timeseries, MONTH)
