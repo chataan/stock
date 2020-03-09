@@ -69,4 +69,5 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True):
 if __name__ == "__main__":
     os.system('clear')
     prediction = sequential_prediction()
+    print(prediction)
     git_update()
