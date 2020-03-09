@@ -2,6 +2,7 @@
 from datetime import date
 from service import download_stock, git_update
 from stock import upload
+from prettytable import PrettyTable
 
 class Stock:
     def __init__(self, name, id):
@@ -29,8 +30,12 @@ class Stock:
     def set_rebalance_info(self, percentage, shares):
         self.percentage = percentage
         self.shares = shares
+    def stock_name(self):
+        return self.name
     def stock_id(self):
         return self.id
+    def stock_shares(self):
+        return self.shares
     def stock_percentage(self):
         return self.percentage
 
@@ -41,12 +46,17 @@ class Portfolio:
         if self.stocks != None:
             for i in range(len(stocks)):
                 stocks[i].set_rebalance_info(percentages[i], shares[i])
+    def display_portfolio(self):
+        table = PrettyTable()
+        
     def create_portfolio(self, portfolio_name):
         etf_stock_list = open(portfolio_name + "_etf_stock_list.txt", "w+")
         etf_stock_balance = open(portfolio_name + "_etf_balance.txt", "w+")
         for i in range(len(stocks)):
+            etf_stock_list.write(stocks[i].stock_name() + ",")
             etf_stock_list.write(stocks[i].stock_id() + ",")
             etf_stock_balance.write(str(stocks[i].stock_percentage()) + ",")
+            etf_stock_balance.write(str(stocks[i].stock_shares()) + ",")
         etf_stock_balance.write(str(self.d2_asset))
         etf_stock_list.close()
         etf_stock_balance.close()
@@ -58,9 +68,10 @@ class Portfolio:
             etf_stock_balance = open(portfolio_name + "_etf_balance.txt", "r")
             stock_list = etf_stock_list.read().split(",")
             stock_balance = etf_stock_balance.read().split(",")
-            for i in range(len(stock_list) - 1):
-                self.stocks.append(Stock(stock_list[i], stock_list[i]))
-                self.stocks[len(self.stocks) - 1].set_rebalance_info(int(stock_balance[i]))
+            
+            for i in range(0, len(stock_list) - 1, 2):
+                self.stocks.append(Stock(self.stocks[i], self.stocks[i + 1]))
+                self.stocks[i].set_rebalance_info(stock_balance[i], stock_balance[ii + 1])
             self.d2_asset = int(stock_balance[len(stock_balance) - 1])
         except IOError:
             print("Cannot find ETF info named, '{}'" .format(portfolio_name))
