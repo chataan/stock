@@ -6,11 +6,15 @@ from service import graph, select_model, download_stock, fetch_last_time_series,
 from financial import rescale, moving_average, sampling, QUARTER, MONTH, STANDARD_SAMPLING_RANGE
 from model import Model
 
-def sequential_prediction(graphing=True):
-    model = select_model()
-    print("Model = [", model, "]\n")
+def sequential_prediction(model=None, stock_id=None, date=None, graphing=True):
+    if model == None:
+        model = select_model()
+        print("Model = [", model, "]\n")
 
-    path, id, date = download_stock()
+    if stock_id == None or date == None:
+        path, id, date = download_stock()
+    else:
+        path, id, date = download_stock(stock_id, date)
     st = upload(path, 1, True)
 
     predictor = Model(model, "PREDICTION_MODEL")
@@ -64,5 +68,5 @@ def sequential_prediction(graphing=True):
 
 if __name__ == "__main__":
     os.system('clear')
-    prediction = sequential_prediction(True)
+    prediction = sequential_prediction()
     git_update()
