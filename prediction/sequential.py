@@ -6,8 +6,7 @@ from service import graph, select_model, download_stock, fetch_last_time_series,
 from financial import rescale, moving_average, sampling, QUARTER, MONTH, STANDARD_SAMPLING_RANGE
 from model import Model
 
-if __name__ == "__main__":
-    os.system('clear')
+def sequential_prediction(graphing=True):
     model = select_model()
     print("Model = [", model, "]\n")
 
@@ -57,10 +56,13 @@ if __name__ == "__main__":
         count += 1
         if count % 10 == 0:
             print("Long Term Prediction [Process Count = ", count, "]")
-    
-    print("\n\n", prediction_matrix, "\n\n")
 
-    graph_title = "../Images/" + model + "_sequential_prediction_demo.png"
-    graph(prediction_matrix, 'red', graph_title, False)
-    
+    if graphing == True:
+        graph_title = "../Images/" + model + "_sequential_prediction_demo.png"
+        graph(prediction_matrix, 'red', graph_title, False)
+    return prediction_matrix
+
+if __name__ == "__main__":
+    os.system('clear')
+    prediction = sequential_prediction(True)
     git_update()

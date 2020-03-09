@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 from datetime import date
 from service import download_stock, git_update
@@ -46,9 +47,12 @@ class Portfolio:
         if self.stocks != None:
             for i in range(len(stocks)):
                 stocks[i].set_rebalance_info(percentages[i], shares[i])
-    def display_portfolio(self):
+    def display(self):
         table = PrettyTable()
-        
+        table.field_names = ['Name', 'ID', 'Rebalance %', 'Shares']
+        for s in self.stocks:
+            table.add_row([s.stock_name(), s.stock_id(), s.stock_percentage(), s.stock_shares()])
+        print(table)
     def create_portfolio(self, portfolio_name):
         etf_stock_list = open(portfolio_name + "_etf_stock_list.txt", "w+")
         etf_stock_balance = open(portfolio_name + "_etf_balance.txt", "w+")
@@ -68,11 +72,11 @@ class Portfolio:
             etf_stock_balance = open(portfolio_name + "_etf_balance.txt", "r")
             stock_list = etf_stock_list.read().split(",")
             stock_balance = etf_stock_balance.read().split(",")
-            
-            for i in range(0, len(stock_list) - 1, 2):
-                self.stocks.append(Stock(self.stocks[i], self.stocks[i + 1]))
-                self.stocks[i].set_rebalance_info(stock_balance[i], stock_balance[ii + 1])
-            self.d2_asset = int(stock_balance[len(stock_balance) - 1])
+
+            for i in range(0, len(stock_list) - 2, 2):
+                self.stocks.append(Stock(stock_list[i], stock_list[i + 1]))
+                self.stocks[len(self.stocks) - 1].set_rebalance_info(stock_balance[i], stock_balance[i + 1])
+            self.d2_asset = stock_balance[len(stock_balance) - 1]
         except IOError:
             print("Cannot find ETF info named, '{}'" .format(portfolio_name))
 
@@ -91,9 +95,9 @@ if __name__ == "__main__":
     battery = Stock("TIGER Secondary Battery", '305540.KS')
     ultra_government_bond = Stock("HANARO KAP Government Bond", '346000.KS')
 
-    stocks = [china_a50, vietnam_vn30, volatility, battery, s_and_p, latin, russia_msci, usa_bond30, ultra_government_bond, government_bond10, government_bond3]
+    stocks = [gold, china_a50, vietnam_vn30, volatility, battery, s_and_p, latin, russia_msci, usa_bond30, ultra_government_bond, government_bond10, government_bond3]
     percentages = [8, 8, 8, 8, 8, 4, 2, 2, 12, 12, 16, 10]
-    shares = [72, 46, 65, 95, 100, 12, 30, 7, 94, 23, 13, 18]
+    shares = [71, 46, 69, 95, 108, 12, 81, 11, 85, 23, 13, 18]
 
     etf = Portfolio(stocks, percentages, shares, 429121)
     etf.create_portfolio("junyoung")
