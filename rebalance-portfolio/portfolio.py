@@ -35,7 +35,7 @@ class Stock:
         return self.percentage
 
 class Portfolio:
-    def __init__(self, stocks, percentages, shares, d2_asset):
+    def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
         self.d2_asset = d2_asset
         self.stocks = stocks
         for i in range(len(stocks)):
@@ -46,8 +46,13 @@ class Portfolio:
         for i in range(len(stocks)):
             etf_stock_list.write(stocks[i].stock_id() + ",")
             etf_stock_balance.write(str(stocks[i].stock_percentage()) + ",")
+            if i == len(stocks) - 1:
+                etf_stock_balance.write(str(self.d2_asset))
         etf_stock_list.close()
         etf_stock_balance.close()
+    def load(self, portfolio_name)
+        # read stock list, balance (i.e., percentages), shares, and assets
+        
 # create ETF portfolio using this module
 
 latin = Stock('TIGER Latin 35', '105010.KS')
