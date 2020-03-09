@@ -53,6 +53,7 @@ class Portfolio:
         for s in self.stocks:
             table.add_row([s.stock_name(), s.stock_id(), s.stock_percentage(), s.stock_shares()])
         print(table)
+        print('Remaining D2 Cash: {}' .format(self.d2_asset))
     def create_portfolio(self, portfolio_name):
         etf_stock_list = open(portfolio_name + "_etf_stock_list.txt", "w+")
         etf_stock_balance = open(portfolio_name + "_etf_balance.txt", "w+")
