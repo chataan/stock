@@ -3,6 +3,7 @@
 
 Junyoung Aiden Sim
 Version: v0.3.2
+Date: 9 Mar, 2020
 
 Create/train(update) a sequential prediction model (LSTM Stock Price Predictor)
 ~~~~~~~~~~~~~~~~~~~~
