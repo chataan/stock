@@ -113,7 +113,7 @@ if __name__ == "__main__":
     s_and_p = Stock('S&P 500', '^gspc')
     government_bond10 = Stock('Government Bond 3 Years', '148070.KS')
     china_a50 = Stock("KODEX China A50", '169950.KS')
-    vietnam_vn30 = Stock("KINDEX Vietnam VN30", '279540.KS')
+    vietnam_vn30 = Stock("KINDEX Vietnam VN30", '245710.KS')
     russia_msci = Stock("Russias MSCI", '265690.KS')
     volatility = Stock("KODEX Volatility", '279540.KS')
     usa_bond30 = Stock('USA Bond 30 years', '304660.KS')
