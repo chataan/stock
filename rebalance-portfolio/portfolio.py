@@ -92,6 +92,9 @@ class Portfolio:
                 self.stocks.append(Stock(stock_list[i], stock_list[i + 1]))
                 self.stocks[len(self.stocks) - 1].set_rebalance_info(stock_balance[i], stock_balance[i + 1])
             self.d2_asset = int(stock_balance[len(stock_balance) - 1])
+
+            #### UPDATE THE AMOUNT OF SHARES THROUGH USER INPUT ####
+            
         except IOError:
             print("Cannot find ETF info named, '{}'" .format(portfolio_name))
     def deposit(self, value):
