@@ -110,7 +110,7 @@ if __name__ == "__main__":
     latin = Stock('TIGER Latin 35', '105010.KS')
     government_bond3 = Stock('Government Bond 3 Years', '114260.KS')
     gold = Stock('Gold', '132030.KS')
-    s_and_p = Stock('S&P 500', '^gspc')
+    s_and_p = Stock('S&P 500', '143850.KS')
     government_bond10 = Stock('Government Bond 3 Years', '148070.KS')
     china_a50 = Stock("KODEX China A50", '169950.KS')
     vietnam_vn30 = Stock("KINDEX Vietnam VN30", '245710.KS')
