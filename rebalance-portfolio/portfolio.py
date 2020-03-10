@@ -28,11 +28,9 @@ class Stock:
         self.close_price = int(self.data[len(self.data) - 1]) # Korean Stocks should be integers
         self.percentage = 0.00
         self.shares = 0
-        self.value = 0
     def set_rebalance_info(self, percentage, shares):
         self.percentage = float(percentage)
         self.shares = int(shares)
-        self.value = self.shares * self.close_price
     def stock_name(self):
         return self.name
     def stock_id(self):
@@ -43,13 +41,18 @@ class Stock:
         return self.percentage
     def price(self):
         return self.close_price
-    #def rebalance(self, portfolio_asset):
+    def rebalance(self, portfolio_asset):
         """ 1. Calculate how much the stock values in the portfolio (i.e., percentage)
             2. Calculate the difference of the target percentage and actual percentage
                 a. if difference > 3.0, return the required amount of purchases/sales
                 b. if difference < 3.0, return NONE 
             RETURNS: float<amount of purchases/sales>, sequential prediction matrix 
                           or NONE, sequential prediction matrix """
+        evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
+        percentage_diff = evaluate_percentage - self.percentage
+        profit = (self.shares * self.close_price) - (self.percentage * portfolio_asset / 100)
+        print(profit)
+
 class Portfolio:
     def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
         self.total_asset = 0.00
@@ -94,13 +97,15 @@ class Portfolio:
             self.d2_asset = int(stock_balance[len(stock_balance) - 1])
 
             #### UPDATE THE AMOUNT OF SHARES THROUGH USER INPUT ####
-            
+
         except IOError:
             print("Cannot find ETF info named, '{}'" .format(portfolio_name))
     def deposit(self, value):
         self.d2_asset += value
-    #def rebalance(self):
+    def rebalance(self):
         """ Display rebalancing information for the day """
+        for s in self.stocks:
+            s.rebalance(self.total_asset)
 
 # create ETF portfolio using this module
 if __name__ == "__main__":

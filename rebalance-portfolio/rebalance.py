@@ -10,5 +10,6 @@ if __name__ == "__main__":
     portfolio = Portfolio()
     portfolio.load("junyoung")
     portfolio.display()
+    portfolio.rebalance()
     git_update()
     
