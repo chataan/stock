@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 from datetime import date
-from service import download_stock, git_update
+from service import download_stock, git_update, fetch_last_time_series
+from financial import QUARTER
 from stock import upload
 from prettytable import PrettyTable
 
@@ -24,7 +25,7 @@ class Stock:
         csv, i = download_stock(self.id, start_date)
         self.data = upload(csv, 1, True)
 
-        self.last_timeseries = None
+        self.last_timeseries = fetch_last_time_series(self.data, QUARTER)
         self.close_price = int(self.data[len(self.data) - 1]) # Korean Stocks should be integers
         self.percentage = 0.00
         self.shares = 0
@@ -49,7 +50,7 @@ class Stock:
             RETURNS: float<amount of purchases/sales>, sequential prediction matrix 
                           or NONE, sequential prediction matrix """
         evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
-        percentage_diff = evaluate_percentage - self.percentage
+        percentage_diff = (evaluate_percentage - self.percentage * 100) / self.percentage
         profit = (self.shares * int(self.close_price)) - int((self.percentage * portfolio_asset / 100))
         print(self.shares * int(self.close_price))
 
@@ -90,8 +91,8 @@ class Portfolio:
             stock_balance = etf_stock_balance.read().split(",")
 
             for i in range(0, len(stock_list) - 2, 2):
-                self.stocks.append(Stock(stock_list[i], stock_list[i + 1]))
-                self.stocks[len(self.stocks) - 1].set_rebalance_info(stock_balance[i], stock_balance[i + 1])
+                self.stocks.append(Stock(stock_list[i], stock_list[i + 1])) # stock name, stock ID
+                self.stocks[len(self.stocks) - 1].set_rebalance_info(stock_balance[i], stock_balance[i + 1]) # stock balance %, shares
                 self.total_asset += int(self.stocks[len(self.stocks) - 1].price()) * self.stocks[len(self.stocks) - 1].stock_shares()
             self.d2_asset = int(stock_balance[len(stock_balance) - 1])
             self.total_asset += self.d2_asset
