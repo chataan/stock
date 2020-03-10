@@ -103,7 +103,7 @@ class Portfolio:
     def rebalance(self):
         """ Display rebalancing information for the day """
         for s in self.stocks:
-            s.rebalance(self.total_asset)
+            s.rebalance(self.total_asset, 3.3)
 
 # create ETF portfolio using this module
 if __name__ == "__main__":
