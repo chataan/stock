@@ -41,7 +41,7 @@ class Stock:
         return self.percentage
     def price(self):
         return self.close_price
-    def rebalance(self, portfolio_asset):
+    def rebalance(self, portfolio_asset, percentage_diff_range):
         """ 1. Calculate how much the stock values in the portfolio (i.e., percentage)
             2. Calculate the difference of the target percentage and actual percentage
                 a. if difference > 3.0, return the required amount of purchases/sales
@@ -50,7 +50,7 @@ class Stock:
                           or NONE, sequential prediction matrix """
         evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
         percentage_diff = evaluate_percentage - self.percentage
-        profit = (self.shares * self.close_price) - (self.percentage * portfolio_asset / 100)
+        profit = (self.shares * int(self.close_price)) - int((self.percentage * portfolio_asset / 100))
         print(profit)
 
 class Portfolio:
@@ -66,10 +66,8 @@ class Portfolio:
         table.field_names = ['Name', 'ID', 'Rebalance %', 'Shares']
         for s in self.stocks:
             table.add_row([s.stock_name(), s.stock_id(), s.stock_percentage(), s.stock_shares()])
-            self.total_asset += int(s.price()) * s.stock_shares()
         print(table)
         print('Remaining D2 Cash: {}' .format(self.d2_asset))
-        self.total_asset += self.d2_asset
         print("TOTAL ASSET = ", self.total_asset)
     def create_portfolio(self, portfolio_name):
         etf_stock_list = open(portfolio_name + "_etf_stock_list.txt", "w+")
@@ -94,10 +92,10 @@ class Portfolio:
             for i in range(0, len(stock_list) - 2, 2):
                 self.stocks.append(Stock(stock_list[i], stock_list[i + 1]))
                 self.stocks[len(self.stocks) - 1].set_rebalance_info(stock_balance[i], stock_balance[i + 1])
+                self.total_asset += int(self.stocks[len(self.stocks) - 1].price()) * self.stocks[len(self.stocks) - 1].stock_shares()
             self.d2_asset = int(stock_balance[len(stock_balance) - 1])
-
-            #### UPDATE THE AMOUNT OF SHARES THROUGH USER INPUT ####
-
+            self.total_asset += self.d2_asset
+            #### UPDATE THE AMOUNT OF SHARES THROUGH USER INPUT ###
         except IOError:
             print("Cannot find ETF info named, '{}'" .format(portfolio_name))
     def deposit(self, value):
@@ -124,8 +122,8 @@ if __name__ == "__main__":
 
     stocks = [gold, china_a50, vietnam_vn30, volatility, battery, s_and_p, latin, russia_msci, usa_bond30, ultra_government_bond, government_bond10, government_bond3]
     percentages = [8, 8, 8, 8, 8, 4, 2, 2, 12, 12, 16, 10]
-    shares = [78, 56, 85, 112, 131, 19, 157, 19, 88, 23, 13, 18]
+    shares = [78, 56, 85, 112, 131, 19, 149, 17, 88, 23, 13, 18]
 
-    etf = Portfolio(stocks, percentages, shares, 729739)
+    etf = Portfolio(stocks, percentages, shares, 801033)
     etf.create_portfolio("junyoung")
     git_update()
