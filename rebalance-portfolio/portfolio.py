@@ -25,7 +25,7 @@ class Stock:
         self.data = upload(csv, 1, True)
 
         self.last_timeseries = None
-        self.close_price = self.data[len(self.data) - 1]
+        self.close_price = int(self.data[len(self.data) - 1]) # Korean Stocks should be integers
         self.percentage = 0.00
         self.shares = 0
         self.value = 0
@@ -43,8 +43,13 @@ class Stock:
         return self.percentage
     def price(self):
         return self.close_price
-    #def rebalance_quantity(self):
-
+    #def rebalance(self, portfolio_asset):
+        """ 1. Calculate how much the stock values in the portfolio (i.e., percentage)
+            2. Calculate the difference of the target percentage and actual percentage
+                a. if difference > 3.0, return the required amount of purchases/sales
+                b. if difference < 3.0, return NONE 
+            RETURNS: float<amount of purchases/sales>, sequential prediction matrix 
+                          or NONE, sequential prediction matrix """
 class Portfolio:
     def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
         self.total_asset = 0.00
@@ -92,6 +97,7 @@ class Portfolio:
     def deposit(self, value):
         self.d2_asset += value
     #def rebalance(self):
+        """ Display rebalancing information for the day """
 
 # create ETF portfolio using this module
 if __name__ == "__main__":
