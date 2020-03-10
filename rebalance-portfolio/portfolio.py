@@ -29,8 +29,8 @@ class Stock:
         self.percentage = 0.00
         self.shares = 0
     def set_rebalance_info(self, percentage, shares):
-        self.percentage = percentage
-        self.shares = shares
+        self.percentage = float(percentage)
+        self.shares = int(shares)
     def stock_name(self):
         return self.name
     def stock_id(self):
@@ -39,9 +39,12 @@ class Stock:
         return self.shares
     def stock_percentage(self):
         return self.percentage
+    def price(self):
+        return self.close_price
 
 class Portfolio:
     def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
+        self.total_asset = 0.00
         self.d2_asset = d2_asset
         self.stocks = stocks
         if self.stocks != None:
@@ -52,8 +55,11 @@ class Portfolio:
         table.field_names = ['Name', 'ID', 'Rebalance %', 'Shares']
         for s in self.stocks:
             table.add_row([s.stock_name(), s.stock_id(), s.stock_percentage(), s.stock_shares()])
+            self.total_asset += int(s.price()) * s.stock_shares()
         print(table)
         print('Remaining D2 Cash: {}' .format(self.d2_asset))
+        self.total_asset += self.d2_asset
+        print("TOTAL ASSET = ", self.total_asset)
     def create_portfolio(self, portfolio_name):
         etf_stock_list = open(portfolio_name + "_etf_stock_list.txt", "w+")
         etf_stock_balance = open(portfolio_name + "_etf_balance.txt", "w+")
@@ -77,9 +83,10 @@ class Portfolio:
             for i in range(0, len(stock_list) - 2, 2):
                 self.stocks.append(Stock(stock_list[i], stock_list[i + 1]))
                 self.stocks[len(self.stocks) - 1].set_rebalance_info(stock_balance[i], stock_balance[i + 1])
-            self.d2_asset = stock_balance[len(stock_balance) - 1]
+            self.d2_asset = int(stock_balance[len(stock_balance) - 1])
         except IOError:
             print("Cannot find ETF info named, '{}'" .format(portfolio_name))
+    #def rebalance(self):
 
 # create ETF portfolio using this module
 if __name__ == "__main__":
