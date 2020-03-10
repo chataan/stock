@@ -28,9 +28,11 @@ class Stock:
         self.close_price = self.data[len(self.data) - 1]
         self.percentage = 0.00
         self.shares = 0
+        self.value = 0
     def set_rebalance_info(self, percentage, shares):
         self.percentage = float(percentage)
         self.shares = int(shares)
+        self.value = self.shares * self.close_price
     def stock_name(self):
         return self.name
     def stock_id(self):
@@ -41,6 +43,7 @@ class Stock:
         return self.percentage
     def price(self):
         return self.close_price
+    #def rebalance_quantity(self):
 
 class Portfolio:
     def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
@@ -86,6 +89,8 @@ class Portfolio:
             self.d2_asset = int(stock_balance[len(stock_balance) - 1])
         except IOError:
             print("Cannot find ETF info named, '{}'" .format(portfolio_name))
+    def deposit(self, value):
+        self.d2_asset += value
     #def rebalance(self):
 
 # create ETF portfolio using this module
@@ -105,8 +110,8 @@ if __name__ == "__main__":
 
     stocks = [gold, china_a50, vietnam_vn30, volatility, battery, s_and_p, latin, russia_msci, usa_bond30, ultra_government_bond, government_bond10, government_bond3]
     percentages = [8, 8, 8, 8, 8, 4, 2, 2, 12, 12, 16, 10]
-    shares = [71, 46, 69, 95, 108, 12, 81, 11, 85, 23, 13, 18]
+    shares = [78, 56, 85, 112, 131, 19, 157, 19, 88, 23, 13, 18]
 
-    etf = Portfolio(stocks, percentages, shares, 429121)
+    etf = Portfolio(stocks, percentages, shares, 729739)
     etf.create_portfolio("junyoung")
     git_update()
