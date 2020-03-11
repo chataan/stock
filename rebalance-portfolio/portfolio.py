@@ -60,7 +60,7 @@ class Stock:
         actual_percentage = self.shares * self.close_price / portfolio_asset * 100
         self.percentage_diff = (actual_percentage - self.percentage) / self.percentage * 100
         profit = (self.shares * self.close_price) - (self.percentage * portfolio_asset / 100)
-        print(profit)
+        self.required_purchase_sales = profit / self.close_price
 
 class Portfolio:
     def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
