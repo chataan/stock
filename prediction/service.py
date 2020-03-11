@@ -4,7 +4,6 @@ import time
 import tqdm
 from model import Model
 import matplotlib.pyplot as plt
-from stock import upload
 from financial import rescale
 from financial import WEEK, MONTH, QUARTER, YEAR
 from financial import MINIMUM_SAMPLING_RANGE, STANDARD_SAMPLING_RANGE, MAXIMUM_SAMPLING_RANGE

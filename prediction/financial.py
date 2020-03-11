@@ -1,6 +1,5 @@
 
 import time
-import stock as stock
 import tqdm as tqdm
 import matplotlib.pyplot as plt
 import numpy as np
