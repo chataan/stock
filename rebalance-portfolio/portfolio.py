@@ -57,11 +57,9 @@ class Stock:
                 b. if difference < 3.0, return NONE 
             RETURNS: float<amount of purchases/sales>, sequential prediction matrix 
                           or NONE, sequential prediction matrix """
-        evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
-        self.percentage_diff = ((evaluate_percentage - self.percentage) / self.percentage) * 100
-        profit = (self.shares * int(self.close_price)) - int((self.percentage * portfolio_asset / 100))
-        self.required_purchase_sales = profit / self.close_price
-        print(evaluate_percentage - self.percentage)
+        actual_percentage = self.shares * self.close_price / portfolio_asset * 100
+        self.percentage_diff = (actual_percentage - self.percentage) / self.percentage * 100
+        print(self.percentage_diff)
 
 class Portfolio:
     def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
