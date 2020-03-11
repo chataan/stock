@@ -20,6 +20,7 @@ class Stock:
         self.percentage = 0.00
         self.shares = 0
         self.required_purchase_sales = 0.00
+        self.percentage_diff = 0
 
         today = date.today()
         today = str(today)
@@ -56,6 +57,8 @@ class Stock:
         return self.prediction
     def purchase_sales(self):
         return self.required_purchase_sales
+    def percentage_difference(self):
+        return self.percentage_diff
     def rebalance(self, portfolio_asset, rebalance_range):
         """ 1. Calculate how much the stock values in the portfolio (i.e., percentage)
             2. Calculate the difference of the target percentage and actual percentage
@@ -64,7 +67,7 @@ class Stock:
             RETURNS: float<amount of purchases/sales>, sequential prediction matrix 
                           or NONE, sequential prediction matrix """
         evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
-        percentage_diff = ((evaluate_percentage - self.percentage) / self.percentage) * 100
+        self.percentage_diff = ((evaluate_percentage - self.percentage) / self.percentage) * 100
         profit = (self.shares * int(self.close_price)) - int((self.percentage * portfolio_asset / 100))
         print(profit, self.close_price)
         self.required_purchase_sales = profit / self.close_price
@@ -132,11 +135,11 @@ class Portfolio:
     def rebalance(self):
         """ Display rebalancing information for the day """
         rebalance_table = PrettyTable()
-        rebalance_table.field_names = ['Name', 'ID', 'Price', 'Required Purchase/Sales', 'Sequential Prediction']
+        rebalance_table.field_names = ['Name', 'ID', 'Price', 'Percentage Diff', 'Required Purchase/Sales', 'Sequential Prediction']
         print("\n...................................REBALANCING/SEQUENTIAL PREDICTIONS (THIS MAY TAKE SOME TIME)...................................\n")
         for s in self.stocks:
             s.rebalance(self.total_asset, 3.3)
-            rebalance_table.add_row([s.stock_name(), s.stock_id(), s.price(), s.purchase_sales(), s.prediction_result()])
+            rebalance_table.add_row([s.stock_name(), s.stock_id(), s.price(), s.percentage_difference(), s.purchase_sales(), s.prediction_result()])
         check = input("Click any key to view rebalance information...")
         os.system("clear")
         print("Rebalancing Information:")
