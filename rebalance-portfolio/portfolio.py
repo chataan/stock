@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from datetime import date
-from service import download_stock, git_update, fetch_last_time_series
+from service import git_update
 from financial import QUARTER
-from stock import upload
 from prettytable import PrettyTable
+from pandas_datareader.data import DataReader
 
 class Stock:
     def __init__(self, name, id):
@@ -21,15 +21,9 @@ class Stock:
                 today += date_info[i]
             else:
                 today += date_info[i] + "-"
-        
-        csv, i = download_stock(self.id, start_date)
-        self.data = upload(csv, 1, True)
 
-        if len(self.data) <= QUARTER:
-            self.last_timeseries = None
-        else:
-            self.last_timeseries = fetch_last_time_series(self.data, QUARTER)
-        self.close_price = int(self.data[len(self.data) - 1]) # Korean Stocks should be integers
+        print(today, start_date)
+        self.close_price = 0.00
         self.percentage = 0.00
         self.shares = 0
 
