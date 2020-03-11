@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+import os
 from datetime import date
 from service import download_stock, git_update, fetch_last_time_series
 from financial import QUARTER
 from stock import upload
 from prettytable import PrettyTable
+from sequential import sequential_prediction
 
 class Stock:
     def __init__(self, name, id):
@@ -15,23 +17,26 @@ class Stock:
         today = str(today)
         date_info = today.split("-")
         date_info[0] = str(int(date_info[0]) - 1)
-        start_date = ""
+        self.start_date = ""
         for i in range(len(date_info)):
             if i == len(date_info) - 1:
-                today += date_info[i]
+                self.start_date += date_info[i]
             else:
-                today += date_info[i] + "-"
+                self.start_date += date_info[i] + "-"
         
-        csv, i = download_stock(self.id, start_date)
+        csv, i = download_stock(self.id, self.start_date)
         self.data = upload(csv, 1, True)
 
         if len(self.data) <= QUARTER:
-            self.last_timeseries = None
+            self.timeseries = None
         else:
-            self.last_timeseries = fetch_last_time_series(self.data, QUARTER)
+            self.timeseries = fetch_last_time_series(self.data, QUARTER)
+        
+        self.prediction = None
         self.close_price = int(self.data[len(self.data) - 1]) # Korean Stocks should be integers
         self.percentage = 0.00
         self.shares = 0
+        self.required_purchase_sales = 0.00
     def set_rebalance_info(self, percentage, shares):
         self.percentage = float(percentage)
         self.shares = int(shares)
@@ -45,7 +50,11 @@ class Stock:
         return self.percentage
     def price(self):
         return self.close_price
-    def rebalance(self, portfolio_asset, percentage_diff_range):
+    def prediction_result(self):
+        return self.prediction
+    def purchase_sales(self):
+        return self.required_purchase_sales
+    def rebalance(self, portfolio_asset, rebalance_range):
         """ 1. Calculate how much the stock values in the portfolio (i.e., percentage)
             2. Calculate the difference of the target percentage and actual percentage
                 a. if difference > 3.0, return the required amount of purchases/sales
@@ -55,7 +64,14 @@ class Stock:
         evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
         percentage_diff = ((evaluate_percentage - self.percentage) / self.percentage) * 100
         profit = (self.shares * int(self.close_price)) - int((self.percentage * portfolio_asset / 100))
-        print(percentage_diff)
+        self.required_purchase_sales = profit / self.price()
+        # run sequential prediction on stock
+        sq_pre = sequential_prediction(id, id, self.timeseries, None, False, False)
+        if sq_pre[0] < sq_pre[len(sq_pre) - 1]: # ascending trend:
+            self.prediction = 'GROWTH'
+        else:
+            self.prediction = 'DECLINE'
+
 
 class Portfolio:
     def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
@@ -106,8 +122,14 @@ class Portfolio:
         self.d2_asset += value
     def rebalance(self):
         """ Display rebalancing information for the day """
+        table = PrettyTable()
+        table.field_names = ['Name', 'ID', 'Price', 'Required Purchase/Sales', 'Sequential Prediction']
         for s in self.stocks:
             s.rebalance(self.total_asset, 3.3)
+            table.add_row(s.stock_name(), s.stock_id(), s.price(), s.purchase_sales(), s.prediction_result())
+        os.system("clear")
+        print("Rebalancing Information:")
+        print(table)
 
 # create ETF portfolio using this module
 if __name__ == "__main__":
@@ -126,7 +148,7 @@ if __name__ == "__main__":
 
     stocks = [gold, china_a50, vietnam_vn30, volatility, battery, s_and_p, latin, russia_msci, usa_bond30, ultra_government_bond, government_bond10, government_bond3]
     percentages = [8, 8, 8, 8, 8, 4, 2, 2, 12, 12, 16, 10]
-    shares = [78, 56, 85, 112, 131, 19, 149, 17, 88, 23, 13, 18]
+    shares = [78, 56, 85, 112, 131, 19, 149, 18, 88, 23, 11, 18]
 
     etf = Portfolio(stocks, percentages, shares, 801033)
     etf.create_portfolio("junyoung")

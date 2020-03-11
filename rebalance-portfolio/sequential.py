@@ -6,20 +6,20 @@ from service import graph, select_model, download_stock, fetch_last_time_series,
 from financial import rescale, moving_average, sampling, QUARTER, MONTH, STANDARD_SAMPLING_RANGE
 from model import Model
 
-def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True):
+def sequential_prediction(model=None, stock_id=None, timeseries=None, date=None, graphing=True, log=True):
     if model == None:
         model = select_model()
         print("Model = [", model, "]\n")
-
-    if stock_id == None or date == None:
-        path, id, date = download_stock()
-    else:
-        path, id, date = download_stock(stock_id, date)
-    st = upload(path, 1, log)
-
     predictor = Model(model, "PREDICTION_MODEL")
-    timeseries, final_close = fetch_last_time_series(st, QUARTER)
     prediction_matrix = []
+
+    if timeseries == None:
+        if stock_id == None or date == None:
+            path, id, date = download_stock()
+        else:
+            path, id, date = download_stock(stock_id, date)
+        st = upload(path, 1, log)
+        timeseries, final_close = fetch_last_time_series(st, QUARTER)
 
     # compute bias using momentum calculations with VIX index
     path, id, date = download_stock("^vix", date)
