@@ -35,7 +35,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
         if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
             bias_momentum += 1
-    bias_momentum *= vix_average / 5
+    bias_momentum *= vix_average
     #print("\nBIAS = [", bias_momentum, "]\n")
 
     for count in range(5):
