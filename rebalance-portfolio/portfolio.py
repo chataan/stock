@@ -2,11 +2,9 @@
 
 import os
 from datetime import date
-from service import download_stock, git_update, fetch_last_time_series
-from financial import QUARTER
+from service import download_stock, git_update
 from stock import upload
 from prettytable import PrettyTable
-from sequential import sequential_prediction
 
 class Stock:
     def __init__(self, name, id):
@@ -14,9 +12,7 @@ class Stock:
         self.name = name
         self.start_date = ""
         self.data = None
-        self.timeseries = None
-        self.close_price = None
-        self.prediction = None
+        self.close_price = 0
         self.percentage = 0.00
         self.shares = 0
         self.required_purchase_sales = 0.00
@@ -34,12 +30,7 @@ class Stock:
         
         csv, i, self.start_date = download_stock(self.id, self.start_date)
         self.data = upload(csv, 1, True)
-        print(len(self.data))
-        if len(self.data) <= QUARTER:
-            self.timeseries = None
-            self.close_price = self.data[len(self.data) - 1]
-        else:
-            self.timeseries, self.close_price = fetch_last_time_series(self.data, QUARTER)
+        self.close_price = self.data[len(self.data) - 1]
     def set_rebalance_info(self, percentage, shares):
         self.percentage = float(percentage)
         self.shares = int(shares)
@@ -67,23 +58,10 @@ class Stock:
             RETURNS: float<amount of purchases/sales>, sequential prediction matrix 
                           or NONE, sequential prediction matrix """
         evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
-        self.percentage_diff = ((evaluate_percentage - self.percentage) / self.percentage) * 100
+        self.percentage_diff = (evaluate_percentage - self.percentage) * 100 / self.percentage
         profit = (self.shares * int(self.close_price)) - int((self.percentage * portfolio_asset / 100))
-        print(profit, self.close_price)
         self.required_purchase_sales = profit / self.close_price
-        # run sequential prediction on stock
-        if self.timeseries == None: # not enough data for predictions
-            self.prediction = 'NOT ENOUGH DATA'
-        else:
-            sq_pre = sequential_prediction(self.id, self.id, self.timeseries, self.start_date, False, False)
-            if sq_pre != None:
-                if sq_pre[0] < sq_pre[len(sq_pre) - 1]: # ascending trend:
-                    self.prediction = 'GROWTH'
-                else: 
-                    self.prediction = 'DECLINE'
-            else:
-                self.prediction = "SYSTEM ERROR (NO MODEL)"
-
+        print(evaluate_percentage, self.percentage_diff, profit, self.required_purchase_sales)
 
 class Portfolio:
     def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
@@ -135,11 +113,10 @@ class Portfolio:
     def rebalance(self):
         """ Display rebalancing information for the day """
         rebalance_table = PrettyTable()
-        rebalance_table.field_names = ['Name', 'ID', 'Price', 'Percentage Diff', 'Required Purchase/Sales', 'Sequential Prediction']
-        print("\n...................................REBALANCING/SEQUENTIAL PREDICTIONS (THIS MAY TAKE SOME TIME)...................................\n")
+        rebalance_table.field_names = ['Name', 'ID', 'Price', 'Percentage Diff', 'Required Purchase/Sales']
         for s in self.stocks:
             s.rebalance(self.total_asset, 3.3)
-            rebalance_table.add_row([s.stock_name(), s.stock_id(), s.price(), s.percentage_difference(), s.purchase_sales(), s.prediction_result()])
+            rebalance_table.add_row([s.stock_name(), s.stock_id(), s.price(), s.percentage_difference(), s.purchase_sales()])
         check = input("Click any key to view rebalance information...")
         os.system("clear")
         print("Rebalancing Information:")
