@@ -38,7 +38,7 @@ def sequential_prediction(model=None, stock_id=None, timeseries=None, date=None,
             momentum += 1
             bias_momentum += 1
             bias_momentum *= (vix_average / 10)
-    bias_momentum /= momentum
+    bias_momentum /= momentum * 10
     #print("\nBIAS = [", bias_momentum, "]\n")
 
     for count in range(5):
