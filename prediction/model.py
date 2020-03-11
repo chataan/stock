@@ -2,8 +2,9 @@
 # model.py is the LSTM neural network that learns
 # the trend of the stock, and predict future prices using Keras
 
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+import logging, os
+logging.disable(logging.WARNING)
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 import time
 import numpy as np
@@ -43,35 +44,10 @@ def preprocessing(dataset):
         print('\n')
         loop.close()
         return training_input, training_output, validation_input, validation_output
-def trend_model_preprocessing(dataset):
-    training_input = []
-    training_output = []
-    validation_input = []
-    validation_output = []
-    training_break_point = int((len(dataset) * 60) / 100)
-    for i in range(0, len(dataset) - 7):
-        if i < training_break_point - 7:
-            training_input.append(dataset[i].sampled_matrix())
-            output = dataset[i + 7].sampled_matrix()
-            if output[len(output) - 1] - output[0] > 0: # increasing trend
-                training_output.append(1.00) # 1.00 for INCREASING TREND
-            else:
-                training_output.append(0.00) # 0.00 for DECREASING TREND
-        else:
-            validation_input.append(dataset[i].sampled_matrix())
-            output = dataset[i + 7].sampled_matrix()
-            if output[len(output) - 1] - output[0] > 0: # increasing trend
-                validation_output.append(1.00) # 1.00 for INCREASING TREND
-            else:
-                validation_output.append(0.00) # 0.00 for DECREASING TREND
-    training_input, validation_input = np.array(training_input), np.array(validation_input)
-    training_input = np.reshape(training_input, (training_input.shape[0], training_input.shape[1], 1))
-    validation_input = np.reshape(validation_input, (validation_input.shape[0], validation_input.shape[1], 1))
-    return training_input, training_output, validation_input, validation_output
 
 class KerasTrainer:
     """ This predictor will generate a LSTM prediction model """
-    def __init__(self, dataset=None, name=None, model_type="PREDICTION_MODEL"):
+    def __init__(self, dataset=None, name=None):
         self.name = name
         self.loaded_model = None
         self.training_input = []
@@ -79,12 +55,7 @@ class KerasTrainer:
         self.validation_input = []
         self.validation_output = []
         self.model_type = model_type
-        if (dataset != None) & (self.model_type == "PREDICTION_MODEL"):
-            self.training_input, self.training_output, self.validation_input, self.validation_output = preprocessing(dataset)
-        elif (dataset != None) & (self.model_type == "TREND_MODEL"):
-            self.training_input, self.training_output, self.validation_input, self.validation_output = trend_model_preprocessing(dataset)
-        else:
-            pass
+        self.training_input, self.training_output, self.validation_input, self.validation_output = preprocessing(dataset)
     def train(self, save_dir, multiprocessing=True, iterations=1000, batch_size=32):
         print("")
         cells = int(self.training_input.shape[1] * 2 / 3)
@@ -117,17 +88,15 @@ class KerasTrainer:
         os.system("mv *.json " + save_dir)
 
 class Model:
-    def __init__(self, model_name, model_type):
+    def __init__(self, model_name):
         """ model_name should be the stock name (ex: google, microsoft ...) 
         __init__ will load the Keras model (.json, .h5) """
         self.model = None
         self.model_name = model_name.lower()
-        self.model_type = model_type
-        if self.model_type == "PREDICTION_MODEL":
-            self.json_file = open("Models/" + model_name + "_model.json", "r")
-            self.loaded_json = self.json_file.read()
-            self.model = model_from_json(self.loaded_json)
-            self.model.load_weights("Models/" + self.model_name + "_model.h5")
+        self.json_file = open("Models/" + model_name + "_model.json", "r")
+        self.loaded_json = self.json_file.read()
+        self.model = model_from_json(self.loaded_json)
+        self.model.load_weights("Models/" + self.model_name + "_model.h5")
         self.json_file.close()
     def update(self, dataset, use_multiprocessing=True, iterations=100, batch_size=32):
         training_input = []
@@ -135,10 +104,7 @@ class Model:
         validation_input = []
         validation_output = []
         self.model.compile(optimizer='adam', loss='mean_squared_error')
-        if self.model_type == "PREDICTION_MODEL":
-            training_input, training_output, validation_input, validation_output = preprocessing(dataset)
-        else:
-            training_input, training_output, validation_input, validation_output = trend_model_preprocessing(dataset)
+        training_input, training_output, validation_input, validation_output = preprocessing(dataset)
         # update the model
         self.model.fit(training_input, training_output, use_multiprocessing=use_multiprocessing, epochs=iterations,  validation_data=(training_input, training_output))
         self.model.fit(validation_input, validation_output, use_multiprocessing=use_multiprocessing, epochs=iterations)
@@ -149,9 +115,8 @@ class Model:
             json_file.write(json)
         self.model.save_weights(name)
         print("\nCompleted Keras-LSTM Model Update!\n")
-        if self.model_type == "PREDICTION":
-            os.system("mv *.h5 Models")
-            os.system("mv *.json Models")
+        os.system("mv *.h5 Models")
+        os.system("mv *.json Models")
     def predict(self, data):
         """ data should be a time series """
         x = []

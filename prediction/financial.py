@@ -5,8 +5,6 @@ import tqdm as tqdm
 import matplotlib.pyplot as plt
 import numpy as np
 
-DATASET_LABEL = ["TRAINING", "VALIDATING", "TESTING"]
-
 WEEK=8
 MONTH=30
 QUARTER=91
@@ -51,7 +49,7 @@ class TimeSeries:
         return self.min
     def get_dataset_label(self):
         return self.dataset_label
-    def get_close_value(self): # this is the labeled output of the corresponding time series data
+    def get_close_value(self):
         return self.final_close_value
     def raw_size(self):
         return len(self.raw)
