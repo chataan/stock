@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-from stock import upload
 from service import graph, select_model, download_stock, fetch_last_time_series, git_update
 from financial import rescale, moving_average, sampling, QUARTER, MONTH, STANDARD_SAMPLING_RANGE
 from model import Model
@@ -11,19 +10,18 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
         model = select_model()
         print("Model = [", model, "]\n")
 
+    stock = None
     if stock_id == None or date == None:
-        path, id, date = download_stock()
+        stock, id = download_stock()
     else:
-        path, id, date = download_stock(stock_id, date)
-    st = upload(path, 1, log)
+        stock, id = download_stock(stock_id, date, 1, True)
 
-    predictor = Model(model, "PREDICTION_MODEL")
-    timeseries, final_close = fetch_last_time_series(st, QUARTER)
+    predictor = Model(model)
+    timeseries, final_close = fetch_last_time_series(stock, QUARTER)
     prediction_matrix = []
 
     # compute bias using momentum calculations with VIX index
-    path, id, date = download_stock("^vix", date)
-    vix = upload(path, 1, log)
+    vix, vix_id = download_stock("^vix", date, 1, True)
     vix_average = 0.00
     vix_timeseries, last_vix = fetch_last_time_series(vix, 10)
     for i in range(vix_timeseries.raw_size()):

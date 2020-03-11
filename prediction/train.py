@@ -4,7 +4,6 @@ import os
 import time
 import model as model
 import tqdm as tqdm
-from stock import upload
 from service import graph, download_stock, partition_time_series, git_update
 from financial import QUARTER, MONTH
 from financial import STANDARD_SAMPLING_RANGE
