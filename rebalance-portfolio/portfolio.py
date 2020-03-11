@@ -36,6 +36,7 @@ class Stock:
 
         if len(self.data) <= QUARTER:
             self.timeseries = None
+            self.close_price = self.data[len(self.data) - 1]
         else:
             self.timeseries, self.close_price = fetch_last_time_series(self.data, QUARTER)
     def set_rebalance_info(self, percentage, shares):
@@ -65,16 +66,20 @@ class Stock:
         evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
         percentage_diff = ((evaluate_percentage - self.percentage) / self.percentage) * 100
         profit = (self.shares * int(self.close_price)) - int((self.percentage * portfolio_asset / 100))
-        self.required_purchase_sales = profit / self.price()
+        print(profit, self.close_price)
+        self.required_purchase_sales = profit / self.close_price
         # run sequential prediction on stock
         if self.timeseries == None: # not enough data for predictions
             self.prediction = 'NOT ENOUGH DATA'
         else:
             sq_pre = sequential_prediction(self.id, self.id, self.timeseries, self.start_date, False, False)
-            if sq_pre[0] < sq_pre[len(sq_pre) - 1]: # ascending trend:
-                self.prediction = 'GROWTH'
+            if sq_pre != None:
+                if sq_pre[0] < sq_pre[len(sq_pre) - 1]: # ascending trend:
+                    self.prediction = 'GROWTH'
+                else: 
+                    self.prediction = 'DECLINE'
             else:
-                self.prediction = 'DECLINE'
+                self.prediction = "SYSTEM ERROR (NO MODEL)"
 
 
 class Portfolio:
@@ -135,7 +140,7 @@ class Portfolio:
         check = input("Click any key to view rebalance information...")
         os.system("clear")
         print("Rebalancing Information:")
-        print(table)
+        print(rebalance_table)
 
 # create ETF portfolio using this module
 if __name__ == "__main__":
