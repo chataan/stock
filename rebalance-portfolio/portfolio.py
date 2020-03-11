@@ -25,10 +25,14 @@ class Stock:
         csv, i = download_stock(self.id, start_date)
         self.data = upload(csv, 1, True)
 
-        self.last_timeseries = fetch_last_time_series(self.data, QUARTER)
+        if len(self.data) <= QUARTER:
+            self.last_timeseries = None
+        else:
+            self.last_timeseries = fetch_last_time_series(self.data, QUARTER)
         self.close_price = int(self.data[len(self.data) - 1]) # Korean Stocks should be integers
         self.percentage = 0.00
         self.shares = 0
+        
     def set_rebalance_info(self, percentage, shares):
         self.percentage = float(percentage)
         self.shares = int(shares)
@@ -52,7 +56,7 @@ class Stock:
         evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
         percentage_diff = (evaluate_percentage - self.percentage * 100) / self.percentage
         profit = (self.shares * int(self.close_price)) - int((self.percentage * portfolio_asset / 100))
-        print(self.shares * int(self.close_price))
+        print(percentage_diff)
 
 class Portfolio:
     def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
