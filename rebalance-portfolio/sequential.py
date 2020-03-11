@@ -32,13 +32,13 @@ def sequential_prediction(model=None, stock_id=None, timeseries=None, date=None,
     print(vix_average)
 
     momentum = 0
-    bias_momentum = 0.00 # smaller the better
+    bias = 0.00 # smaller the better
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
         if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
             momentum += 1
-            bias_momentum += 1
-            bias_momentum *= (vix_average / 10)
-    bias_momentum /= momentum * 15
+            bias += 1
+            bias *= (vix_average / 30)
+    bias /= momentum * 30
     #print("\nBIAS = [", bias_momentum, "]\n")
 
     for count in range(5):
@@ -53,7 +53,7 @@ def sequential_prediction(model=None, stock_id=None, timeseries=None, date=None,
             for j in range(result.shape[1]):
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
                 # compare the distance of the last close price and the moving average trend line to add bias to the prediction
-                prediction -= bias_momentum
+                prediction -= bias
         prediction_matrix.append(prediction)
         raw = timeseries.raw_matrix()
         for i in range(0, len(raw)):
