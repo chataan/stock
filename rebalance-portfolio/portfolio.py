@@ -116,7 +116,7 @@ class Portfolio:
         for s in self.stocks:
             status = None
             s.rebalance(self.total_asset)
-            if abs(s.percentage_difference()) > 3.8:
+            if (abs(s.percentage_difference()) > 3.8) & (abs(s.purchase_sales()) > 1.0):
                 status = "ACT"
             else:
                 status = ""
