@@ -1,6 +1,5 @@
 
 import os
-import time as time
 import tqdm as tqdm
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -35,7 +34,6 @@ def upload(path, period, log=True):
         if log == True:
             loop.set_description('Reading stock data...' .format(len(data)))
             loop.update(1)
-            time.sleep(0.001)
         else:
             pass
     print("\n\nUploaded stock data successfully!")

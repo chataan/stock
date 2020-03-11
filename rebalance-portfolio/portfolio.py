@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from datetime import date
-from service import git_update
+from service import download_stock, git_update, fetch_last_time_series
 from financial import QUARTER
+from stock import upload
 from prettytable import PrettyTable
-from pandas_datareader.data import DataReader
 
 class Stock:
     def __init__(self, name, id):
@@ -21,12 +21,17 @@ class Stock:
                 today += date_info[i]
             else:
                 today += date_info[i] + "-"
+        
+        csv, i = download_stock(self.id, start_date)
+        self.data = upload(csv, 1, True)
 
-        print(today, start_date)
-        self.close_price = 0.00
+        if len(self.data) <= QUARTER:
+            self.last_timeseries = None
+        else:
+            self.last_timeseries = fetch_last_time_series(self.data, QUARTER)
+        self.close_price = int(self.data[len(self.data) - 1]) # Korean Stocks should be integers
         self.percentage = 0.00
         self.shares = 0
-
     def set_rebalance_info(self, percentage, shares):
         self.percentage = float(percentage)
         self.shares = int(shares)
@@ -40,7 +45,7 @@ class Stock:
         return self.percentage
     def price(self):
         return self.close_price
-    def rebalance(self, portfolio_asset, rebalance_range):
+    def rebalance(self, portfolio_asset, percentage_diff_range):
         """ 1. Calculate how much the stock values in the portfolio (i.e., percentage)
             2. Calculate the difference of the target percentage and actual percentage
                 a. if difference > 3.0, return the required amount of purchases/sales
@@ -48,9 +53,9 @@ class Stock:
             RETURNS: float<amount of purchases/sales>, sequential prediction matrix 
                           or NONE, sequential prediction matrix """
         evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
-        percentage_diff = evaluate_percentage - float(self.percentage) * 100 / self.percentage
+        percentage_diff = (evaluate_percentage - self.percentage) / self.percentage
         profit = (self.shares * int(self.close_price)) - int((self.percentage * portfolio_asset / 100))
-        print(evaluate_percentage, percentage_diff)
+        print(percentage_diff)
 
 class Portfolio:
     def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
