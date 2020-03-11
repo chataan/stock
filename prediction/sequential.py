@@ -27,7 +27,6 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     for i in range(vix_timeseries.raw_size()):
         vix_average += vix_timeseries.raw_datapoint(i)
     vix_average /= vix_timeseries.raw_size()
-    print(vix_average)
 
     bias_momentum = 0.00 # smaller the better
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
@@ -66,5 +65,5 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 if __name__ == "__main__":
     os.system('clear')
     prediction = sequential_prediction()
-    print(prediction)
+    print("\n", prediction, "\n")
     git_update()
