@@ -136,7 +136,7 @@ if __name__ == "__main__":
     ultra_government_bond = Stock("HANARO KAP Government Bond", '346000.KS')
 
     stocks = [gold, china_a50, vietnam_vn30, volatility, battery, s_and_p, latin, russia_msci, usa_bond30, ultra_government_bond, government_bond10, government_bond3]
-    percentages = [8, 8, 8, 8, 8, 4, 2, 2, 12, 12, 16, 10]
+    percentages = [7.5, 8.0, 8.0, 8.0, 8.0, 6.0, 3.5, 3.5, 10.0, 10.0, 12.0, 8.4]
     shares = [78, 56, 85, 112, 131, 19, 149, 18, 88, 23, 11, 18]
 
     etf = Portfolio(stocks, percentages, shares, 801033)
