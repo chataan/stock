@@ -58,7 +58,7 @@ class Stock:
             RETURNS: float<amount of purchases/sales>, sequential prediction matrix 
                           or NONE, sequential prediction matrix """
         evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
-        self.percentage_diff = (evaluate_percentage - self.percentage) * 100 / self.percentage
+        self.percentage_diff = ((evaluate_percentage - self.percentage) * 100) / self.percentage
         profit = (self.shares * int(self.close_price)) - int((self.percentage * portfolio_asset / 100))
         self.required_purchase_sales = profit / self.close_price
         print(evaluate_percentage, self.percentage_diff, profit, self.required_purchase_sales)
