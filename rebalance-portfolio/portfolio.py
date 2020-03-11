@@ -140,6 +140,6 @@ if __name__ == "__main__":
     percentages = [7.5, 8.0, 8.0, 8.0, 8.0, 6.0, 3.5, 3.5, 10.0, 10.0, 12.0, 8.4]
     shares = [78, 56, 85, 112, 131, 22, 149, 18, 88, 23, 11, 18]
 
-    etf = Portfolio(stocks, percentages, shares, 801033)
+    etf = Portfolio(stocks, percentages, shares, 937648)
     etf.create_portfolio("junyoung")
     git_update()
