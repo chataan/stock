@@ -50,7 +50,7 @@ class Stock:
         return self.required_purchase_sales
     def percentage_difference(self):
         return self.percentage_diff
-    def rebalance(self, portfolio_asset, rebalance_range):
+    def rebalance(self, portfolio_asset):
         """ 1. Calculate how much the stock values in the portfolio (i.e., percentage)
             2. Calculate the difference of the target percentage and actual percentage
                 a. if difference > 3.0, return the required amount of purchases/sales
@@ -112,10 +112,15 @@ class Portfolio:
     def rebalance(self):
         """ Display rebalancing information for the day """
         rebalance_table = PrettyTable()
-        rebalance_table.field_names = ['Name', 'ID', 'Price', 'Percentage Diff', 'Required Purchase/Sales']
+        rebalance_table.field_names = ['Name', 'ID', 'Price', 'Percentage Diff', 'Required Purchase/Sales', 'Status']
         for s in self.stocks:
-            s.rebalance(self.total_asset, 3.3)
-            rebalance_table.add_row([s.stock_name(), s.stock_id(), s.price(), s.percentage_difference(), s.purchase_sales()])
+            status = None
+            s.rebalance(self.total_asset)
+            if abs(s.percentage_difference()) > 3.8:
+                status = "ACT"
+            else:
+                status = ""
+            rebalance_table.add_row([s.stock_name(), s.stock_id(), s.price(), s.percentage_difference(), s.purchase_sales(), status])
         check = input("Click any key to view rebalance information...")
         os.system("clear")
         print("Rebalancing Information:")
