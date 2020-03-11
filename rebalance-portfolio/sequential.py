@@ -21,7 +21,7 @@ def sequential_prediction(model=None, stock_id=None, timeseries=None, date=None,
         st = upload(path, 1, log)
         timeseries, final_close = fetch_last_time_series(st, QUARTER)
 
-    # compute bias using momentum calculations with VIX index
+    # collect data for computing bias using momentum calculations with VIX index
     path, id, date = download_stock("^vix", date)
     vix = upload(path, 1, log)
     vix_average = 0.00
@@ -29,7 +29,7 @@ def sequential_prediction(model=None, stock_id=None, timeseries=None, date=None,
     for i in range(vix_timeseries.raw_size()):
         vix_average += vix_timeseries.raw_datapoint(i)
     vix_average /= vix_timeseries.raw_size()
-    print(vix_average)
+    #print(vix_average)
 
     momentum = 0
     bias = 0.00 # smaller the better
@@ -37,9 +37,9 @@ def sequential_prediction(model=None, stock_id=None, timeseries=None, date=None,
         if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
             momentum += 1
             bias += 1
-            bias *= (vix_average / 30)
-    bias /= momentum * 30
-    #print("\nBIAS = [", bias_momentum, "]\n")
+            bias *= (vix_average / 15)
+    bias /= momentum * 15
+    #print("\nBIAS = [", bias, "]\n")
 
     for count in range(5):
         trend = moving_average(timeseries, MONTH)
@@ -71,5 +71,5 @@ def sequential_prediction(model=None, stock_id=None, timeseries=None, date=None,
 if __name__ == "__main__":
     os.system('clear')
     prediction = sequential_prediction()
-    print(prediction)
+    print(prediction, "\n")
     git_update()

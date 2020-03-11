@@ -2,8 +2,10 @@
 # model.py is the LSTM neural network that learns
 # the trend of the stock, and predict future prices using Keras
 
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+import logging, os
+
+logging.disable(logging.WARNING)
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 import time
 import numpy as np

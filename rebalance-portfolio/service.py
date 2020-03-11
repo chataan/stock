@@ -39,7 +39,7 @@ def download_stock(stock_id="", start_date=""):
     return csv, stock_id, start_date
 def select_model():
     files = []
-    for r, d, f in os.walk("Models"):
+    for r, d, f in os.walk("../prediction/Models"):
         for file in f:
             if '.h5' in file:
                 file = str(file)

@@ -24,8 +24,8 @@ def upload(path, period, log=True):
 
     raw = []
     count = 0
-    print("\nReading stock data from [", path, "]")
     if log == True:
+        print("\nReading stock data from [", path, "]")
         loop = tqdm.tqdm(total = int(len(data) / period), position = 0, leave = False)
     for i in range(0, len(data), period):
         line = data[i].split(",")
@@ -36,5 +36,6 @@ def upload(path, period, log=True):
             loop.update(1)
         else:
             pass
-    print("\n\nUploaded stock data successfully!")
+    if log == True:
+        print("\nUploaded stock data successfully!")
     return raw
