@@ -31,12 +31,14 @@ def sequential_prediction(model=None, stock_id=None, timeseries=None, date=None,
     vix_average /= vix_timeseries.raw_size()
     print(vix_average)
 
+    momentum = 0
     bias_momentum = 0.00 # smaller the better
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
         if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
+            momentum += 1
             bias_momentum += 1
             bias_momentum *= (vix_average / 10)
-    bias_momentum /= 10
+    bias_momentum /= momentum
     #print("\nBIAS = [", bias_momentum, "]\n")
 
     for count in range(5):
