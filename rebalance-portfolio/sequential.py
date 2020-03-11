@@ -40,7 +40,7 @@ def sequential_prediction(model=None, stock_id=None, timeseries=None, date=None,
             if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
                 momentum += 1
                 bias += 1
-                bias *= (vix_average / 15)
+                bias *= (vix_average / 10)
         if momentum != 0:
             bias /= momentum * 15
         #print("\nBIAS = [", bias, "]\n")
