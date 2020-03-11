@@ -15,7 +15,7 @@ class Stock:
         self.start_date = ""
         self.data = None
         self.timeseries = None
-        self.close_price = 0
+        self.close_price = None
         self.prediction = None
         self.percentage = 0.00
         self.shares = 0
@@ -34,8 +34,8 @@ class Stock:
         
         csv, i, self.start_date = download_stock(self.id, self.start_date)
         self.data = upload(csv, 1, True)
-
-        if len(self.data) <= QUARTER * 3:
+        print(len(self.data))
+        if len(self.data) <= QUARTER:
             self.timeseries = None
             self.close_price = self.data[len(self.data) - 1]
         else:
