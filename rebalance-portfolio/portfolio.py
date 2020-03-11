@@ -46,7 +46,7 @@ class Stock:
         return self.percentage
     def price(self):
         return self.close_price
-    def rebalance(self, portfolio_asset, percentage_diff_range):
+    def rebalance(self, portfolio_asset, rebalance_range):
         """ 1. Calculate how much the stock values in the portfolio (i.e., percentage)
             2. Calculate the difference of the target percentage and actual percentage
                 a. if difference > 3.0, return the required amount of purchases/sales
@@ -54,9 +54,9 @@ class Stock:
             RETURNS: float<amount of purchases/sales>, sequential prediction matrix 
                           or NONE, sequential prediction matrix """
         evaluate_percentage = self.shares * self.close_price * 100 / portfolio_asset
-        percentage_diff = (evaluate_percentage - self.percentage * 100) / self.percentage
+        percentage_diff = evaluate_percentage - float(self.percentage) * 100 / self.percentage
         profit = (self.shares * int(self.close_price)) - int((self.percentage * portfolio_asset / 100))
-        print(evaluate_percentage)
+        print(evaluate_percentage, percentage_diff)
 
 class Portfolio:
     def __init__(self, stocks=None, percentage=None, shares=None, d2_asset=0.00):
