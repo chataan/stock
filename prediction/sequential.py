@@ -58,9 +58,11 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
         count += 1
 
     if graphing == True:
+        for p in prediction_matrix:
+            stock.append(p)
         graph_title = "../Images/" + model + "_sequential_prediction_demo.png"
-        graph(prediction_matrix, 'red', graph_title, False)
-    return prediction_matrix
+        graph(stock, 'red', graph_title, False)
+    return stock, prediction_matrix
 
 if __name__ == "__main__":
     os.system('clear')
