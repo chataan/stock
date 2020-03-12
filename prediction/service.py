@@ -54,8 +54,8 @@ def download_stock(stock_id="", start_date="", period=1, log=True):
 
     raw = []
     count = 0
-    print("\nReading stock data from [", csv, "]")
     if log == True:
+        print("\nReading stock data from [", csv, "]")
         loop = tqdm.tqdm(total = int(len(data) / period), position = 0, leave = False)
     for i in range(0, len(data), period):
         line = data[i].split(",")
@@ -64,11 +64,10 @@ def download_stock(stock_id="", start_date="", period=1, log=True):
         if log == True:
             loop.set_description('Reading stock data...' .format(len(data)))
             loop.update(1)
-            time.sleep(0.001)
         else:
             pass
-    print("\n\nUploaded stock data successfully!")
-
+    if log == True:
+        print("\n\nUploaded stock data successfully!")
     return raw, stock_id
 def select_model():
     files = []
@@ -93,13 +92,22 @@ def select_model():
             os.system("clear")
     print("\n", files[select], "model selected!!")
     return files[select]
+def all_models():
+    files = []
+    for r, d, f in os.walk("Models"):
+        for file in f:
+            if '.h5' in file:
+                file = str(file)
+                file = file[:-9]
+                files.append(file)
+    return files
 
 def fetch_last_time_series(stock, timeseries_split_range):
     raw = []
     for i in range(len(stock) - timeseries_split_range, len(stock)):
         raw.append(stock[i])
     return TimeSeries(raw), stock[len(stock) - 1]
-def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
+def partition_time_series(stock, timeseries_split_range, ignore_percentage=35, log=True):
     dataset = []
     # discard 35% (default) of the stock datapoint (since too old datapoints = obsolete)
     ignore_breakpoint = int((len(dataset) * ignore_percentage) / 100)
@@ -123,7 +131,8 @@ def partition_time_series(stock, timeseries_split_range, ignore_percentage=35):
         else:
             dataset[i].set_dataset_label("VALIDATING")
             amount_of_validation_datasets += 1
-    print("Completed stock time series partitioning! [Training = {0}, Validation = {1}]" .format(amount_of_training_datasets, amount_of_validation_datasets))
-    print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
+    if log == True:
+        print("Completed stock time series partitioning! [Training = {0}, Validation = {1}]" .format(amount_of_training_datasets, amount_of_validation_datasets))
+        print("Each time series data contains a total of {0} datapoints!\n" .format(dataset[0].raw_size()))
     return dataset
     

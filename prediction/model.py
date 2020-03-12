@@ -25,9 +25,7 @@ def preprocessing(dataset):
         training_output = []
         validation_input = []
         validation_output = []
-        loop = tqdm.tqdm(total = len(dataset), position = 0, leave = False)
         for d in range(len(dataset)):
-            loop.set_description('Packaging all processed time series data... ' .format(len(dataset)))
             time_series = dataset[d]
             if time_series.get_dataset_label() == "TRAINING":
                 training_input.append(time_series.sampled_matrix())
@@ -35,14 +33,12 @@ def preprocessing(dataset):
             else:
                 validation_input.append(time_series.sampled_matrix())
                 validation_output.append(time_series.get_close_value())
-            loop.update(1)
 
         training_input, training_output = np.array(training_input), np.array(training_output)
         training_input = np.reshape(training_input, (training_input.shape[0], training_input.shape[1], 1))
         validation_input, validation_output = np.array(validation_input), np.array(validation_output)
         validation_input = np.reshape(validation_input, (validation_input.shape[0], validation_input.shape[1], 1))
         print('\n')
-        loop.close()
         return training_input, training_output, validation_input, validation_output
 
 class KerasTrainer:
@@ -98,7 +94,7 @@ class Model:
         self.model = model_from_json(self.loaded_json)
         self.model.load_weights("Models/" + self.model_name + "_model.h5")
         self.json_file.close()
-    def update(self, dataset, use_multiprocessing=True, iterations=100, batch_size=32):
+    def update(self, dataset, use_multiprocessing=True, iterations=100, batch_size=32, log=1):
         training_input = []
         training_output = []
         validation_input = []
@@ -106,15 +102,14 @@ class Model:
         self.model.compile(optimizer='adam', loss='mean_squared_error')
         training_input, training_output, validation_input, validation_output = preprocessing(dataset)
         # update the model
-        self.model.fit(training_input, training_output, use_multiprocessing=use_multiprocessing, epochs=iterations,  validation_data=(training_input, training_output))
-        self.model.fit(validation_input, validation_output, use_multiprocessing=use_multiprocessing, epochs=iterations)
+        self.model.fit(training_input, training_output, use_multiprocessing=use_multiprocessing, epochs=iterations,  validation_data=(training_input, training_output), verbose=log)
+        self.model.fit(validation_input, validation_output, use_multiprocessing=use_multiprocessing, epochs=iterations, verbose=log)
         # save the updated model
         name = self.model_name + "_model.h5"
         json = self.model.to_json()
         with open((self.model_name + "_model.json"), "w") as json_file:
             json_file.write(json)
         self.model.save_weights(name)
-        print("\nCompleted Keras-LSTM Model Update!\n")
         os.system("mv *.h5 Models")
         os.system("mv *.json Models")
     def predict(self, data):

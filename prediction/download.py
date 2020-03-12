@@ -3,5 +3,5 @@
 from service import download_stock
 
 while True:
-	cv, id = download_stock()
+	stock, id = download_stock()
 

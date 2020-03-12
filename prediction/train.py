@@ -40,7 +40,7 @@ if __name__ == "__main__":
         try:
             f = open("Models/" + _id + "_model.h5", "r")
             m = model.Model(_id)
-            m.update(dataset, True, 10, 32)
+            m.update(dataset, True, 10, 32, 1)
             f.close()
         except IOError:
             m = model.KerasTrainer(dataset, _id.lower())
