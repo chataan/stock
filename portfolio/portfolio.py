@@ -56,7 +56,7 @@ class Stock:
             RETURNS: float<amount of purchases/sales>, sequential prediction matrix 
                           or NONE, sequential prediction matrix """
         actual_percentage = self.shares * self.close_price / portfolio_asset * 100
-        self.percentage_diff = (actual_percentage - self.percentage) / self.percentage * 100
+        self.percentage_diff = (actual_percentage - self.percentage) * 100 / self.percentage
         profit = (self.shares * self.close_price) - (self.percentage * portfolio_asset / 100)
         self.required_purchase_sales = profit / self.close_price
 
