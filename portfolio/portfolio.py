@@ -3,7 +3,6 @@
 import os
 from datetime import date
 from service import download_stock, git_update
-from stock import upload
 from prettytable import PrettyTable
 
 class Stock:
@@ -28,8 +27,7 @@ class Stock:
             else:
                 self.start_date += date_info[i] + "-"
         
-        csv, i, self.start_date = download_stock(self.id, self.start_date)
-        self.data = upload(csv, 1, True)
+        self.data, _ = download_stock(self.id, self.start_date, 1, True)
         self.close_price = self.data[len(self.data) - 1]
     def set_rebalance_info(self, percentage, shares):
         self.percentage = float(percentage)
@@ -143,8 +141,8 @@ if __name__ == "__main__":
 
     stocks = [gold, china_a50, vietnam_vn30, volatility, battery, s_and_p, latin, russia_msci, usa_bond30, ultra_government_bond, government_bond10, government_bond3]
     percentages = [7.5, 8.0, 8.0, 8.0, 8.0, 6.0, 3.5, 3.5, 10.0, 10.0, 12.0, 8.4]
-    shares = [78, 56, 85, 112, 131, 22, 149, 18, 88, 23, 11, 18]
+    shares = [78, 54, 87, 117, 138, 27, 152, 18, 86, 23, 11, 18]
 
-    etf = Portfolio(stocks, percentages, shares, 937648)
+    etf = Portfolio(stocks, percentages, shares, 849015)
     etf.create_portfolio("junyoung")
     git_update()
