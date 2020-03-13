@@ -25,8 +25,6 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     vix, vix_id = download_stock("^vix", date, 1, True)
     for i in range(len(vix) - 1 - QUARTER, 0, -1):
         del vix[i]
-    vix = moving_average(TimeSeries(vix), WEEK)
-    vix = sampling(vix, 0, 2, STANDARD_SAMPLING_RANGE)
     votality_rate = (vix[len(vix) - 1] - vix[0]) / len(vix)
     print(vix[len(vix) - 1])
     print(votality_rate)
