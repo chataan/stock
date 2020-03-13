@@ -2,7 +2,8 @@
 
 import os
 from service import graph, select_model, download_stock, fetch_last_time_series, git_update
-from financial import rescale, moving_average, sampling, QUARTER, MONTH, STANDARD_SAMPLING_RANGE
+from financial import rescale, moving_average, sampling, QUARTER, MONTH, WEEK, STANDARD_SAMPLING_RANGE
+from financial import TimeSeries
 from model import Model
 
 def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True):
@@ -22,17 +23,18 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 
     # compute bias using momentum calculations with VIX index
     vix, vix_id = download_stock("^vix", date, 1, True)
-    vix_average = 0.00
-    vix_timeseries, last_vix = fetch_last_time_series(vix, 10)
-    for i in range(vix_timeseries.raw_size()):
-        vix_average += vix_timeseries.raw_datapoint(i)
-    vix_average /= vix_timeseries.raw_size()
+    for i in range(len(vix) - 1, QUARTER, -1):
+        del vix[i]
+    vix = moving_average(TimeSeries(vix), WEEK)
+    vix = sampling(vix, 0, 2, STANDARD_SAMPLING_RANGE)
+    votality_rate = (vix[len(vix) - 1] - vix[0]) / len(vix)
+    print(votality_rate)
 
     bias_momentum = 0.00 # smaller the better
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
         if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
-            bias_momentum += 1
-            bias_momentum *= vix_average / 30
+            bias_momentum += i
+    bias_momentum *= votality_rate
     #print("\nBIAS = [", bias_momentum, "]\n")
 
     for count in range(5):
