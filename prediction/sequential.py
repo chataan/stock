@@ -25,14 +25,18 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     vix, vix_id = download_stock("^vix", date, 1, True)
     for i in range(len(vix) - 1 - QUARTER, 0, -1):
         del vix[i]
-    votality_rate = vix[len(vix) - 1] - vix[0]
+    votality_rate = (vix[len(vix) - 1] - vix[0]) / len(vix)
 
     bias_momentum = 0.00 # smaller the better
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
-        if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
-            bias_momentum += i
-    bias_momentum *= votality_rate
-    #print("\nBIAS = [", bias_momentum, "]\n")
+        # higher the value of the bias momentum, the higher "decreasing votality"
+        if timeseries.raw_datapoint(timeseries.raw_size() - 1) - timeseries.raw_datapoint(i) < 0:
+            bias_momentum += 1
+            bias_momentum *= votality_rate / 10
+        else:
+            # subtracting from bias momentum when stock prices go up
+            # means low decreasing votality
+            bias_momentum -= 1
 
     for count in range(5):
         trend = moving_average(timeseries, MONTH)
