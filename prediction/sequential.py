@@ -26,20 +26,13 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     for i in range(len(vix) - 1 - WEEK, 0, -1):
         del vix[i]
     votality_rate = (vix[len(vix) - 1] - vix[0]) / len(vix)
-    print(votality_rate)
 
     bias_momentum = 0.00 # smaller the better
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
         if timeseries.raw_datapoint(i) < timeseries.raw_datapoint(i - 1):
             bias_momentum += 1
-        else:
-            bias_momentum -= 1
-    if bias_momentum >= 5: # decreasing trend for 10 days
-        bias_momentum *= 5.00
-    else:
-        bias_momentum = 0
-    bias_momentum *= votality_rate
-    print(bias_momentum)
+            bias_momentum *= votality_rate
+    bias_momentum *= -1.00
 
     for count in range(5):
         trend = moving_average(timeseries, MONTH)
@@ -53,7 +46,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
             for j in range(result.shape[1]):
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
                 # compare the distance of the last close price and the moving average trend line to add bias to the prediction
-                prediction -= bias_momentum
+                prediction += bias_momentum
         prediction_matrix.append(prediction)
         raw = timeseries.raw_matrix()
         for i in range(0, len(raw)):
