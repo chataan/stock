@@ -23,7 +23,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 
     # compute bias using momentum calculations with VIX index
     vix, vix_id = download_stock("^vix", date, 1, True)
-    for i in range(len(vix) - 1, QUARTER, -1):
+    for i in range(len(vix) - 1 - QUARTER, 0, -1):
         del vix[i]
     vix = moving_average(TimeSeries(vix), WEEK)
     vix = sampling(vix, 0, 2, STANDARD_SAMPLING_RANGE)
