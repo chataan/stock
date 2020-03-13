@@ -39,6 +39,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     else:
         bias_momentum = 0
     bias_momentum *= votality_rate
+    print(bias_momentum)
 
     for count in range(5):
         trend = moving_average(timeseries, MONTH)
