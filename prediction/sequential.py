@@ -30,14 +30,14 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     bias_momentum = 0.00 # smaller the better
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
         # higher the value of the bias momentum, the higher "decreasing votality"
-        if timeseries.raw_datapoint(timeseries.raw_size() - 1) - timeseries.raw_datapoint(i) < 0:
+        if timeseries.raw_datapoint(timeseries.raw_size() - 1) > timeseries.raw_datapoint(i):
             bias_momentum += 1
             bias_momentum *= votality_rate / 10
         else:
             # subtracting from bias momentum when stock prices go up
             # means low decreasing votality
             bias_momentum -= 1
-    print(bias_momentum)
+    
 
     for count in range(5):
         trend = moving_average(timeseries, MONTH)
