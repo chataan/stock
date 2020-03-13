@@ -50,7 +50,6 @@ class KerasTrainer:
         self.training_output = []
         self.validation_input = []
         self.validation_output = []
-        self.model_type = model_type
         self.training_input, self.training_output, self.validation_input, self.validation_output = preprocessing(dataset)
     def train(self, save_dir, multiprocessing=True, iterations=1000, batch_size=32):
         print("")
