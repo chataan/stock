@@ -37,6 +37,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
             # subtracting from bias momentum when stock prices go up
             # means low decreasing votality
             bias_momentum -= 1
+    print(bias_momentum)
 
     for count in range(5):
         trend = moving_average(timeseries, MONTH)
