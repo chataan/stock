@@ -74,7 +74,6 @@ class TimeSeries:
         self.raw, self.min, self.max = normalize(self.raw)
         self.sampled, _min, _max = normalize(self.sampled)
         self.final_close_value  = self.raw[len(self.raw) - 1]
-        del self.raw[len(self.raw) - 1]
 
 def moving_average(timeseries, trend_window_range):
     """ Moving average analysis to detect trend in stock price variability """
