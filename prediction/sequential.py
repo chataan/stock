@@ -32,9 +32,13 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - 10, -1):
         if timeseries.raw_datapoint(i) < timeseries.raw_datapoint(i - 1):
             bias_momentum += 1
-            bias_momentum *= votality_rate / 10
         else:
             bias_momentum -= 1
+    if bias_momentum >= 5: # decreasing trend for 10 days
+        bias_momentum *= 5.00
+    else:
+        bias_momentum = 0
+    bias_momentum *= votality_rate
 
     for count in range(5):
         trend = moving_average(timeseries, MONTH)
