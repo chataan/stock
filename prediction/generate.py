@@ -33,7 +33,6 @@ if __name__ == "__main__":
             loop.update(1)
         print("\nCompleted trend line analysis")
         loop.close()
-        print(dataset[0].get_close_value())
 
         # check if there is an existing model for the corresponding stock _ID
         # if model exists, load existing model and train on it (model.Model: update())
