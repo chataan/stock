@@ -31,7 +31,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - MONTH, -1):
         if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
             bias_momentum += 1
-    bias_momentum *= -votality_rate * 1.5
+    bias_momentum *= -votality_rate * 1.8
     print(bias_momentum)
 
     for count in range(5):
