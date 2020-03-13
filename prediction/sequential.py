@@ -25,13 +25,13 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     vix, vix_id = download_stock("^vix", date, 1, True)
     for i in range(len(vix) - 1 - WEEK, 0, -1):
         del vix[i]
-    votality_rate = (vix[len(vix) - 1] - vix[0]) * 10 / len(vix)
+    votality_rate = (vix[len(vix) - 1] - vix[0]) / len(vix)
 
     bias_momentum = 0.00 # smaller the better
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - MONTH, -1):
         if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
             bias_momentum += 1
-    bias_momentum *=  votality_rate
+    bias_momentum *= -votality_rate
     print(bias_momentum)
 
     for count in range(5):
