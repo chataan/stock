@@ -23,7 +23,7 @@ def vix_momentum_bias(timeseries, date, votality_calculation_range, observation_
     
     bias_momentum *= -votality_rate
     return bias_momentum
-def regression_momentum_bias(timeseries):
+def regression_momentum_bias(timeseries, observation_range):
     """ my own implementation of linear regression on a stock matrix """
     """ this is crappy. don't take this seriously """
     # set initial slope and bias based on the end points of the matrix
@@ -70,11 +70,11 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     timeseries, final_close = fetch_last_time_series(stock, QUARTER)
     prediction_matrix = []
 
-    bias = input("Bias Type [0: Votality, 1: Regression] :: ")
+    bias = int(input("Bias Type [0: Votality, 1: Regression] :: "))
     bias_momentum = 0.00
     # compute bias using momentum calculations with VIX index
     if bias == 1:
-        bias_momentum = regression_momentum_bias(timeseries)
+        bias_momentum = regression_momentum_bias(timeseries, MONTH)
     else:
         bias_momentum = vix_momentum_bias(timeseries, date, WEEK, MONTH)
     print(bias_momentum)
