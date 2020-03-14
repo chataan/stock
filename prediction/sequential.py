@@ -91,7 +91,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
         for i in range(result.shape[0]):
             for j in range(result.shape[1]):
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
-                # compare the distance of the last close price and the moving average trend line to add bias to the prediction
+                # apply the pre-calculated bias to the prediction results
                 prediction += bias_momentum
         prediction_matrix.append(prediction)
         raw = timeseries.raw_matrix()
