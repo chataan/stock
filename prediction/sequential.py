@@ -74,7 +74,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     bias_momentum = 0.00
     # compute bias using momentum calculations with VIX index
     if bias == 1:
-        bias_momentum = regression_momentum_bias(timeseries, MONTH)
+        bias_momentum = regression_momentum_bias(timeseries, WeEK)
     else:
         bias_momentum = vix_momentum_bias(timeseries, date, WEEK, MONTH)
     print(bias_momentum)
