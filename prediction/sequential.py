@@ -52,7 +52,7 @@ def regression_momentum_bias(timeseries, observation_range):
         else:
             bias_momentum -= 1
     
-    bias_momentum *= -regression_slope
+    bias_momentum *= regression_slope
     return bias_momentum
 
 def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True):
