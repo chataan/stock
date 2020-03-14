@@ -20,8 +20,9 @@ def vix_momentum_bias(timeseries, date, votality_calculation_range, observation_
             bias_momentum += 1
         else:
             bias_momentum -= 1
-    
-    bias_momentum *= -votality_rate
+    # always be negative (positive momentum * negative = negative bias)
+    # (negative momentum * negative = positive bias)
+    bias_momentum *= -votality_rate 
     return bias_momentum
 def regression_momentum_bias(timeseries, observation_range):
     """ my own implementation of linear regression on a stock matrix """
@@ -52,7 +53,7 @@ def regression_momentum_bias(timeseries, observation_range):
         else:
             bias_momentum -= 1
     
-    bias_momentum *= regression_slope
+    bias_momentum *= regression_slope # could be positive or negative
     return bias_momentum
 
 def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True):
@@ -107,7 +108,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     return stock, prediction_matrix
 
 if __name__ == "__main__":
-    #os.system('clear')
+    os.system('clear')
     stock, prediction = sequential_prediction()
     print("\n", prediction, "\n")
     git_update()
