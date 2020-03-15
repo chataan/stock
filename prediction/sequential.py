@@ -14,18 +14,18 @@ def vix_momentum_bias(timeseries, date, votality_calculation_range, observation_
         del vix[i]
     votality_rate = (vix[len(vix) - 1] - vix[0]) / len(vix)
 
-    bias_momentum = 0.00 # smaller the better
+    bias = 0.00 # smaller the better
     for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - observation_range, -1):
         if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
-            bias_momentum += 1
+            bias += 1
         else:
-            bias_momentum -= 1
+            bias -= 1
     # always be negative (positive momentum * negative = negative bias)
     # (negative momentum * negative = positive bias)
-    bias_momentum *= -votality_rate 
-    return bias_momentum
+    bias *= -votality_rate 
+    return bias
 def regression_momentum_bias(timeseries, observation_range):
-    """ my own implementation of linear regression on a stock matrix """
+    """ my own implementation of linear regression on a stock matrix to calculate its rate of growth """
     """ this is crappy. don't take this seriously """
     # set initial slope and bias based on the end points of the matrix
     timeseries.raw_datapoint(timeseries.raw_size() - 1)
@@ -38,24 +38,24 @@ def regression_momentum_bias(timeseries, observation_range):
             high = i
         if timeseries.raw_datapoint(i) < timeseries.raw_datapoint(low):
             low = i
-    
-    high_low_bias = 0.00
     high_low_slope = (timeseries.raw_datapoint(high) - timeseries.raw_datapoint(low)) / (high - low)
-    if high > low:
-        high_low_bias = high_low_slope + timeseries.raw_datapoint(low)
-    else:
-        high_low_bias = high_low_slope + timeseries.raw_datapoint(high)
-
+    
     slope = (high_low_slope + end_point_slope) / 2
-    bias = (high_low_bias + end_point_bias) / 2
-
+    
     line = [i * slope + bias for i in range(timeseries.raw_size())]
-
     graph(timeseries.raw_matrix(), "green", "trend.png", False)
     graph(line, "red", "trend.png", False)
     
-    bias_momentum = 0.00
-    return bias_momentum
+    decrease_momentum, increase_momentum = 0, 0
+    for i in range(timeseries.raw_size() - 2, timeseries.raw_size() - 1 - observation_range, -1):
+        if timeseries.raw_datapoint(i) < timeseries.raw_datapoint(timeseries.raw_size() - 1):
+            decrease_momentum += 1
+        else:
+            increase_momentum += 1
+    decrease_momentum *= slope
+    increase_momentum *= slope
+    bias = decrease_momentum + increase_momentum
+    return bias
 
 def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True):
     if model == None:
@@ -73,13 +73,13 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     prediction_matrix = []
 
     bias = int(input("Bias Type [0: Votality, 1: Regression] :: "))
-    bias_momentum = 0.00
+    bias = 0.00
     # compute bias using momentum calculations with VIX index
     if bias == 1:
-        bias_momentum = regression_momentum_bias(timeseries, WEEK)
+        bias = regression_momentum_bias(timeseries, WEEK)
     else:
-        bias_momentum = vix_momentum_bias(timeseries, date, WEEK, MONTH)
-    print(bias_momentum)
+        bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
+    print(bias)
 
     for count in range(5):
         trend = moving_average(timeseries, MONTH)
@@ -93,7 +93,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
             for j in range(result.shape[1]):
                 prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
                 # apply the pre-calculated bias to the prediction results
-                prediction += bias_momentum
+                prediction += bias
         prediction_matrix.append(prediction)
         raw = timeseries.raw_matrix()
         for i in range(0, len(raw)):
