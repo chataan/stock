@@ -112,7 +112,7 @@ if __name__ == "__main__":
     os.system('clear')
     stock, prediction = sequential_prediction()
     
-    print("Estimated Stock Matrix = [", prediction, "]")
-    print("Estimated Change: ", stock[len(stock) - 1] - prediction[len(prediction) - 1])
+    print("\n\nEstimated Stock Matrix = ", prediction)
+    print("Estimated Change: ", stock[len(stock) - 1] - prediction[len(prediction) - 1], "\n\n")
 
     git_update()
