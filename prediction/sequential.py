@@ -41,11 +41,11 @@ def regression_momentum_bias(timeseries, observation_range):
     high_low_slope = (timeseries.raw_datapoint(high) - timeseries.raw_datapoint(low)) / (high - low)
     
     slope = (high_low_slope + end_point_slope) / 2
-    line_bias = timeseries.raw_datapoint(0)
+    line_bias = (timeseries.raw_datapoint(high) + timeseries.raw_datapoint(0)) / 2
     
     line = [i * slope + line_bias for i in range(timeseries.raw_size())]
-    #graph(timeseries.raw_matrix(), "green", "trend.png", False)
-    #graph(line, "red", "trend.png", False)
+    graph(timeseries.raw_matrix(), "green", "trend.png", False)
+    graph(line, "red", "trend.png", False)
     
     # calculate bias momentum by comparing the amount of plots in a certain range of 
     # difference of the actual stock prices between the values represented by the regression line
