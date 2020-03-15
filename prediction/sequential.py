@@ -105,7 +105,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 
 if __name__ == "__main__":
     os.system('clear')
-    stock, prediction = sequential_prediction(itr=30)
+    stock, prediction = sequential_prediction(itr=80)
 
     print("\n\nEstimated Stock Matrix = ", prediction)
     print("Estimated Change: ", prediction[len(prediction) - 1] - stock[len(stock) - 1], "\n\n")
