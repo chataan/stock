@@ -72,14 +72,14 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     timeseries, final_close = fetch_last_time_series(stock, QUARTER)
     prediction_matrix = []
 
-    bias = int(input("Bias Type [0: Votality, 1: Regression] :: "))
+    #bias = int(input("Bias Type [0: Votality, 1: Regression] :: "))
     bias = 0.00
     # compute bias using momentum calculations with VIX index
-    if bias == 1:
-        bias = regression_momentum_bias(timeseries, WEEK)
-    else:
-        bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
-    print(bias)
+    #if bias == 1:
+        #bias = regression_momentum_bias(timeseries, WEEK)
+    #else:
+     #   bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
+    #print(bias)
 
     for count in range(5):
         trend = moving_average(timeseries, MONTH)
