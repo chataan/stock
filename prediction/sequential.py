@@ -40,23 +40,25 @@ def regression_momentum_bias(timeseries, observation_range):
             low = i
     high_low_slope = (timeseries.raw_datapoint(high) - timeseries.raw_datapoint(low)) / (high - low)
     
-    slope = sqrt(high_low_slope * end_point_slope) # growth rate (regression slope)
+    slope = sqrt(abs(high_low_slope) * abs(end_point_slope)) # growth rate (regression slope)
     if high_low_slope < 0 or end_point_slope < 0:
         slope *= -1
-        
+
     midpoint = int(timeseries.raw_size() / 2)
     line_bias = timeseries.raw_datapoint(0) + timeseries.raw_datapoint(midpoint) - (slope * midpoint + timeseries.raw_datapoint(0))
 
-    line = [i * slope + line_bias for i in range(timeseries.raw_size())]
-    graph(timeseries.raw_matrix(), "green", "trend.png", False)
-    graph(line, "red", "trend.png", False)
+    #line = [i * slope + line_bias for i in range(timeseries.raw_size())]
+    #graph(timeseries.raw_matrix(), "green", "trend.png", False)
+    #graph(line, "red", "trend.png", False)
     
     # calculate bias momentum by comparing the amount of plots in a certain range of 
     # difference of the actual stock prices between the values represented by the regression line
     bias = 0
     for i in range(timeseries.raw_size() - 2, timeseries.raw_size() - observation_range, -1):
-        print(slope * i + line_bias)
-
+        if abs(slope * i + line_bias - timeseries.raw_datapoint(i)) < 80:
+            bias += 1
+    bias *= slope
+    
     return bias
 
 def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, add_bias=True, itr=10):
