@@ -24,7 +24,7 @@ def git_update():
 def graph(matrix, _color, save_name, show=False):
     count = []
     for i in range(len(matrix)):
-        count.append(i)
+        count.append(int(i))
     plt.plot(count, matrix, color=_color)
     plt.xlabel("Count")
     plt.ylabel("Value")
