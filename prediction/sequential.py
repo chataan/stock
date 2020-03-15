@@ -59,7 +59,7 @@ def regression_momentum_bias(timeseries, observation_range):
     bias *= slope
     return bias
 
-def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, add_bias=True, itr=10):
+def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, add_bias=True, itr=5):
     if model == None:
         model = select_model()
         print("Model = [", model, "]\n")
@@ -113,7 +113,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 
 if __name__ == "__main__":
     os.system('clear')
-    stock, prediction = sequential_prediction(itr=15, add_bias=True)
+    stock, prediction = sequential_prediction(itr=5, add_bias=True)
 
     print("\n\nEstimated Stock Matrix = ", prediction)
     print("Estimated Change: ", prediction[len(prediction) - 1] - stock[len(stock) - 1], "\n\n")
