@@ -46,18 +46,16 @@ def regression_momentum_bias(timeseries, observation_range):
     #graph(timeseries.raw_matrix(), "green", "trend.png", False)
     #graph(line, "red", "trend.png", False)
     
-    decrease_momentum, increase_momentum = 0, 0
+    bias = 0
     for i in range(timeseries.raw_size() - 2, timeseries.raw_size() - 1 - observation_range, -1):
         if timeseries.raw_datapoint(i) < timeseries.raw_datapoint(timeseries.raw_size() - 1):
-            decrease_momentum += 1
+            bias += 1
         else:
-            increase_momentum += 1
-    decrease_momentum *= slope
-    increase_momentum *= slope
-    bias = decrease_momentum + increase_momentum
+            bias -= 1
+    bias *= slope
     return bias
 
-def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True):
+def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, itr=10):
     if model == None:
         model = select_model()
         print("Model = [", model, "]\n")
@@ -80,7 +78,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     else:
         bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
 
-    for count in range(10):
+    for count in range(itr):
         trend = moving_average(timeseries, MONTH)
         matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
@@ -109,7 +107,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 
 if __name__ == "__main__":
     os.system('clear')
-    stock, prediction = sequential_prediction()
+    stock, prediction = sequential_prediction(itr=15)
 
     print("\n\nEstimated Stock Matrix = ", prediction)
     print("Estimated Change: ", prediction[len(prediction) - 1] - stock[len(stock) - 1], "\n\n")
