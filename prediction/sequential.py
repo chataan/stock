@@ -40,7 +40,7 @@ def regression_momentum_bias(timeseries, observation_range):
             low = i
     high_low_slope = (timeseries.raw_datapoint(high) - timeseries.raw_datapoint(low)) / (high - low)
     
-    slope = (high_low_slope + end_point_slope) / 2 # growth rate (regression slope)
+    slope = sqrt(high_low_slope * end_point_slope) # growth rate (regression slope)
     
     midpoint = int(timeseries.raw_size() / 2)
     line_bias = timeseries.raw_datapoint(0) + timeseries.raw_datapoint(midpoint) - (slope * midpoint + timeseries.raw_datapoint(0))
