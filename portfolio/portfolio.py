@@ -49,12 +49,6 @@ class Stock:
     def percentage_difference(self):
         return self.percentage_diff
     def rebalance(self, portfolio_asset):
-        """ 1. Calculate how much the stock values in the portfolio (i.e., percentage)
-            2. Calculate the difference of the target percentage and actual percentage
-                a. if difference > 3.0, return the required amount of purchases/sales
-                b. if difference < 3.0, return NONE 
-            RETURNS: float<amount of purchases/sales>, sequential prediction matrix 
-                          or NONE, sequential prediction matrix """
         actual_percentage = self.shares * self.close_price / portfolio_asset * 100
         self.percentage_diff = (actual_percentage - self.percentage) * 100 / self.percentage
         profit = (self.shares * self.close_price) - (self.percentage * portfolio_asset / 100)

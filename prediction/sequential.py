@@ -42,7 +42,7 @@ def regression_momentum_bias(timeseries, observation_range):
     
     slope = (high_low_slope + end_point_slope) / 2
     
-    line = [i * slope + bias for i in range(timeseries.raw_size())]
+    line = [i * slope + end_point_bias for i in range(timeseries.raw_size())]
     graph(timeseries.raw_matrix(), "green", "trend.png", False)
     graph(line, "red", "trend.png", False)
     
@@ -72,14 +72,14 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     timeseries, final_close = fetch_last_time_series(stock, QUARTER)
     prediction_matrix = []
 
-    #bias = int(input("Bias Type [0: Votality, 1: Regression] :: "))
+    bias_mode = int(input("Bias Type [0: Votality, 1: Regression] :: "))
     bias = 0.00
     # compute bias using momentum calculations with VIX index
-    #if bias == 1:
-        #bias = regression_momentum_bias(timeseries, WEEK)
-    #else:
-     #   bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
-    #print(bias)
+    if bias_mode == 1:
+        bias = regression_momentum_bias(timeseries, WEEK)
+    else:
+        bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
+    print(bias)
 
     for count in range(5):
         trend = moving_average(timeseries, MONTH)
@@ -111,5 +111,8 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 if __name__ == "__main__":
     os.system('clear')
     stock, prediction = sequential_prediction()
-    print("\n", prediction, "\n")
+    
+    print("Estimated Stock Matrix = [", prediction, "]")
+    print("Estimated Change: ", stock[len(stock) - 1] - prediction[len(prediction) - 1])
+
     git_update()
