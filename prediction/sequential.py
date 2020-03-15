@@ -50,8 +50,6 @@ def regression_momentum_bias(timeseries, observation_range):
     for i in range(timeseries.raw_size() - 2, timeseries.raw_size() - 1 - observation_range, -1):
         if timeseries.raw_datapoint(i) < timeseries.raw_datapoint(timeseries.raw_size() - 1):
             bias += 1
-        else:
-            bias -= 1
     bias *= slope
     return bias
 
