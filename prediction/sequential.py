@@ -47,12 +47,12 @@ def regression_momentum_bias(timeseries, observation_range):
     #graph(timeseries.raw_matrix(), "green", "trend.png", False)
     #graph(line, "red", "trend.png", False)
     
-    bias = 0.00
-    # calculate momentum based on the distance of the stock plots from the regression line
-    for i in range(timeseries.raw_size() - 2, timeseries.raw_size() - 1 - observation_range, -1):
-        if abs((slope * i - timeseries.raw_datapoint(i) + line_bias) / sqrt(slope**2 + 1)) < 200:
-            bias += 1
-    bias *= slope
+    # calculate bias momentum by comparing the amount of plots in a certain range of 
+    # difference of the actual stock prices between the values represented by the regression line
+    bias = 0
+    for i in range(timeseries.raw_size() - 2, timeseries.raw_size() - observation_range, -1):
+        print(slope * i + line_bias)
+
     return bias
 
 def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, add_bias=True, itr=10):
