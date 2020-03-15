@@ -39,8 +39,13 @@ def regression_momentum_bias(timeseries, observation_range):
         if timeseries.raw_datapoint(i) < timeseries.raw_datapoint(low):
             low = i
     
+    high_low_bias = 0.00
     high_low_slope = (timeseries.raw_datapoint(high) - timeseries.raw_datapoint(low)) / (high - low)
-    print((end_point_slope + high_low_slope) / 2)
+    if high > low:
+        high_low_bias = high_low_slope + timeseries.raw_datapoint(low)
+    else:
+        high_low_bias = high_low_slope + timeseries.raw_datapoint(high)
+    print(high_low_bias)
 
     line = [i * end_point_slope + end_point_bias for i in range(timeseries.raw_size())]
 
