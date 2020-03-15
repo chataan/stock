@@ -53,7 +53,7 @@ def regression_momentum_bias(timeseries, observation_range):
     bias *= slope
     return bias
 
-def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, itr=10):
+def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, bias=True, itr=10):
     if model == None:
         model = select_model()
         print("Model = [", model, "]\n")
@@ -68,13 +68,14 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     timeseries, final_close = fetch_last_time_series(stock, QUARTER)
     prediction_matrix = []
 
-    bias_mode = int(input("Bias Type [0: Votality, 1: Regression] :: "))
     bias = 0.00
-    # compute bias using momentum calculations with VIX index
-    if bias_mode == 1:
-        bias = regression_momentum_bias(timeseries, WEEK)
-    else:
-        bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
+    if bias == True:
+        bias_mode = int(input("Bias Type [0: Votality, 1: Regression] :: "))
+        # compute bias using momentum calculations with VIX index
+        if bias_mode == 1:
+            bias = regression_momentum_bias(timeseries, WEEK)
+        else:
+            bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
 
     for count in range(itr):
         trend = moving_average(timeseries, MONTH)
@@ -105,7 +106,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 
 if __name__ == "__main__":
     os.system('clear')
-    stock, prediction = sequential_prediction(itr=15)
+    stock, prediction = sequential_prediction(itr=15, bias=False)
 
     print("\n\nEstimated Stock Matrix = ", prediction)
     print("Estimated Change: ", prediction[len(prediction) - 1] - stock[len(stock) - 1], "\n\n")
