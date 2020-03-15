@@ -53,7 +53,7 @@ def regression_momentum_bias(timeseries, observation_range):
     bias *= slope
     return bias
 
-def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, bias=True, itr=10):
+def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, add_bias=True, itr=10):
     if model == None:
         model = select_model()
         print("Model = [", model, "]\n")
@@ -69,7 +69,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     prediction_matrix = []
 
     bias = 0.00
-    if bias == True:
+    if add_bias == True:
         bias_mode = int(input("Bias Type [0: Votality, 1: Regression] :: "))
         # compute bias using momentum calculations with VIX index
         if bias_mode == 1:
@@ -106,7 +106,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 
 if __name__ == "__main__":
     os.system('clear')
-    stock, prediction = sequential_prediction(itr=15)
+    stock, prediction = sequential_prediction(itr=15, add_bias=False)
 
     print("\n\nEstimated Stock Matrix = ", prediction)
     print("Estimated Change: ", prediction[len(prediction) - 1] - stock[len(stock) - 1], "\n\n")
