@@ -30,30 +30,14 @@ def regression_momentum_bias(timeseries, observation_range):
     # set initial slope and bias based on the end points of the matrix
     timeseries.raw_datapoint(timeseries.raw_size() - 1)
     end_point_slope = (timeseries.raw_datapoint(timeseries.raw_size() - 1) - timeseries.raw_datapoint(0)) / timeseries.raw_size()
+    end_point_bias = end_point_slope + timeseries.raw_datapoint(0)
 
-    high, high_index = -1, 0
-    low, low_index = 10000000, 0
-    for i in range(timeseries.raw_size()):
-        if timeseries.raw_datapoint(i) > high:
-            high = timeseries.raw_datapoint(i)
-            high_index = i
-        else:
-            low = timeseries.raw_datapoint(i)
-            low_index = i
+    line = [i * end_point_slope + end_point_bias for i in range(timeseries.raw_size())]
 
-    high_low_slope = 0.00
-    high_low_slope = (timeseries.raw_datapoint(high_index) - timeseries.raw_datapoint(low_index)) / (high_index - low_index)
+    graph(timeseries.raw_matrix(), "green", "trend.png", False)
+    graph(line, "red", "trend.png", False)
     
-    regression_slope = (high_low_slope + end_point_slope) / 2
-
-    bias_momentum = 0.00 # smaller the better
-    for i in range(timeseries.raw_size() - 1, timeseries.raw_size() - observation_range, -1):
-        if timeseries.raw_datapoint(timeseries.raw_size() - 1) < timeseries.raw_datapoint(i):
-            bias_momentum += 1
-        else:
-            bias_momentum -= 1
-    
-    bias_momentum *= regression_slope # could be positive or negative
+    bias_momentum = 0.00
     return bias_momentum
 
 def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True):
