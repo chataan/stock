@@ -48,8 +48,8 @@ def regression_momentum_bias(timeseries, observation_range):
     else:
         high_low_bias = high_low_slope + timeseries.raw_datapoint(high_index)
 
-    slope, bias = (end_point_bias + high_low_slope) / 2, (end_point_bias + high_low_bias) / 2
-    line = [i * slope + bias for i in range(timeseries.raw_size())]
+    slope = (end_point_bias + high_low_slope) / 2
+    line = [i * slope + end_point_bias for i in range(timeseries.raw_size())]
 
     graph(timeseries.raw_matrix(), "green", "trend.png", False)
     graph(line, "red", "trend.png", False)
