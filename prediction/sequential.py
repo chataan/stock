@@ -76,6 +76,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
             bias = regression_momentum_bias(timeseries, WEEK)
         else:
             bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
+    print("BIAS = ", bias)
 
     for count in range(itr):
         trend = moving_average(timeseries, MONTH)
