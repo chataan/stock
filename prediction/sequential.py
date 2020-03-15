@@ -43,8 +43,8 @@ def regression_momentum_bias(timeseries, observation_range):
     slope = (high_low_slope + end_point_slope) / 2
     
     line = [i * slope + end_point_bias for i in range(timeseries.raw_size())]
-    graph(timeseries.raw_matrix(), "green", "trend.png", False)
-    graph(line, "red", "trend.png", False)
+    #graph(timeseries.raw_matrix(), "green", "trend.png", False)
+    #graph(line, "red", "trend.png", False)
     
     decrease_momentum, increase_momentum = 0, 0
     for i in range(timeseries.raw_size() - 2, timeseries.raw_size() - 1 - observation_range, -1):
@@ -112,6 +112,8 @@ if __name__ == "__main__":
     os.system('clear')
     stock, prediction = sequential_prediction()
     
+    print(stock[len(stock) - 1])
+
     print("\n\nEstimated Stock Matrix = ", prediction)
     print("Estimated Change: ", stock[len(stock) - 1] - prediction[len(prediction) - 1], "\n\n")
 
