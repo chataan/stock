@@ -79,9 +79,8 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
         bias = regression_momentum_bias(timeseries, WEEK)
     else:
         bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
-    print(bias)
 
-    for count in range(5):
+    for count in range(10):
         trend = moving_average(timeseries, MONTH)
         matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
         timeseries.set_sampled_matrix(matrix)
@@ -111,10 +110,8 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 if __name__ == "__main__":
     os.system('clear')
     stock, prediction = sequential_prediction()
-    
-    print(stock[len(stock) - 1])
 
     print("\n\nEstimated Stock Matrix = ", prediction)
-    print("Estimated Change: ", stock[len(stock) - 1] - prediction[len(prediction) - 1], "\n\n")
+    print("Estimated Change: ", prediction[len(prediction) - 1] - stock[len(stock) - 1], "\n\n")
 
     git_update()
