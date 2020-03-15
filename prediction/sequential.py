@@ -55,10 +55,10 @@ def regression_momentum_bias(timeseries, observation_range):
     # difference of the actual stock prices between the values represented by the regression line
     bias = 0
     for i in range(timeseries.raw_size() - 2, timeseries.raw_size() - observation_range, -1):
-        if abs(slope * i + line_bias - timeseries.raw_datapoint(i)) < 80:
+        if abs(slope * i + line_bias - timeseries.raw_datapoint(i)) < timeseries.raw_datapoint(i) / 10:
             bias += 1
     bias *= slope
-    
+
     return bias
 
 def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, add_bias=True, itr=10):
