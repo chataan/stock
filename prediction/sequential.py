@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+from math import sqrt
 from service import graph, select_model, download_stock
 from service import fetch_last_time_series, git_update
 from financial import rescale, moving_average, sampling
@@ -30,7 +31,6 @@ def regression_momentum_bias(timeseries, observation_range):
     # set initial slope and bias based on the end points of the matrix
     timeseries.raw_datapoint(timeseries.raw_size() - 1)
     end_point_slope = (timeseries.raw_datapoint(timeseries.raw_size() - 1) - timeseries.raw_datapoint(0)) / timeseries.raw_size()
-    end_point_bias = end_point_slope + timeseries.raw_datapoint(0)
 
     high, low = 0, 0
     for i in range(timeseries.raw_size()):
@@ -41,16 +41,16 @@ def regression_momentum_bias(timeseries, observation_range):
     high_low_slope = (timeseries.raw_datapoint(high) - timeseries.raw_datapoint(low)) / (high - low)
     
     slope = (high_low_slope + end_point_slope) / 2
+    line_bias = slope + timeseries.raw_datapoint(0)
     
-    line = [i * slope + end_point_bias for i in range(timeseries.raw_size())]
+    line = [i * slope + line_bias for i in range(timeseries.raw_size())]
     #graph(timeseries.raw_matrix(), "green", "trend.png", False)
     #graph(line, "red", "trend.png", False)
     
-    bias = 0
+    bias = 0.00
     for i in range(timeseries.raw_size() - 2, timeseries.raw_size() - 1 - observation_range, -1):
-        if timeseries.raw_datapoint(i) < timeseries.raw_datapoint(timeseries.raw_size() - 1):
-            bias += 1
-    bias *= slope
+        print(abs((slope * i) - timeseries.raw_datapoint(i) + line_bias) / sqrt(slope**2 + 1))
+
     return bias
 
 def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, add_bias=True, itr=10):
