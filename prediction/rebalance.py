@@ -108,5 +108,7 @@ if __name__ == "__main__":
             cash_balance += adjustment_value
             stock_balance[i] -= adjustment_value
     print(stock_balance, "\n")
-    
+
+    # run rebalancing calculations
+
     git_update()
