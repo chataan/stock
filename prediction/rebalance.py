@@ -88,11 +88,14 @@ if __name__ == "__main__":
     print("Running prediction models... ")
     for i in range(len(dataset)):
         stock, prediction = sequential_prediction(model=stock_id_list[i].lower(), stock_id=stock_id_list[i].lower(), date=start_date, log=False, bias_type='REGRESSION', itr=10)
-        # predicted growth
-        if prediction[len(prediction) - 1] > stock[len(stock) - 1]:
-            predictions.append('POSITIVE')
+        if prediction == []: # meaning that no model exists
+            predictions.append('NO MODEL')
         else:
-            predictions.append('NEGATIVE')
+            # predicted growth
+            if prediction[len(prediction) - 1] > stock[len(stock) - 1]:
+                predictions.append('POSITIVE')
+            else:
+                predictions.append('NEGATIVE')
     
     # based on the prediction output, tune all the stock balances
     # if prediction is POSITIVE, take <adjustment_value> from <cash_balance> to the stock
