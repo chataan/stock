@@ -76,4 +76,15 @@ if __name__ == "__main__":
         dataset.append(timeseries)
         price.append(int(close_price))
 
+    # run sequential prediction before rebalancing
+    predictions = []
+    for timeseries in dataset:
+        stock, prediction_matrix = sequential_prediction(itr=10, add_bias=True, bias_type='REGRESSION')
+        if prediction_matrix[len(prediction_matrix) - 1] > stock[len(stock) - 1]: # predicted growth
+            predictions.append('POSITIVE')
+        else:
+            predictions.append('POSITIVE')
+    print(predictions)
+    
+
     git_update()

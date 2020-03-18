@@ -59,7 +59,7 @@ def regression_momentum_bias(timeseries, observation_range):
     bias *= slope
     return bias
 
-def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, add_bias=True, itr=5):
+def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, log=True, add_bias=True, bias_type='DEFAULT', itr=5):
     if model == None:
         model = select_model()
         print("Model = [", model, "]\n")
@@ -76,13 +76,16 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 
     bias = 0.00
     if add_bias == True:
-        bias_mode = int(input("Bias Type [0: Votality, 1: Regression] :: "))
-        # compute bias using momentum calculations with VIX index
-        if bias_mode == 1:
-            bias = regression_momentum_bias(timeseries, WEEK)
-        else:
+        if bias_type == 'DEFAULT': # 
             bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
-    print("BIAS = ", bias)
+        else:
+            bias_mode = int(input("Bias Type [0: Votality, 1: Regression] :: "))
+            # compute bias using momentum calculations with VIX index
+            if bias_mode == 1:
+                bias = regression_momentum_bias(timeseries, WEEK)
+            else:
+                bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
+    #print("BIAS = ", bias)
 
     for count in range(itr):
         trend = moving_average(timeseries, MONTH)
@@ -109,13 +112,12 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     if graphing == True:
         graph_title = "../Images/" + model + "_sequential_prediction_demo.png"
         graph(prediction_matrix, 'red', graph_title, False)
-    return stock, prediction_matrix
+    return prediction_matrix
 
 if __name__ == "__main__":
     os.system('clear')
-    stock, prediction = sequential_prediction(itr=10, add_bias=True)
+    prediction = sequential_prediction(itr=10, add_bias=True)
 
     print("\n\nEstimated Stock Matrix = ", prediction)
-    print("Estimated Change: ", prediction[len(prediction) - 1] - stock[len(stock) - 1], "\n\n")
 
     git_update()

@@ -19,11 +19,11 @@ chmod +x sequential.py
 ./sequential.py
 ~~~~~~~~~~~~~~~~~~~~
 
-Creating a rebalancing portfolio (AFTER ADDING CODE IN MAIN FUNC of portfolio.py)
+Creating a rebalancing portfolio (Forecast-based portfolio rebalancing)
 ~~~~~~~~~~~~~~~~~~~~
-cd rebalancing-portfolio
-chmod +x portfolio.py
-./portfolio.py
+cd prediction
+chmod +x rebalance.py
+./rebalance.py
 ~~~~~~~~~~~~~~~~~~~~
 
 Rebalancing a portfolio
