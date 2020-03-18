@@ -85,9 +85,11 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 
         bias = 0.00
         if add_bias == True:
-            if bias_type == 'DEFAULT': # 
+            if bias_type == 'VIX': 
                 bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
-            else:
+            elif bias_type == 'REGRESSION':
+                bias = regression_momentum_bias(timeseries, WEEK)
+            else: # no specific BIAS type inputted
                 bias_mode = int(input("Bias Type [0: Votality, 1: Regression] :: "))
                 # compute bias using momentum calculations with VIX index
                 if bias_mode == 1:
