@@ -70,48 +70,57 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     else:
         stock, id = download_stock(stock_id, date, 1, True)
 
-    predictor = Model(model)
-    timeseries, final_close = fetch_last_time_series(stock, QUARTER)
+    predictor = None
+    model_exists = None
     prediction_matrix = []
+    
+    try:
+        predictor = Model(model)
+        model_exists = True
+    except:
+        model_exists = False
 
-    bias = 0.00
-    if add_bias == True:
-        if bias_type == 'DEFAULT': # 
-            bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
-        else:
-            bias_mode = int(input("Bias Type [0: Votality, 1: Regression] :: "))
-            # compute bias using momentum calculations with VIX index
-            if bias_mode == 1:
-                bias = regression_momentum_bias(timeseries, WEEK)
-            else:
+    if model_exists == True:
+        timeseries, final_close = fetch_last_time_series(stock, QUARTER)
+
+        bias = 0.00
+        if add_bias == True:
+            if bias_type == 'DEFAULT': # 
                 bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
-    #print("BIAS = ", bias)
+            else:
+                bias_mode = int(input("Bias Type [0: Votality, 1: Regression] :: "))
+                # compute bias using momentum calculations with VIX index
+                if bias_mode == 1:
+                    bias = regression_momentum_bias(timeseries, WEEK)
+                else:
+                    bias = vix_momentum_bias(timeseries, date, WEEK, MONTH)
+        #print("BIAS = ", bias)
 
-    for count in range(itr):
-        trend = moving_average(timeseries, MONTH)
-        matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
-        timeseries.set_sampled_matrix(matrix)
-        timeseries.normalize_timeseries()
+        for count in range(itr):
+            trend = moving_average(timeseries, MONTH)
+            matrix = sampling(trend, 0, 2, STANDARD_SAMPLING_RANGE)
+            timeseries.set_sampled_matrix(matrix)
+            timeseries.normalize_timeseries()
 
-        prediction = 0.00
-        result = predictor.predict(timeseries)
-        for i in range(result.shape[0]):
-            for j in range(result.shape[1]):
-                prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
-                # apply the pre-calculated bias to the prediction results
-                prediction += bias
-        prediction_matrix.append(prediction)
-        raw = timeseries.raw_matrix()
-        for i in range(0, len(raw)):
-            raw[i] = rescale(raw[i], timeseries.minimum(), timeseries.maximum())
-        del raw[0]
-        raw.append(prediction)
-        timeseries.set_raw_matrix(raw)
-        count += 1
+            prediction = 0.00
+            result = predictor.predict(timeseries)
+            for i in range(result.shape[0]):
+                for j in range(result.shape[1]):
+                    prediction = rescale(result[i][j], timeseries.minimum(), timeseries.maximum())
+                    # apply the pre-calculated bias to the prediction results
+                    prediction += bias
+            prediction_matrix.append(prediction)
+            raw = timeseries.raw_matrix()
+            for i in range(0, len(raw)):
+                raw[i] = rescale(raw[i], timeseries.minimum(), timeseries.maximum())
+            del raw[0]
+            raw.append(prediction)
+            timeseries.set_raw_matrix(raw)
+            count += 1
 
-    if graphing == True:
-        graph_title = "../Images/" + model + "_sequential_prediction_demo.png"
-        graph(prediction_matrix, 'red', graph_title, False)
+        if graphing == True:
+            graph_title = "../Images/" + model + "_sequential_prediction_demo.png"
+            graph(prediction_matrix, 'red', graph_title, False)
     return prediction_matrix
 
 if __name__ == "__main__":
