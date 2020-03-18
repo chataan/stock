@@ -107,5 +107,6 @@ if __name__ == "__main__":
         else:
             cash_balance += adjustment_value
             stock_balance[i] -= adjustment_value
-    print(stock_balance)
+    print(stock_balance, "\n")
+    
     git_update()
