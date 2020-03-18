@@ -125,7 +125,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
 
 if __name__ == "__main__":
     os.system('clear')
-    prediction = sequential_prediction(itr=10, add_bias=True)
+    stock, prediction = sequential_prediction(itr=10, add_bias=True)
 
     print("\n\nEstimated Stock Matrix = ", prediction)
 
