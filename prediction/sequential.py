@@ -73,7 +73,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
     predictor = None
     model_exists = None
     prediction_matrix = []
-    
+
     try:
         predictor = Model(model)
         model_exists = True
@@ -121,7 +121,7 @@ def sequential_prediction(model=None, stock_id=None, date=None, graphing=True, l
         if graphing == True:
             graph_title = "../Images/" + model + "_sequential_prediction_demo.png"
             graph(prediction_matrix, 'red', graph_title, False)
-    return prediction_matrix
+    return stock, prediction_matrix
 
 if __name__ == "__main__":
     os.system('clear')
