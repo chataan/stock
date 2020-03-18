@@ -80,7 +80,7 @@ if __name__ == "__main__":
         dataset.append(timeseries)
         price.append(int(close_price))
 
-    minimum_cash_balance = 100.0 - total_stock_balance
+    cash_balance = 100.0 - total_stock_balance
     adjustment_value = 0.3 # THIS VALUE COULD BE TUNED
 
     # run sequential prediction before rebalancing
@@ -95,6 +95,10 @@ if __name__ == "__main__":
             predictions.append('NEGATIVE')
     
     # based on the prediction output, tune all the stock balances
-    # if prediction is POSITIVE, take 
+    # if prediction is POSITIVE, take <adjustment_value> from <cash_balance> to the stock
+    # if prediction is NEGATIVE, take <adjustment_value> from stock to <cash_balance>
+
+    
+
 
     git_update()
