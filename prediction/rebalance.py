@@ -57,6 +57,10 @@ if __name__ == "__main__":
     price, evaluated_value, evaluated_percentage, percentage_difference, profit = [], [], [], [], []
     stock_id_list, stock_name_list, stock_balance, stock_shares, cash = load_portfolio('junyoung')
 
+    total_stock_balance = 0
+    for val in stock_balance:
+        total_stock_balance += val
+
     # get date YYYY-MM-DD string 1 year before
     start_date = ""
     today = str(date.today())
@@ -76,6 +80,9 @@ if __name__ == "__main__":
         dataset.append(timeseries)
         price.append(int(close_price))
 
+    minimum_cash_balance = 100.0 - total_stock_balance
+    adjustment_value = 0.3 # THIS VALUE COULD BE TUNED
+
     # run sequential prediction before rebalancing
     predictions = []
     print("Running prediction models... ")
@@ -86,10 +93,8 @@ if __name__ == "__main__":
             predictions.append('POSITIVE')
         else:
             predictions.append('NEGATIVE')
-    print(predictions)
     
-    minimum_cash_balance = int(input('Specify minimum cash balance: '))
-    adjustment_balance = int(input('Specify desired adjustment balance: '))
-    
+    # based on the prediction output, tune all the stock balances
+    # if prediction is POSITIVE, take 
 
     git_update()
