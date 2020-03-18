@@ -98,7 +98,8 @@ if __name__ == "__main__":
     # if prediction is POSITIVE, take <adjustment_value> from <cash_balance> to the stock
     # if prediction is NEGATIVE, take <adjustment_value> from stock to <cash_balance>
     for i in range(len(predictions)):
-
+        if predictions[i] == 'POSITIVE':
+            
 
 
     git_update()
