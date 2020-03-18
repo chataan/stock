@@ -89,6 +89,7 @@ if __name__ == "__main__":
     print(predictions)
     
     minimum_cash_balance = int(input('Specify minimum cash balance: '))
-    adjustment_balance = int(input('Specify desired adjustment balance'))
+    adjustment_balance = int(input('Specify desired adjustment balance: '))
+    
 
     git_update()
